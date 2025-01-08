@@ -8,6 +8,4 @@ import com.project.niyam.domain.model.StrictTasks
 abstract class TasksDataBase : RoomDatabase() {
 
     abstract fun getStrictTasksDAO(): StrictTasksDAO
-
-
 }

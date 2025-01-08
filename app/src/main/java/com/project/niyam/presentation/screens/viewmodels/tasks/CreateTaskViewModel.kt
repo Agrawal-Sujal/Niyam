@@ -17,7 +17,7 @@ data class CreateTaskUiState(
     val description: String = "",
     val startTime: String = "",
     val endTime: String = "",
-    val subTasks: List<CreateSubTaskUiState> = listOf()
+    val subTasks: List<CreateSubTaskUiState> = listOf(),
 )
 
 data class CreateSubTaskUiState(
@@ -40,7 +40,6 @@ class CreateTaskViewModel @Inject constructor(
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskName = subTaskName)
     }
 
-
     fun updateSubTaskDescription(subTaskDescription: String) {
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskDescription = subTaskDescription)
     }
@@ -54,7 +53,6 @@ class CreateTaskViewModel @Inject constructor(
 
     fun updateDate(date: String) {
         this.date = date
-
     }
 
     fun updateName(name: String) {
@@ -81,8 +79,8 @@ class CreateTaskViewModel @Inject constructor(
             reqList.add(
                 SubTasks(
                     subTaskName = it.subTaskName,
-                    subTaskDescription = it.subTaskDescription
-                )
+                    subTaskDescription = it.subTaskDescription,
+                ),
             )
         }
         repository.insertStrictTasks(
@@ -92,9 +90,8 @@ class CreateTaskViewModel @Inject constructor(
                 startTime = convertToLocalTime(_uiState.value.startTime),
                 endTime = convertToLocalTime(_uiState.value.endTime),
                 date = date,
-                subTasks = reqList
-            )
+                subTasks = reqList,
+            ),
         )
     }
 }
-

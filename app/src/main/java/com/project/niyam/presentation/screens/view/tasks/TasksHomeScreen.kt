@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -49,23 +48,20 @@ import java.time.LocalDate
 fun TasksHomeScreen(
     onCreate: (String) -> Unit,
     context: Context,
-    homeViewModel: TasksHomeScreenViewModel = hiltViewModel()
+    homeViewModel: TasksHomeScreenViewModel = hiltViewModel(),
 ) {
-
     val uiState by homeViewModel.uiState
 
     val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = 12.dp),
         ) {
-
             TodayDate()
             HorizontalCalendar(homeViewModel, uiState.date)
             Spacer(modifier = Modifier.height(8.dp))
@@ -73,9 +69,8 @@ fun TasksHomeScreen(
                 viewModel = homeViewModel,
                 uiState.date,
                 onClick = {
-                }
+                },
             )
-
         }
         FloatingActionButton(
             onClick = { onCreate(uiState.date) },
@@ -83,13 +78,12 @@ fun TasksHomeScreen(
                 .align(Alignment.BottomEnd)
                 .padding(20.dp),
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.secondary
+            contentColor = MaterialTheme.colorScheme.secondary,
         ) {
             Icon(imageVector = Icons.Filled.Add, contentDescription = null)
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -102,20 +96,18 @@ fun TodayDate() {
                 DateTimeDetail.FULL_YEAR.getDetail()
             }",
             modifier = Modifier.padding(top = 12.dp, start = 12.dp),
-            fontSize = 16.sp
+            fontSize = 16.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HorizontalCalendar(
     viewModel: TasksHomeScreenViewModel,
-    selectedDate: String
+    selectedDate: String,
 ) {
-
     val datesList: List<LocalDate> =
         viewModel.giveDateLists()
 
@@ -127,7 +119,7 @@ fun HorizontalCalendar(
                 .align(Alignment.CenterVertically)
                 .clickable {
                     viewModel.decreaseDate()
-                }
+                },
         )
         datesList.forEach {
             val fullDate = DateDetail.FULL_DATE.getDetail(it)
@@ -139,19 +131,24 @@ fun HorizontalCalendar(
                     text = day,
                     modifier = Modifier
                         .padding(start = 4.dp, end = 4.dp),
-                    color = if (fullDate == selectedDate) Color.Blue
-                    else Color.Black
+                    color = if (fullDate == selectedDate) {
+                        Color.Blue
+                    } else {
+                        Color.Black
+                    },
                 )
                 Text(
                     text = date,
                     modifier = Modifier
                         .padding(start = 4.dp, end = 4.dp)
                         .align(Alignment.CenterHorizontally),
-                    color = if (fullDate == selectedDate) Color.Blue
-                    else Color.Black
+                    color = if (fullDate == selectedDate) {
+                        Color.Blue
+                    } else {
+                        Color.Black
+                    },
                 )
             }
-
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -160,13 +157,10 @@ fun HorizontalCalendar(
                 .align(Alignment.CenterVertically)
                 .clickable {
                     viewModel.increaseDate()
-                }
+                },
         )
-
     }
-
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -183,7 +177,7 @@ fun RoutinePartUI(viewModel: TasksHomeScreenViewModel, date: String, onClick: (I
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         items(items = routineList, key = { it.id }) { item ->
 
@@ -193,10 +187,8 @@ fun RoutinePartUI(viewModel: TasksHomeScreenViewModel, date: String, onClick: (I
                 description = item.taskDescription,
                 time = item.startTime,
             )
-
         }
     }
-
 }
 
 @Composable
@@ -206,14 +198,13 @@ fun EachTaskUI(
     description: String,
     time: String,
 ) {
-
     Row(
         modifier = Modifier
             .padding(
-                8.dp
+                8.dp,
             )
             .clickable(onClick = {
-            })
+            }),
 
     ) {
         TaskUI(
@@ -224,7 +215,6 @@ fun EachTaskUI(
     }
 }
 
-
 @Composable
 fun TaskUI(
     task: String = "",
@@ -233,14 +223,15 @@ fun TaskUI(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         Box {
             Text(
-                text = time, modifier = Modifier
+                text = time,
+                modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(4.dp)
-                    .padding(end = 12.dp)
+                    .padding(end = 12.dp),
             )
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -250,22 +241,21 @@ fun TaskUI(
                     .clickable {
                     }
                     .align(Alignment.BottomEnd)
-                    .padding(4.dp)
+                    .padding(4.dp),
             )
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 Text(
                     text = task,
                     modifier = Modifier.padding(start = 16.dp, top = 8.dp),
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(text = description, modifier = Modifier.padding(start = 16.dp, top = 3.dp))
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
-
     }
 }

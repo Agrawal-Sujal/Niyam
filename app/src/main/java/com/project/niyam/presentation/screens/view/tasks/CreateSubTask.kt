@@ -10,17 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun CreateSubTask(
     viewModel: CreateTaskViewModel,
-    navigateToCreateTaskScreen: () -> Unit
+    navigateToCreateTaskScreen: () -> Unit,
 ) {
     val uiState by viewModel.uiStateSubTask
     Column {
@@ -41,7 +39,6 @@ fun CreateSubTask(
             Button(onClick = {
                 viewModel.saveSubTask()
                 navigateToCreateTaskScreen()
-
             }) { Text("Done") }
             Button(onClick = {
                 CoroutineScope(Dispatchers.IO).launch {

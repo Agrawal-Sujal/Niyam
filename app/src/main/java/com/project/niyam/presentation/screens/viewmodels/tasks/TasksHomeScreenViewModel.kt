@@ -20,7 +20,7 @@ import javax.inject.Inject
 data class TasksHomeScreenUIState(
     val date: String = "",
     val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null
+    val endDate: LocalDate? = null,
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -38,7 +38,7 @@ class TasksHomeScreenViewModel @Inject constructor(private val strictTaskReposit
         _uiState.value = _uiState.value.copy(
             date = DateTimeDetail.FULL_DATE.getDetail(),
             startDate = startDate,
-            endDate = endDate
+            endDate = endDate,
         )
         println(DateDetail.FULL_DATE.getDetail(startDate))
         println(DateDetail.FULL_DATE.getDetail(endDate))
@@ -81,9 +81,7 @@ class TasksHomeScreenViewModel @Inject constructor(private val strictTaskReposit
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
+                initialValue = emptyList(),
             )
     }
-
-
 }

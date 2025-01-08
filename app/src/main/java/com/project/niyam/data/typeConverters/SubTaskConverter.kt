@@ -2,8 +2,8 @@ package com.project.niyam.data.typeConverters
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
-import com.project.niyam.domain.model.SubTasks
 import com.google.gson.reflect.TypeToken
+import com.project.niyam.domain.model.SubTasks
 
 class SubTaskConverter {
     @TypeConverter

@@ -27,7 +27,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -83,12 +83,8 @@ dependencies {
     // serializable
     implementation(libs.kotlinx.serialization.json)
 
-    //Extra
+    // Extra
 //    implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
 
     implementation("com.google.code.gson:gson:2.10.1")
-
-
-
-
 }

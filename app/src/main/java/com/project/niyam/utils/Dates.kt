@@ -10,24 +10,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun getDateRange(): List<String> {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd (EEEE)")
-    val currentDate = LocalDate.now()
-    val pastMonthDate = currentDate.minusMonths(1)
-    val futureMonthDate = currentDate.plusMonths(1)
-
-    val dateList = mutableListOf<String>()
-
-    var date = pastMonthDate
-    while (!date.isAfter(futureMonthDate)) {
-        dateList.add(date.format(formatter))
-        date = date.plusDays(1)
-    }
-    return dateList
-}
-
-
 enum class DateTimeDetail {
     FULL_DAY_NAME,
     SHORT_DAY_NAME,
@@ -40,7 +22,8 @@ enum class DateTimeDetail {
     HOUR_24,
     HOUR_12,
     MINUTE,
-    AM_PM;
+    AM_PM,
+    ;
 
     fun getDetail(): String {
         val calendar = Calendar.getInstance()
@@ -69,7 +52,8 @@ enum class DateDetail {
     SHORT_MONTH_NAME,
     FULL_YEAR,
     DATE,
-    FULL_DATE;
+    FULL_DATE,
+    ;
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getDetail(localDate: LocalDate): String {

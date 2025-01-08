@@ -5,8 +5,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.project.niyam.domain.model.StrictTasks
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
-
 
 @Dao
 interface StrictTasksDAO {
@@ -16,5 +14,4 @@ interface StrictTasksDAO {
 
     @Query("SELECT * FROM StrictTasks WHERE  date=:date")
     fun getAllStrictAlarm(date: String): Flow<List<StrictTasks>>
-
 }

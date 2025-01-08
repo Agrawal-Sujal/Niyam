@@ -17,20 +17,19 @@ import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewMod
 fun TasksScreenNavigation(
     changeBottomNavigation: (Int) -> Unit,
     context: Context,
-    viewModel: CreateTaskViewModel
+    viewModel: CreateTaskViewModel,
 ) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = TasksHomeScreen
-    )
-    {
+        startDestination = TasksHomeScreen,
+    ) {
         composable<TasksHomeScreen> {
             changeBottomNavigation(1)
             TasksHomeScreen(
                 onCreate = { navController.navigate(CreateTaskScreen(date = it)) },
-                context = context
+                context = context,
             )
         }
 
@@ -39,19 +38,19 @@ fun TasksScreenNavigation(
             val date = it.arguments?.getString("date")
             CreateStrictTask(
                 viewModel,
-                date = date!!, onClick = {
+                date = date!!,
+                onClick = {
                     navController.navigate(TasksHomeScreen)
                 },
-                navigateToCreateSubTaskScreen = { navController.navigate(CreateSubTaskScreen) }
+                navigateToCreateSubTaskScreen = { navController.navigate(CreateSubTaskScreen) },
             )
         }
 
         composable<CreateSubTaskScreen> {
             changeBottomNavigation(0)
-            CreateSubTask(viewModel,navigateToCreateTaskScreen = {
+            CreateSubTask(viewModel, navigateToCreateTaskScreen = {
                 navController.navigateUp()
             })
         }
     }
-
 }

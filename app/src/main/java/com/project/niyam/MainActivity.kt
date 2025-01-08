@@ -1,25 +1,21 @@
 package com.project.niyam
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -28,14 +24,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -48,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,13 +51,13 @@ class MainActivity : ComponentActivity() {
                 title = "Task",
                 selectedIcon = Icons.Filled.Notifications,
                 unselectedIcon = Icons.Outlined.Notifications,
-                destination = HomePageNavigation.Tasks
+                destination = HomePageNavigation.Tasks,
             ),
             BottomNavigationItem(
                 title = "Settings",
                 selectedIcon = Icons.Filled.Settings,
                 unselectedIcon = Icons.Outlined.Settings,
-                destination = HomePageNavigation.Setting
+                destination = HomePageNavigation.Setting,
             ),
         )
         setContent {
@@ -75,9 +70,10 @@ class MainActivity : ComponentActivity() {
             }
             val viewModel: CreateTaskViewModel = hiltViewModel()
             NiyamTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(),
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        if (showBottomNavigation == 1)
+                        if (showBottomNavigation == 1) {
                             NavigationBar {
                                 navigationList.forEachIndexed { index, item ->
                                     NavigationBarItem(
@@ -93,30 +89,32 @@ class MainActivity : ComponentActivity() {
                                             BadgedBox(
                                                 badge = {
                                                     if (item.hasBadge) Badge()
-                                                }
+                                                },
                                             ) {
                                                 Icon(
                                                     imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
-                                                    contentDescription = null
+                                                    contentDescription = null,
                                                 )
                                             }
-                                        }
+                                        },
                                     )
                                 }
                             }
-                    }) { innerPadding ->
+                        }
+                    },
+                ) { innerPadding ->
                     Surface(modifier = Modifier.padding(innerPadding)) {
                         NavHost(
                             navController = navController,
                             startDestination = HomePageNavigation.Tasks,
                             enterTransition = { fadeIn(animationSpec = tween(0)) },
-                            exitTransition = { fadeOut(animationSpec = tween(0)) }
+                            exitTransition = { fadeOut(animationSpec = tween(0)) },
                         ) {
                             composable<HomePageNavigation.Tasks> {
                                 TasksScreenNavigation(
                                     { showBottomNavigation = it },
                                     context = this@MainActivity,
-                                    viewModel
+                                    viewModel,
                                 )
                             }
                             composable<HomePageNavigation.Setting> {
@@ -134,5 +132,5 @@ data class BottomNavigationItem(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
     val hasBadge: Boolean = false,
-    val destination: HomePageNavigation
+    val destination: HomePageNavigation,
 )

@@ -30,13 +30,8 @@ class TopModule {
         return tasksDataBase.getStrictTasksDAO()
     }
 
-
-
     @Provides
     fun provideStrictTaskRepoImpl(strictTaskRepositoryImpl: StrictTaskRepositoryImpl): StrictTaskRepository {
         return strictTaskRepositoryImpl
     }
-
-
-
 }
