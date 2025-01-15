@@ -7,7 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.niyam.domain.model.StrictTasks
+import com.project.niyam.domain.model.Tasks
 import com.project.niyam.domain.repository.StrictTaskRepository
+import com.project.niyam.domain.repository.TaskRepository
 import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +27,10 @@ data class TasksHomeScreenUIState(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class TasksHomeScreenViewModel @Inject constructor(private val strictTaskRepository: StrictTaskRepository) :
+class TasksHomeScreenViewModel @Inject constructor(
+    private val strictTaskRepository: StrictTaskRepository,
+    private val taskRepository: TaskRepository
+) :
     ViewModel() {
 
     private val _uiState = mutableStateOf(TasksHomeScreenUIState())
@@ -78,6 +83,15 @@ class TasksHomeScreenViewModel @Inject constructor(private val strictTaskReposit
 
     fun getAllStrictTaskRepository(date: String): StateFlow<List<StrictTasks>> {
         return strictTaskRepository.getAllStrictTasks(date)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList(),
+            )
+    }
+
+    fun getAllTaskRepository(date: String): StateFlow<List<Tasks>> {
+        return taskRepository.getAllTasks(date)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),

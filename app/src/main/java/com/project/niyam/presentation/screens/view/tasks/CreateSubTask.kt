@@ -21,6 +21,7 @@ fun CreateSubTask(
     navigateToCreateTaskScreen: () -> Unit,
 ) {
     val uiState by viewModel.uiStateSubTask
+
     Column {
         Row(modifier = Modifier.padding(12.dp)) {
             Text("Enter SubTask Name :")
@@ -28,6 +29,7 @@ fun CreateSubTask(
                 viewModel.updateSubTaskName(it)
             }, modifier = Modifier.padding(start = 12.dp))
         }
+
         Row(modifier = Modifier.padding(12.dp)) {
             Text("Enter SubTask Description :")
             TextField(value = uiState.subTaskDescription, onValueChange = {

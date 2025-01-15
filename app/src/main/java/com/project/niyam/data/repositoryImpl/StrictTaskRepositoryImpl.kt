@@ -15,4 +15,12 @@ class StrictTaskRepositoryImpl @Inject constructor(private val strictTasksDAO: S
     override suspend fun insertStrictTasks(strictTasks: StrictTasks) {
         return strictTasksDAO.insertStrictTask(strictTasks)
     }
+
+    override fun getStrictTaskById(id: Int): Flow<StrictTasks> {
+        return strictTasksDAO.getStrictAlarmById(id)
+    }
+
+    override suspend fun updateStrictTasks(strictTasks: StrictTasks) {
+        return strictTasksDAO.updateStrictTask(strictTasks)
+    }
 }

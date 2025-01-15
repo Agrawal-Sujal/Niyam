@@ -1,6 +1,7 @@
 package com.project.niyam.presentation.screens.view.tasks
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.project.niyam.presentation.screens.view.preview.SubTaskPreview
 import com.project.niyam.presentation.screens.viewmodels.tasks.TasksHomeScreenViewModel
 import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
@@ -70,6 +72,7 @@ fun TasksHomeScreen(
                 uiState.date,
                 onClick = {
                 },
+                context = context
             )
         }
         FloatingActionButton(
@@ -164,15 +167,16 @@ fun HorizontalCalendar(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RoutinePartUI(viewModel: TasksHomeScreenViewModel, date: String, onClick: (Int) -> Unit) {
+fun RoutinePartUI(
+    viewModel: TasksHomeScreenViewModel,
+    date: String,
+    onClick: (Int) -> Unit,
+    context: Context
+) {
     val scope = rememberCoroutineScope()
-    val routineFlow = remember(key1 = date) {
+    val routineList = remember(key1 = date) {
         viewModel.getAllStrictTaskRepository(date)
-    }
-    val routine by routineFlow.collectAsState()
-//    val routine by viewModel.routines(date).collectAsState()
-    val routineList = routine
-//    val spotLightTime: String = viewModel.getSpotLightTime(routineList)
+    }.collectAsState().value
 
     LazyColumn(
         modifier = Modifier
@@ -180,12 +184,13 @@ fun RoutinePartUI(viewModel: TasksHomeScreenViewModel, date: String, onClick: (I
             .padding(16.dp),
     ) {
         items(items = routineList, key = { it.id }) { item ->
-
             EachTaskUI(
                 id = item.id,
                 task = item.taskName,
                 description = item.taskDescription,
                 time = item.startTime,
+                context = context,
+                endTime = item.endTime
             )
         }
     }
@@ -197,6 +202,8 @@ fun EachTaskUI(
     task: String,
     description: String,
     time: String,
+    context: Context,
+    endTime: String
 ) {
     Row(
         modifier = Modifier
@@ -206,11 +213,14 @@ fun EachTaskUI(
             .clickable(onClick = {
             }),
 
-    ) {
+        ) {
         TaskUI(
             task = task,
             description = description,
             time = time,
+            context = context,
+            id = id,
+            endTime = endTime
         )
     }
 }
@@ -220,9 +230,19 @@ fun TaskUI(
     task: String = "",
     description: String = "",
     time: String,
+    context: Context,
+    id: Int,
+    endTime: String
 ) {
     Card(
         modifier = Modifier
+            .clickable {
+                val intent = Intent(context, SubTaskPreview::class.java)
+                intent.action = "subTask"
+                intent.putExtra("id", id.toString())
+                intent.putExtra("endTime", endTime)
+                context.startActivity(intent)
+            }
             .fillMaxWidth(),
     ) {
         Box {

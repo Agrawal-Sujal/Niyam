@@ -3,9 +3,12 @@ package com.project.niyam.di
 import android.content.Context
 import androidx.room.Room
 import com.project.niyam.data.datasources.local.StrictTasksDAO
+import com.project.niyam.data.datasources.local.TasksDAO
 import com.project.niyam.data.datasources.local.TasksDataBase
 import com.project.niyam.data.repositoryImpl.StrictTaskRepositoryImpl
+import com.project.niyam.data.repositoryImpl.TaskRepositoryImpl
 import com.project.niyam.domain.repository.StrictTaskRepository
+import com.project.niyam.domain.repository.TaskRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +34,17 @@ class TopModule {
     }
 
     @Provides
+    fun provideTasksDAO(tasksDataBase: TasksDataBase): TasksDAO {
+        return tasksDataBase.getTasksDAO()
+    }
+
+    @Provides
     fun provideStrictTaskRepoImpl(strictTaskRepositoryImpl: StrictTaskRepositoryImpl): StrictTaskRepository {
         return strictTaskRepositoryImpl
+    }
+
+    @Provides
+    fun provideTaskRepoImpl(taskRepositoryImpl: TaskRepositoryImpl): TaskRepository {
+        return taskRepositoryImpl
     }
 }

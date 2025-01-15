@@ -3,6 +3,7 @@ package com.project.niyam.data.datasources.local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.project.niyam.domain.model.StrictTasks
 import kotlinx.coroutines.flow.Flow
 
@@ -14,4 +15,10 @@ interface StrictTasksDAO {
 
     @Query("SELECT * FROM StrictTasks WHERE  date=:date")
     fun getAllStrictAlarm(date: String): Flow<List<StrictTasks>>
+
+    @Query("SELECT * FROM StrictTasks WHERE id=:id")
+    fun getStrictAlarmById(id: Int): Flow<StrictTasks>
+
+    @Update
+    suspend fun updateStrictTask(strictTask: StrictTasks)
 }

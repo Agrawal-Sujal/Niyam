@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".ApplicationClass"
         android:allowBackup="true"
@@ -13,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Niyam"
         tools:targetApi="31">
+        <service
+            android:name=".domain.services.StopWatchService"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,6 +31,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".presentation.screens.view.preview.SubTaskPreview" android:label="@string/app_name">
+
         </activity>
     </application>
 

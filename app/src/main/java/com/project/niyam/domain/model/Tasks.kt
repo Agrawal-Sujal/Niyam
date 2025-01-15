@@ -7,13 +7,13 @@ import com.project.niyam.data.typeConverters.SubTaskConverter
 
 @Entity
 @TypeConverters(SubTaskConverter::class)
-data class StrictTasks(
+data class Tasks(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val taskName: String = "",
     var taskDescription: String = "",
-    val startTime: String = "",
-    val endTime: String = "",
+    val hours: String = "",
+    val days: Int = 1,
     val isCompleted: Boolean = false,
     val subTasks: List<SubTasks> = listOf(),
     val date: String = "",
