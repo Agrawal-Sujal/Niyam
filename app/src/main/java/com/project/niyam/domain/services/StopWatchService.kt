@@ -6,7 +6,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
@@ -65,7 +64,6 @@ class StopWatchService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
 //                endTime = intent.getStringExtra("endTime")!!
 //                endTime = giveDifference(endTime)
 //        duration = Duration.parse("PT" + endTime + "S")
@@ -117,7 +115,6 @@ class StopWatchService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startStopwatch(onTick: (h: String, m: String, s: String) -> Unit) {
         duration = giveDifference()
@@ -166,7 +163,7 @@ class StopWatchService : Service() {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_LOW,
             )
             notificationManager.createNotificationChannel(channel)
         }
@@ -180,12 +177,14 @@ class StopWatchService : Service() {
                     hours = hours,
                     minutes = minutes,
                     seconds = seconds,
-                )
+                ),
             ).setContentIntent(
                 ServiceHelper.clickPendingIntent(
-                    this, id = id, endTime = endTime
-                )
-            ).build()
+                    this,
+                    id = id,
+                    endTime = endTime,
+                ),
+            ).build(),
         )
     }
 
@@ -196,8 +195,8 @@ class StopWatchService : Service() {
             NotificationCompat.Action(
                 0,
                 "Stop",
-                ServiceHelper.stopPendingIntent(this)
-            )
+                ServiceHelper.stopPendingIntent(this),
+            ),
         )
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -209,8 +208,8 @@ class StopWatchService : Service() {
             NotificationCompat.Action(
                 0,
                 "Resume",
-                ServiceHelper.resumePendingIntent(this)
-            )
+                ServiceHelper.resumePendingIntent(this),
+            ),
         )
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -242,6 +241,5 @@ enum class StopwatchState {
     Idle,
     Started,
     Stopped,
-    Canceled
+    Canceled,
 }
-

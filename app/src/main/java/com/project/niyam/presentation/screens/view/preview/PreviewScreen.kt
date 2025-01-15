@@ -47,12 +47,11 @@ import com.project.niyam.utils.Constants.ACTION_SERVICE_CANCEL
 import com.project.niyam.utils.Constants.ACTION_SERVICE_START
 import com.project.niyam.utils.Constants.ACTION_SERVICE_STOP
 
-
 @Composable
 fun PreviewScreen(
     stopWatchService: StopWatchService,
     viewModel: PreviewScreenViewModel = hiltViewModel(),
-    id: Int
+    id: Int,
 ) {
     val context = LocalContext.current
     val hours by stopWatchService.hours
@@ -68,7 +67,7 @@ fun PreviewScreen(
 //    }
 
     LaunchedEffect(key1 = id) {
-            viewModel.getStrictTask(id)
+        viewModel.getStrictTask(id)
     }
 
     Column(
@@ -76,26 +75,28 @@ fun PreviewScreen(
             .fillMaxSize()
             .padding(30.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-            if (uiState.currentIndex != 0) Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .clickable {
-                        viewModel.decreaseIndex()
-                    },
-            )
+            if (uiState.currentIndex != 0) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .clickable {
+                            viewModel.decreaseIndex()
+                        },
+                )
+            }
             Column {
                 Text(uiState.subTasks[uiState.currentIndex].subTaskName)
                 Text(
                     modifier = Modifier.padding(top = 12.dp),
-                    text = uiState.subTasks[uiState.currentIndex].subTaskDescription
+                    text = uiState.subTasks[uiState.currentIndex].subTaskDescription,
                 )
             }
-            if (uiState.currentIndex != uiState.subTasks.size - 1)
+            if (uiState.currentIndex != uiState.subTasks.size - 1) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
@@ -105,20 +106,21 @@ fun PreviewScreen(
                             viewModel.increaseIndex()
                         },
                 )
+            }
         }
         Button(onClick = {
             viewModel.subTaskDone()
         }, enabled = !uiState.subTasks[uiState.currentIndex].isCompleted) {
             Text(
                 text = "Done",
-                color = if (uiState.subTasks[uiState.currentIndex].isCompleted) Color.Green else Color.Black
+                color = if (uiState.subTasks[uiState.currentIndex].isCompleted) Color.Green else Color.Black,
             )
         }
 
         Column(
             modifier = Modifier.weight(weight = 9f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 //            AnimatedContent(targetState = hours, transitionSpec = { addAnimation() }) {
             Text(
@@ -126,26 +128,28 @@ fun PreviewScreen(
                 style = TextStyle(
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (hours == "00") Color.White else Blue
-                )
+                    color = if (hours == "00") Color.White else Blue,
+                ),
             )
 //            }
 //            AnimatedContent(targetState = minutes, transitionSpec = { addAnimation() }) {
             Text(
-                text = minutes, style = TextStyle(
+                text = minutes,
+                style = TextStyle(
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (minutes == "00") Color.White else Blue
-                )
+                    color = if (minutes == "00") Color.White else Blue,
+                ),
             )
 //            }
 //            AnimatedContent(targetState = seconds, transitionSpec = { addAnimation() }) {
             Text(
-                text = seconds, style = TextStyle(
+                text = seconds,
+                style = TextStyle(
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (seconds == "00") Color.White else Blue
-                )
+                    color = if (seconds == "00") Color.White else Blue,
+                ),
             )
 //            }
         }
@@ -157,20 +161,27 @@ fun PreviewScreen(
                 onClick = {
                     ServiceHelper.triggerForegroundService(
                         context = context,
-                        action = if (currentState == StopwatchState.Started) ACTION_SERVICE_STOP
-                        else ACTION_SERVICE_START
+                        action = if (currentState == StopwatchState.Started) {
+                            ACTION_SERVICE_STOP
+                        } else {
+                            ACTION_SERVICE_START
+                        },
                     )
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (currentState == StopwatchState.Started) Red else Blue,
-                    contentColor = Color.White
+                    contentColor = Color.White,
                 ),
 
-                ) {
+            ) {
                 Text(
-                    text = if (currentState == StopwatchState.Started) "Stop"
-                    else if ((currentState == StopwatchState.Stopped)) "Resume"
-                    else "Start"
+                    text = if (currentState == StopwatchState.Started) {
+                        "Stop"
+                    } else if ((currentState == StopwatchState.Stopped)) {
+                        "Resume"
+                    } else {
+                        "Start"
+                    },
                 )
             }
             Spacer(modifier = Modifier.width(30.dp))
@@ -180,11 +191,12 @@ fun PreviewScreen(
                     .fillMaxHeight(0.8f),
                 onClick = {
                     ServiceHelper.triggerForegroundService(
-                        context = context, action = ACTION_SERVICE_CANCEL
+                        context = context,
+                        action = ACTION_SERVICE_CANCEL,
                     )
                 },
                 enabled = seconds != "00" && currentState != StopwatchState.Started,
-                colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Blue)
+                colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Blue),
             ) {
                 Text(text = "Cancel")
             }
@@ -194,9 +206,13 @@ fun PreviewScreen(
 
 @ExperimentalAnimationApi
 fun addAnimation(duration: Int = 600): ContentTransform {
-    return (slideInVertically(animationSpec = tween(durationMillis = duration)) { height -> height } + fadeIn(
-        animationSpec = tween(durationMillis = duration)
-    )).togetherWith(slideOutVertically(animationSpec = tween(durationMillis = duration)) { height -> height } + fadeOut(
-        animationSpec = tween(durationMillis = duration)
-    ))
+    return (
+        slideInVertically(animationSpec = tween(durationMillis = duration)) { height -> height } + fadeIn(
+            animationSpec = tween(durationMillis = duration),
+        )
+        ).togetherWith(
+        slideOutVertically(animationSpec = tween(durationMillis = duration)) { height -> height } + fadeOut(
+            animationSpec = tween(durationMillis = duration),
+        ),
+    )
 }

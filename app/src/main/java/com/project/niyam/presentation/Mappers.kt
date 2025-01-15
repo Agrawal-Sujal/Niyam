@@ -15,7 +15,7 @@ fun StrictTasks.toPreviewScreenUIState(currentIndex: Int): PreviewScreenUIState 
         isCompleted = this.isCompleted,
         subTasks = this.subTasks,
         date = this.date,
-        currentIndex = currentIndex
+        currentIndex = currentIndex,
     )
 }
 
@@ -29,6 +29,6 @@ fun PreviewScreenUIState.toStrictTasks(): StrictTasks {
         endTime = this.endTime,
         isCompleted = this.isCompleted,
         subTasks = this.subTasks,
-        date = this.date
+        date = this.date,
     )
 }

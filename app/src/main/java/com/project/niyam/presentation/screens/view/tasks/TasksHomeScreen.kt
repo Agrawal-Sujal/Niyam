@@ -72,7 +72,7 @@ fun TasksHomeScreen(
                 uiState.date,
                 onClick = {
                 },
-                context = context
+                context = context,
             )
         }
         FloatingActionButton(
@@ -171,7 +171,7 @@ fun RoutinePartUI(
     viewModel: TasksHomeScreenViewModel,
     date: String,
     onClick: (Int) -> Unit,
-    context: Context
+    context: Context,
 ) {
     val scope = rememberCoroutineScope()
     val routineList = remember(key1 = date) {
@@ -190,7 +190,7 @@ fun RoutinePartUI(
                 description = item.taskDescription,
                 time = item.startTime,
                 context = context,
-                endTime = item.endTime
+                endTime = item.endTime,
             )
         }
     }
@@ -203,7 +203,7 @@ fun EachTaskUI(
     description: String,
     time: String,
     context: Context,
-    endTime: String
+    endTime: String,
 ) {
     Row(
         modifier = Modifier
@@ -213,14 +213,14 @@ fun EachTaskUI(
             .clickable(onClick = {
             }),
 
-        ) {
+    ) {
         TaskUI(
             task = task,
             description = description,
             time = time,
             context = context,
             id = id,
-            endTime = endTime
+            endTime = endTime,
         )
     }
 }
@@ -232,7 +232,7 @@ fun TaskUI(
     time: String,
     context: Context,
     id: Int,
-    endTime: String
+    endTime: String,
 ) {
     Card(
         modifier = Modifier

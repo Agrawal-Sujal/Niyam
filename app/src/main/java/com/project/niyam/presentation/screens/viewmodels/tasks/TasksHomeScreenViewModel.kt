@@ -29,7 +29,7 @@ data class TasksHomeScreenUIState(
 @HiltViewModel
 class TasksHomeScreenViewModel @Inject constructor(
     private val strictTaskRepository: StrictTaskRepository,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) :
     ViewModel() {
 

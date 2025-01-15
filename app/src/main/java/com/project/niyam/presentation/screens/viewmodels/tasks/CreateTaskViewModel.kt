@@ -104,15 +104,15 @@ class CreateTaskViewModel @Inject constructor(
             ),
         )
         repository.insertStrictTasks(
-                StrictTasks(
-                    taskName = _uiState.value.name,
-                    taskDescription = _uiState.value.description,
-                    startTime = convertToLocalTime(_uiState.value.startTime),
-                    endTime = convertToLocalTime(_uiState.value.endTime),
-                    date = date,
-                    subTasks = reqList,
-                ),
+            StrictTasks(
+                taskName = _uiState.value.name,
+                taskDescription = _uiState.value.description,
+                startTime = convertToLocalTime(_uiState.value.startTime),
+                endTime = convertToLocalTime(_uiState.value.endTime),
+                date = date,
+                subTasks = reqList,
+            ),
         )
-        _uiState.value=CreateTaskUiState()
+        _uiState.value = CreateTaskUiState()
     }
 }

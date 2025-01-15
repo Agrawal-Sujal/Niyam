@@ -1,7 +1,6 @@
 package com.project.niyam.presentation.screens.view.preview
 
 import android.Manifest
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,19 +8,15 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.os.PersistableBundle
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import com.project.niyam.domain.services.StopWatchService
-import dagger.hilt.android.AndroidEntryPoint
-import androidx.appcompat.app.AppCompatActivity;
 import com.project.niyam.ui.theme.NiyamTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SubTaskPreview : ComponentActivity() {
@@ -57,30 +52,27 @@ class SubTaskPreview : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                0
+                0,
             )
+        }
         setContent {
             NiyamTheme {
-
                 if (intent1.action == "subTask") {
                     val id: String? = intent1.getStringExtra("id")
                     if (isBound) {
-
                         PreviewScreen(
                             stopWatchService = stopwatchService,
-                            id = id.toString().toInt()
+                            id = id.toString().toInt(),
                         )
                     }
                 }
-
             }
         }
     }
-
 
     override fun onStop() {
         super.onStop()

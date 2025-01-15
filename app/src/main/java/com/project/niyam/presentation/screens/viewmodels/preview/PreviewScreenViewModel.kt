@@ -32,8 +32,6 @@ class PreviewScreenViewModel @Inject constructor(private val strictTaskRepositor
     private val _uiState = mutableStateOf(PreviewScreenUIState())
     val uiState: State<PreviewScreenUIState> = _uiState
 
-
-
     fun getStrictTask(id: Int) {
         viewModelScope.launch {
             try {
@@ -90,5 +88,4 @@ class PreviewScreenViewModel @Inject constructor(private val strictTaskRepositor
         strictTaskRepositoryImpl.updateStrictTasks(_uiState.value.toStrictTasks())
         Log.i("uiState", _uiState.value.toString())
     }
-
 }

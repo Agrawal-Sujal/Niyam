@@ -5,9 +5,9 @@ import androidx.room.RoomDatabase
 import com.project.niyam.domain.model.StrictTasks
 import com.project.niyam.domain.model.Tasks
 
-@Database(entities = [StrictTasks::class,Tasks::class], version = 1)
+@Database(entities = [StrictTasks::class, Tasks::class], version = 1)
 abstract class TasksDataBase : RoomDatabase() {
 
     abstract fun getStrictTasksDAO(): StrictTasksDAO
-    abstract fun getTasksDAO() : TasksDAO
+    abstract fun getTasksDAO(): TasksDAO
 }
