@@ -17,8 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun CreateSubTask(
-    viewModel: CreateTaskViewModel,
+fun CreateStrictSubTask(
+    viewModel: CreateStrictTaskViewModel,
     navigateToCreateTaskScreen: () -> Unit,
 ) {
     val uiState by viewModel.uiStateSubTask
@@ -27,14 +27,14 @@ fun CreateSubTask(
         Row(modifier = Modifier.padding(12.dp)) {
             Text("Enter SubTask Name :")
             TextField(value = uiState.subTaskName, onValueChange = {
-                viewModel.updateSubTaskName(it)
+                    viewModel.updateSubTaskName(it)
             }, modifier = Modifier.padding(start = 12.dp))
         }
 
         Row(modifier = Modifier.padding(12.dp)) {
             Text("Enter SubTask Description :")
             TextField(value = uiState.subTaskDescription, onValueChange = {
-                viewModel.updateSubTaskDescription(it)
+                    viewModel.updateSubTaskDescription(it)
             }, modifier = Modifier.padding(start = 12.dp))
         }
 
@@ -45,7 +45,7 @@ fun CreateSubTask(
             }) { Text("Done") }
             Button(onClick = {
                 CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.saveSubTask()
+                        viewModel.saveSubTask()
                 }
             }) { Text("Add More") }
         }

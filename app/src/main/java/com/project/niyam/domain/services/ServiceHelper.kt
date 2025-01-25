@@ -3,7 +3,10 @@ package com.project.niyam.domain.services
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.project.niyam.presentation.screens.view.preview.SubTaskPreview
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import com.project.niyam.presentation.screens.view.preview.TaskPreview
 import com.project.niyam.utils.Constants.CANCEL_REQUEST_CODE
 import com.project.niyam.utils.Constants.CLICK_REQUEST_CODE
 import com.project.niyam.utils.Constants.RESUME_REQUEST_CODE
@@ -12,21 +15,42 @@ import com.project.niyam.utils.Constants.STOP_REQUEST_CODE
 
 object ServiceHelper {
 
-    private const val flag =
-        PendingIntent.FLAG_IMMUTABLE
+    private const val FLAG =
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
-    fun clickPendingIntent(context: Context, id: String, endTime: String): PendingIntent {
-        val clickIntent = Intent(context, SubTaskPreview::class.java).apply {
-            putExtra(STOPWATCH_STATE, StopwatchState.Started.name)
+
+    fun strictClickPendingIntent(context: Context, id: String): PendingIntent {
+        val clickIntent = Intent(context, TaskPreview::class.java).apply {
+            Log.d("ServiceHelper", id)
             putExtra("id", id)
-            putExtra("endTime", endTime)
+            putExtra("Strict", "true")
         }
         clickIntent.action = "subTask"
         return PendingIntent.getActivity(
             context,
             CLICK_REQUEST_CODE,
             clickIntent,
-            flag,
+            FLAG,
+        )
+    }
+
+    fun clickPendingIntent(
+        context: Context,
+        id: String,
+    ): PendingIntent {
+        val clickIntent = Intent(context, TaskPreview::class.java).apply {
+            Log.d("ServiceHelper", id)
+            putExtra(STOPWATCH_STATE, StopwatchState.Started.name)
+            putExtra("id", id)
+            putExtra("Strict", "false")
+        }
+
+        clickIntent.action = "subTask"
+        return PendingIntent.getActivity(
+            context,
+            CLICK_REQUEST_CODE,
+            clickIntent,
+            FLAG,
         )
     }
 
@@ -34,11 +58,12 @@ object ServiceHelper {
         val stopIntent = Intent(context, StopWatchService::class.java).apply {
             putExtra(STOPWATCH_STATE, StopwatchState.Stopped.name)
         }
+        stopIntent.action = "subTaskPreview"
         return PendingIntent.getService(
             context,
             STOP_REQUEST_CODE,
             stopIntent,
-            flag,
+            FLAG,
         )
     }
 
@@ -46,11 +71,12 @@ object ServiceHelper {
         val resumeIntent = Intent(context, StopWatchService::class.java).apply {
             putExtra(STOPWATCH_STATE, StopwatchState.Started.name)
         }
+        resumeIntent.action = "subTaskPreview"
         return PendingIntent.getService(
             context,
             RESUME_REQUEST_CODE,
             resumeIntent,
-            flag,
+            FLAG,
         )
     }
 
@@ -58,18 +84,21 @@ object ServiceHelper {
         val cancelIntent = Intent(context, StopWatchService::class.java).apply {
             putExtra(STOPWATCH_STATE, StopwatchState.Canceled.name)
         }
+        cancelIntent.action = "subTaskPreview"
         return PendingIntent.getService(
             context,
             CANCEL_REQUEST_CODE,
             cancelIntent,
-            flag,
+            FLAG,
         )
     }
 
-    fun triggerForegroundService(context: Context, action: String) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun triggerForegroundService(context: Context, msg: String) {
         Intent(context, StopWatchService::class.java).apply {
-            this.action = action
-            context.startService(this)
+            putExtra(STOPWATCH_STATE, msg)
+            action = "subTaskPreview"
+            context.startForegroundService(this)
         }
     }
 }

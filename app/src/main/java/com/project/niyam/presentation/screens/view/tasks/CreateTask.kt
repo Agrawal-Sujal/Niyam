@@ -17,15 +17,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskViewModel
+import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreateStrictTask(
-    viewModel: CreateStrictTaskViewModel,
+fun CreateTask(
+    viewModel: CreateTaskViewModel,
     date: String,
     onClick: () -> Unit,
     navigateToCreateSubTaskScreen: () -> Unit,
@@ -47,19 +47,19 @@ fun CreateStrictTask(
                     viewModel.updateDescription(it)
                 }, modifier = Modifier.padding(start = 12.dp))
             }
-            Row(modifier = Modifier.padding(12.dp)) {
-                Text("Enter Start Time (HH:MM) :")
-                TextField(value = uiState.startTime, onValueChange = {
-                    viewModel.updateStartDate(it)
-                }, modifier = Modifier.padding(start = 12.dp))
-            }
-            Row(modifier = Modifier.padding(12.dp)) {
-                Text("Enter End Time (HH:MM) :")
-                TextField(value = uiState.endTime, onValueChange = {
-                    viewModel.updateEndDate(it)
-                }, modifier = Modifier.padding(start = 12.dp))
-            }
 
+            Row(modifier = Modifier.padding(12.dp)) {
+                Text("Enter time in minutes :")
+                TextField(value = uiState.minutesRemaining, onValueChange = {
+                    viewModel.updateMinutes(it)
+                }, modifier = Modifier.padding(start = 12.dp))
+            }
+            Row(modifier = Modifier.padding(12.dp)) {
+                Text("Enter Days :")
+                TextField(value = uiState.days, onValueChange = {
+                    viewModel.updateDays(it)
+                }, modifier = Modifier.padding(start = 12.dp))
+            }
             Spacer(modifier = Modifier.height(24.dp))
 
             uiState.subTasks.forEach {

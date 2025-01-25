@@ -20,6 +20,10 @@ class StrictTaskRepositoryImpl @Inject constructor(private val strictTasksDAO: S
         return strictTasksDAO.getStrictAlarmById(id)
     }
 
+    override fun getEndTime(id: Int): Flow<String> {
+        return strictTasksDAO.getEndTime(id)
+    }
+
     override suspend fun updateStrictTasks(strictTasks: StrictTasks) {
         return strictTasksDAO.updateStrictTask(strictTasks)
     }

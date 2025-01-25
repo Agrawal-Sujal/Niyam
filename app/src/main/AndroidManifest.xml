@@ -20,7 +20,10 @@
             android:name=".domain.services.StopWatchService"
             android:enabled="true"
             android:exported="false" />
-
+        <service
+            android:name=".domain.services.StrictTaskService"
+            android:enabled="true"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -32,7 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.screens.view.preview.SubTaskPreview" android:label="@string/app_name">
+        <activity android:name=".presentation.screens.view.preview.TaskPreview" android:label="@string/app_name">
 
         </activity>
     </application>

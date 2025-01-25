@@ -19,6 +19,9 @@ interface StrictTasksDAO {
     @Query("SELECT * FROM StrictTasks WHERE id=:id")
     fun getStrictAlarmById(id: Int): Flow<StrictTasks>
 
+    @Query("SELECT endTime FROM StrictTasks WHERE id=:id")
+    fun getEndTime(id: Int): Flow<String>
+
     @Update
     suspend fun updateStrictTask(strictTask: StrictTasks)
 }

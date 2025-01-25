@@ -12,9 +12,9 @@ data class Tasks(
     val id: Int = 0,
     val taskName: String = "",
     var taskDescription: String = "",
-    val hours: String = "",
-    val days: Int = 1,
+    val minutesRemaining: String = "",
+    val startDate: String = "",
     val isCompleted: Boolean = false,
     val subTasks: List<SubTasks> = listOf(),
-    val date: String = "",
+    val endDate: String = "",
 )

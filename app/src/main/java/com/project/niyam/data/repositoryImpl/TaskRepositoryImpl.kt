@@ -22,4 +22,8 @@ class TaskRepositoryImpl @Inject constructor(private val tasksDAO: TasksDAO) : T
     override suspend fun updateTasks(tasks: Tasks) {
         return tasksDAO.updateTask(tasks)
     }
+
+    override fun getEndTime(id: Int): Flow<String> {
+        return tasksDAO.getEndTime(id)
+    }
 }

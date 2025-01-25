@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -31,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,22 +37,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.project.niyam.presentation.screens.view.preview.SubTaskPreview
+import com.project.niyam.presentation.screens.view.preview.TaskPreview
 import com.project.niyam.presentation.screens.viewmodels.tasks.TasksHomeScreenViewModel
 import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
+import com.project.niyam.utils.daysRemaining
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TasksHomeScreen(
-    onCreate: (String) -> Unit,
+    onCreateStrictTask: (String) -> Unit,
     context: Context,
     homeViewModel: TasksHomeScreenViewModel = hiltViewModel(),
+    onCreateTask: (String) -> Unit
 ) {
     val uiState by homeViewModel.uiState
 
-    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -70,13 +69,22 @@ fun TasksHomeScreen(
             RoutinePartUI(
                 viewModel = homeViewModel,
                 uiState.date,
-                onClick = {
-                },
                 context = context,
             )
+            FloatingActionButton(
+                onClick = { onCreateTask(uiState.date) },
+                modifier = Modifier
+                    .padding(20.dp),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.secondary,
+            ) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = null)
+            }
+
+
         }
         FloatingActionButton(
-            onClick = { onCreate(uiState.date) },
+            onClick = { onCreateStrictTask(uiState.date) },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(20.dp),
@@ -91,7 +99,6 @@ fun TasksHomeScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TodayDate() {
-    val fullDate = DateTimeDetail.FULL_DATE.getDetail()
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -170,49 +177,65 @@ fun HorizontalCalendar(
 fun RoutinePartUI(
     viewModel: TasksHomeScreenViewModel,
     date: String,
-    onClick: (Int) -> Unit,
     context: Context,
 ) {
-    val scope = rememberCoroutineScope()
     val routineList = remember(key1 = date) {
-        viewModel.getAllStrictTaskRepository(date)
+        viewModel.getAllStrictTask(date)
     }.collectAsState().value
-
+    val task = remember(key1 = date) { viewModel.getAllTask(date) }.collectAsState().value
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp),
     ) {
-        items(items = routineList, key = { it.id }) { item ->
-            EachTaskUI(
-                id = item.id,
-                task = item.taskName,
-                description = item.taskDescription,
-                time = item.startTime,
-                context = context,
-                endTime = item.endTime,
-            )
+        item {
+            routineList.forEach { item ->
+                StrictTaskUI(
+                    id = item.id,
+                    task = item.taskName,
+                    description = item.taskDescription,
+                    time = item.startTime,
+                    context = context,
+                    endTime = item.endTime,
+                    isStrict = true
+                )
+            }
+            Text("Weekly Tasks")
+            task.forEach { item ->
+                val daysRemaining: String = daysRemaining(item.endDate).toString()
+                StrictTaskUI(
+                    id = item.id,
+                    task = item.taskName,
+                    description = item.taskDescription,
+                    time = daysRemaining,
+                    context = context,
+                    endTime = item.minutesRemaining,
+                    isStrict = false
+                )
+            }
         }
+//        items(items = routineList, key = { it.id }) { item ->
+//
+//        }
     }
 }
 
+
 @Composable
-fun EachTaskUI(
+fun StrictTaskUI(
     id: Int,
     task: String,
     description: String,
     time: String,
     context: Context,
     endTime: String,
+    isStrict: Boolean
 ) {
     Row(
         modifier = Modifier
             .padding(
                 8.dp,
             )
-            .clickable(onClick = {
-            }),
-
     ) {
         TaskUI(
             task = task,
@@ -221,6 +244,7 @@ fun EachTaskUI(
             context = context,
             id = id,
             endTime = endTime,
+            isStrict = isStrict
         )
     }
 }
@@ -233,14 +257,16 @@ fun TaskUI(
     context: Context,
     id: Int,
     endTime: String,
+    isStrict: Boolean
 ) {
     Card(
         modifier = Modifier
             .clickable {
-                val intent = Intent(context, SubTaskPreview::class.java)
+                val intent = Intent(context, TaskPreview::class.java)
                 intent.action = "subTask"
                 intent.putExtra("id", id.toString())
-                intent.putExtra("endTime", endTime)
+                if (isStrict) intent.putExtra("Strict", "true")
+                else intent.putExtra("Strict", "false")
                 context.startActivity(intent)
             }
             .fillMaxWidth(),
@@ -279,3 +305,4 @@ fun TaskUI(
         }
     }
 }
+

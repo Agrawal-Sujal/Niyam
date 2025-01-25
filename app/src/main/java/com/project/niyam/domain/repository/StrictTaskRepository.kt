@@ -11,5 +11,7 @@ interface StrictTaskRepository {
 
     fun getStrictTaskById(id: Int): Flow<StrictTasks>
 
+    fun getEndTime(id: Int): Flow<String>
+
     suspend fun updateStrictTasks(strictTasks: StrictTasks)
 }

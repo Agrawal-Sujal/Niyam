@@ -5,32 +5,35 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.project.niyam.domain.model.StrictTasks
+import com.project.niyam.domain.model.SubTasks
 import com.project.niyam.domain.repository.StrictTaskRepository
-import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.presentation.toTasks
-import com.project.niyam.utils.DateTimeDetail
-import com.project.niyam.utils.getDateAfterDays
+import com.project.niyam.presentation.toStrictTasks
+import com.project.niyam.utils.convertToLocalTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-
-data class CreateTaskUiState(
+data class CreateStrictTaskUiState(
     val name: String = "",
     val description: String = "",
-    val startDate: String = "",
-    val endDate: String = "",
+    val startTime: String = "",
+    val endTime: String = "",
     val subTasks: List<CreateSubTaskUiState> = listOf(),
-    val minutesRemaining: String = "",
-    val days: String = ""
+)
+
+data class CreateSubTaskUiState(
+    val subTaskName: String = "",
+    val subTaskDescription: String = "",
 )
 
 @HiltViewModel
-class CreateTaskViewModel @Inject constructor(
-    private val repository: TaskRepository,
-) : ViewModel() {
+class CreateStrictTaskViewModel @Inject constructor(
+    private val repository: StrictTaskRepository,
+) :
+    ViewModel() {
     var date: String = ""
-    private val _uiState = mutableStateOf(CreateTaskUiState())
-    val uiState: State<CreateTaskUiState> = _uiState
+    private val _uiState = mutableStateOf(CreateStrictTaskUiState())
+    val uiState: State<CreateStrictTaskUiState> = _uiState
     private val _uiStateSubTask = mutableStateOf(CreateSubTaskUiState())
     val uiStateSubTask: State<CreateSubTaskUiState> = _uiStateSubTask
 
@@ -61,20 +64,17 @@ class CreateTaskViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(description = desc)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun updateDays(days: String) {
-        val startDate = DateTimeDetail.FULL_DATE.getDetail()
-        val endDate = getDateAfterDays(days.toString().toLong())
-        _uiState.value = _uiState.value.copy(startDate = startDate, endDate = endDate, days = days)
+    fun updateStartDate(startDate: String) {
+        _uiState.value = _uiState.value.copy(startTime = startDate)
     }
 
-    fun updateMinutes(minutes: String) {
-        _uiState.value = _uiState.value.copy(minutesRemaining = minutes)
+    fun updateEndDate(endTime: String) {
+        _uiState.value = _uiState.value.copy(endTime = endTime)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun saveTask(date: String) {
-        repository.insertTasks(_uiState.value.toTasks(date = date))
-        _uiState.value = CreateTaskUiState()
+        repository.insertStrictTasks(_uiState.value.toStrictTasks(date = date))
+        _uiState.value = CreateStrictTaskUiState()
     }
 }

@@ -81,7 +81,7 @@ class TasksHomeScreenViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(startDate = startDate, endDate = endDate)
     }
 
-    fun getAllStrictTaskRepository(date: String): StateFlow<List<StrictTasks>> {
+    fun getAllStrictTask(date: String): StateFlow<List<StrictTasks>> {
         return strictTaskRepository.getAllStrictTasks(date)
             .stateIn(
                 scope = viewModelScope,
@@ -90,7 +90,7 @@ class TasksHomeScreenViewModel @Inject constructor(
             )
     }
 
-    fun getAllTaskRepository(date: String): StateFlow<List<Tasks>> {
+    fun getAllTask(date: String): StateFlow<List<Tasks>> {
         return taskRepository.getAllTasks(date)
             .stateIn(
                 scope = viewModelScope,

@@ -17,4 +17,10 @@ object TasksHomeScreen
 data class CreateTaskScreen(val date: String)
 
 @Serializable
+data class CreateStrictTaskScreen(val date:String)
+
+@Serializable
+object CreateSubStrictTaskScreen
+
+@Serializable
 object CreateSubTaskScreen

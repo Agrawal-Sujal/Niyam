@@ -36,6 +36,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.project.niyam.presentation.navigation.HomePageNavigation
 import com.project.niyam.presentation.navigation.TasksScreenNavigation
+import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskViewModel
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
 import com.project.niyam.ui.theme.NiyamTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,7 +69,8 @@ class MainActivity : ComponentActivity() {
             var showBottomNavigation by rememberSaveable {
                 mutableIntStateOf(1)
             }
-            val viewModel: CreateTaskViewModel = hiltViewModel()
+            val viewModel: CreateStrictTaskViewModel = hiltViewModel()
+            val taskViewModel: CreateTaskViewModel = hiltViewModel()
             NiyamTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -115,6 +117,7 @@ class MainActivity : ComponentActivity() {
                                     { showBottomNavigation = it },
                                     context = this@MainActivity,
                                     viewModel,
+                                    taskViewModel
                                 )
                             }
                             composable<HomePageNavigation.Setting> {

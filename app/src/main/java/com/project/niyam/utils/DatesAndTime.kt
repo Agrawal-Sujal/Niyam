@@ -7,6 +7,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 
@@ -64,7 +65,7 @@ enum class DateDetail {
             SHORT_MONTH_NAME -> DateTimeFormatter.ofPattern("MMM", Locale.getDefault())
             FULL_YEAR -> DateTimeFormatter.ofPattern("yyyy", Locale.getDefault())
             DATE -> DateTimeFormatter.ofPattern("d", Locale.getDefault())
-            FULL_DATE -> DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
+            FULL_DATE -> DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
         }
         return localDate.format(formatter)
     }
@@ -87,4 +88,44 @@ fun convertToLocalTime(hardCodedTime: String): String {
 
     // Return the formatted time in a string (you can modify the format as required)
     return localTimeAdjusted.format(DateTimeFormatter.ofPattern("HH:mm"))
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun daysRemaining(targetDate: String): Long {
+    try {
+        // Define the date formatter for "dd-MM-yyyy" format
+        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+
+        // Parse the target date
+        val target = LocalDate.parse(targetDate, formatter)
+
+        // Get today's date
+        val today = LocalDate.now()
+
+        // Calculate the difference in days
+        return ChronoUnit.DAYS.between(today, target)
+    } catch (e: Exception) {
+        println("Invalid date format. Please use 'dd-MM-yyyy'. Error: ${e.message}")
+        return -1
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun getDateAfterDays(days: Long): String {
+    // Get the current date
+    val today = LocalDate.now()
+
+    // Calculate the date after 'days'
+    val futureDate = today.plusDays(days)
+
+    // Format the date in "dd-MM-yyyy" format
+    val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    return futureDate.format(formatter)
+}
+
+fun convertMinutesToHHMM(minutes: Int): String {
+    val hours = minutes / 60
+    val remainingMinutes = minutes % 60
+    return String.format("%02d:%02d", hours, remainingMinutes)
 }
