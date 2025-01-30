@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -42,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,7 +64,7 @@ fun TasksHomeScreen(
     onCreateStrictTask: (String, String) -> Unit,
     context: Context,
     homeViewModel: TasksHomeScreenViewModel = hiltViewModel(),
-    onCreateTask: (String, String) -> Unit
+    onCreateTask: (String, String) -> Unit,
 ) {
     val uiState by homeViewModel.uiState
 
@@ -90,7 +88,7 @@ fun TasksHomeScreen(
                     homeViewModel.setRunningTask(it)
                 },
                 onCreateStrictTask,
-                onCreateTask
+                onCreateTask,
             )
         }
         ExpandableFABExample(onCreateTask = {
@@ -151,9 +149,11 @@ fun HorizontalCalendar(
                     } else {
                         colorResource(R.color.NormalText)
                     },
-                    fontSize = if (fullDate == selectedDate)
+                    fontSize = if (fullDate == selectedDate) {
                         18.sp
-                    else 14.sp
+                    } else {
+                        14.sp
+                    },
                 )
                 Text(
                     text = date,
@@ -167,7 +167,6 @@ fun HorizontalCalendar(
                     },
                 )
             }
-
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -189,7 +188,7 @@ fun RoutinePartUI(
     context: Context,
     onTaskSelected: (Int) -> Unit,
     onCreateStrictTask: (String, String) -> Unit,
-    onCreateTask: (String, String) -> Unit
+    onCreateTask: (String, String) -> Unit,
 ) {
     val task = remember(key1 = date) { viewModel.getAllTask(date) }.collectAsState().value
 
@@ -220,18 +219,18 @@ fun RoutinePartUI(
                     onEdit = {
                         onCreateStrictTask(date, item.id.toString())
                     },
-                    enable = isToday(date) && isCurrentTimeInRange(item.startTime, item.endTime)
+                    enable = isToday(date) && isCurrentTimeInRange(item.startTime, item.endTime),
 
                 )
             }
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(2.dp)
+                    .height(2.dp),
             )
             task.forEach { item ->
                 val daysRemaining: String = daysRemaining(item.endDate).toString()
-                if (daysRemaining == "1")
+                if (daysRemaining == "1") {
                     StrictTaskUI(
                         id = item.id,
                         task = item.taskName,
@@ -244,14 +243,15 @@ fun RoutinePartUI(
                         viewModel,
                         onDelete = { viewModel.removeTask(item) },
                         onEdit = { onCreateTask(date, item.id.toString()) },
-                        enable = isToday(date = date)
+                        enable = isToday(date = date),
                     )
+                }
             }
 
             Text("Weekly Tasks", color = colorResource(R.color.PrimaryColorText))
             task.forEach { item ->
                 val daysRemaining: String = daysRemaining(item.endDate).toString()
-                if (daysRemaining != "1")
+                if (daysRemaining != "1") {
                     StrictTaskUI(
                         id = item.id,
                         task = item.taskName,
@@ -264,13 +264,13 @@ fun RoutinePartUI(
                         viewModel,
                         onDelete = { viewModel.removeTask(item) },
                         onEdit = { onCreateTask(date, item.id.toString()) },
-                        enable = isToday(date = date)
+                        enable = isToday(date = date),
                     )
+                }
             }
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -286,13 +286,13 @@ fun StrictTaskUI(
     viewModel: TasksHomeScreenViewModel,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
-    enable: Boolean
+    enable: Boolean,
 ) {
     Row(
         modifier = Modifier
             .padding(
                 8.dp,
-            )
+            ),
     ) {
         TaskUI(
             task = task,
@@ -306,7 +306,7 @@ fun StrictTaskUI(
             viewModel,
             onDelete,
             onEdit,
-            enable = enable
+            enable = enable,
         )
     }
 }
@@ -325,32 +325,37 @@ fun TaskUI(
     viewModel: TasksHomeScreenViewModel,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
-    enable: Boolean
+    enable: Boolean,
 ) {
     Card(
         modifier = Modifier
             .clickable {
-                if (enable)
+                if (enable) {
                     runBlocking {
                         val taskRunningId2 = viewModel.getTaskRunning().toInt()
                         Log.d(
                             "Testing",
-                            "Running Task Id : $taskRunningId2 , selected Item Id : $id"
+                            "Running Task Id : $taskRunningId2 , selected Item Id : $id",
                         )
                         if (taskRunningId2 == id || taskRunningId2 == 0) {
-                            if (isStrict)
+                            if (isStrict) {
                                 onTaskSelected(id)
+                            }
                             val intent = Intent(context, TaskPreview::class.java)
                             intent.action = "subTask"
                             intent.putExtra("id", id.toString())
-                            if (isStrict) intent.putExtra("Strict", "true")
-                            else intent.putExtra("Strict", "false")
+                            if (isStrict) {
+                                intent.putExtra("Strict", "true")
+                            } else {
+                                intent.putExtra("Strict", "false")
+                            }
                             context.startActivity(intent)
                         } else {
                             Toast.makeText(context, "Task is already running", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
+                }
             }
             .fillMaxWidth(),
         colors = CardColors(
@@ -358,7 +363,7 @@ fun TaskUI(
             contentColor = Color(0xffE7E7E7),
             disabledContainerColor = Color(0xffEDFFFF),
             disabledContentColor = Color(0xffEDFFFF),
-        )
+        ),
 
     ) {
         Box {
@@ -378,13 +383,13 @@ fun TaskUI(
                         .clickable {
                             runBlocking {
                                 val taskRunningId2 = viewModel.getTaskRunning().toInt()
-                                if (taskRunningId2 != id)
+                                if (taskRunningId2 != id) {
                                     onDelete()
-                                else {
+                                } else {
                                     Toast.makeText(
                                         context,
                                         "Finish the Task or stop the task",
-                                        Toast.LENGTH_SHORT
+                                        Toast.LENGTH_SHORT,
                                     ).show()
                                 }
                             }
@@ -392,7 +397,8 @@ fun TaskUI(
                         .padding(4.dp),
                 )
                 Icon(
-                    imageVector = Icons.Default.Edit, contentDescription = "Edit Icon",
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit Icon",
                     modifier = Modifier
                         .size(25.dp)
                         .clickable {
@@ -426,11 +432,11 @@ fun ExpandableFABExample(onCreateTask: () -> Unit, onCreateStrictTask: () -> Uni
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        contentAlignment = Alignment.BottomEnd
+        contentAlignment = Alignment.BottomEnd,
     ) {
         Column(
             horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (showFABs) {
                 Button(
@@ -439,8 +445,8 @@ fun ExpandableFABExample(onCreateTask: () -> Unit, onCreateStrictTask: () -> Uni
                         containerColor = colorResource(R.color.PrimaryColor),
                         contentColor = colorResource(R.color.PrimaryColor),
                         disabledContainerColor = colorResource(R.color.PrimaryColor),
-                        disabledContentColor = colorResource(R.color.PrimaryColor)
-                    )
+                        disabledContentColor = colorResource(R.color.PrimaryColor),
+                    ),
                 ) {
                     Text("Task", color = colorResource(R.color.NormalText))
                 }
@@ -451,8 +457,8 @@ fun ExpandableFABExample(onCreateTask: () -> Unit, onCreateStrictTask: () -> Uni
                         containerColor = colorResource(R.color.PrimaryColor),
                         contentColor = colorResource(R.color.PrimaryColor),
                         disabledContainerColor = colorResource(R.color.PrimaryColor),
-                        disabledContentColor = colorResource(R.color.PrimaryColor)
-                    )
+                        disabledContentColor = colorResource(R.color.PrimaryColor),
+                    ),
                 ) {
                     Text("Strict Task", color = colorResource(R.color.NormalText))
                 }
@@ -460,7 +466,7 @@ fun ExpandableFABExample(onCreateTask: () -> Unit, onCreateStrictTask: () -> Uni
 
             FloatingActionButton(
                 onClick = { showFABs = !showFABs },
-                containerColor = colorResource(R.color.PrimaryColor)
+                containerColor = colorResource(R.color.PrimaryColor),
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
@@ -471,7 +477,6 @@ fun ExpandableFABExample(onCreateTask: () -> Unit, onCreateStrictTask: () -> Uni
 fun isToday(date: String): Boolean {
     return DateTimeDetail.FULL_DATE.getDetail() == date
 }
-
 
 fun isCurrentTimeInRange(startTime: String, endTime: String): Boolean {
     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())

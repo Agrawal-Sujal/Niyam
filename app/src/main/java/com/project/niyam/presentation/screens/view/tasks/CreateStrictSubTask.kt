@@ -23,13 +23,14 @@ fun CreateStrictSubTask(
     viewModel: CreateStrictTaskViewModel,
     navigateToCreateTaskScreen: () -> Unit,
     idx: Int,
-    id: Int
+    id: Int,
 ) {
     val uiState by viewModel.uiStateSubTask
     if (idx != -1) {
         LaunchedEffect(key1 = idx) {
             Log.d(
-                "CreateStrictSubTask", " Loading Strict Sub Task$idx"
+                "CreateStrictSubTask",
+                " Loading Strict Sub Task$idx",
             )
             viewModel.loadStrictSubTask(idx)
         }
@@ -40,38 +41,39 @@ fun CreateStrictSubTask(
         TextField(
             value = uiState.subTaskName,
             onValueChange = { viewModel.updateSubTaskName(it) },
-            label = "Sub Task Name"
+            label = "Sub Task Name",
         )
         Spacer(modifier = Modifier.height(12.dp))
         TextField(
             value = uiState.subTaskDescription,
             onValueChange = { viewModel.updateSubTaskDescription(it) },
-            label = "Sub Task Description"
+            label = "Sub Task Description",
         )
 
         Row(
             modifier = Modifier
                 .padding(12.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceAround,
         ) {
             if (idx == -1) {
                 Button(
                     onClick = {
                         viewModel.saveSubTask()
                         navigateToCreateTaskScreen()
-                    }, modifier = Modifier
+                    },
+                    modifier = Modifier
                         .fillMaxWidth(0.35f)
-                        .weight(5f)
+                        .weight(5f),
                 ) { Text("Done") }
                 Button(
                     onClick = {
                         viewModel.saveSubTask()
-
-                    }, modifier = Modifier
+                    },
+                    modifier = Modifier
                         .fillMaxWidth(0.35f)
                         .weight(5f)
-                        .padding(start = 4.dp)
+                        .padding(start = 4.dp),
                 ) { Text("Add More") }
             } else {
                 Button(onClick = {

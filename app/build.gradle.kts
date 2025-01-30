@@ -89,8 +89,8 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     // Preferences DataStore
-    implementation ("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
 
     // Proto DataStore (if using Proto)
-    implementation ("androidx.datastore:datastore:1.1.2")
+    implementation("androidx.datastore:datastore:1.1.2")
 }

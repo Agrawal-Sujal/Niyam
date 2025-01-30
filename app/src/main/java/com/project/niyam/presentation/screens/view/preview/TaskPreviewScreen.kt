@@ -2,15 +2,6 @@ package com.project.niyam.presentation.screens.view.preview
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,14 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,8 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -52,11 +37,7 @@ import com.project.niyam.R
 import com.project.niyam.domain.services.ServiceHelper
 import com.project.niyam.domain.services.StopWatchService
 import com.project.niyam.domain.services.StopwatchState
-import com.project.niyam.domain.services.StrictTaskState
 import com.project.niyam.presentation.screens.viewmodels.preview.TaskPreviewScreenViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -75,7 +56,6 @@ fun TaskPreviewScreen(
         LaunchedEffect(key1 = id) {
             viewModel.offPrefUtil()
         }
-
     }
     viewModel.updateID(id)
     Column(
@@ -88,7 +68,7 @@ fun TaskPreviewScreen(
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             if (hours != "00") {
                 Text(
@@ -125,18 +105,19 @@ fun TaskPreviewScreen(
         Spacer(
             modifier = Modifier
                 .height(12.dp)
-                .weight(0.15f)
+                .weight(0.15f),
         )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .weight(0.7f), colors = CardColors(
+                .weight(0.7f),
+            colors = CardColors(
                 contentColor = colorResource(R.color.NormalText),
                 containerColor = colorResource(R.color.PrimaryColor),
                 disabledContainerColor = colorResource(R.color.PrimaryColor),
-                disabledContentColor = colorResource(R.color.PrimaryColor)
-            )
+                disabledContentColor = colorResource(R.color.PrimaryColor),
+            ),
         ) {
             val pagerState = rememberPagerState(pageCount = {
                 uiState.subTasks.size
@@ -145,14 +126,14 @@ fun TaskPreviewScreen(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(12.dp)
+                    .padding(12.dp),
             ) { page ->
                 Column(modifier = Modifier.fillMaxSize()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         uiState.subTasks[page].subTaskName,
                         fontSize = 24.sp,
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
@@ -173,12 +154,12 @@ fun TaskPreviewScreen(
                                 viewModel.updateComplete()
                                 ServiceHelper.triggerForegroundService(
                                     context = context,
-                                    StopwatchState.Completed.name
+                                    StopwatchState.Completed.name,
                                 )
                             }
                         },
                         enabled = currentState == StopwatchState.Started,
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     ) {
                         Text(
                             text = "Done",
@@ -189,7 +170,7 @@ fun TaskPreviewScreen(
             }
         }
         Spacer(modifier = Modifier.height(40.dp))
-        if (hours != "00" || minutes != "00" || seconds != "00")
+        if (hours != "00" || minutes != "00" || seconds != "00") {
             Row(modifier = Modifier.weight(0.15f)) {
                 Button(
                     enabled = currentState != StopwatchState.Started,
@@ -200,7 +181,7 @@ fun TaskPreviewScreen(
                         viewModel.onPrefUtil(id)
                         ServiceHelper.triggerForegroundService(
                             context = context,
-                            msg = StopwatchState.Started.name
+                            msg = StopwatchState.Started.name,
                         )
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -209,7 +190,7 @@ fun TaskPreviewScreen(
                     ),
                 ) {
                     Text(
-                        text = "Start"
+                        text = "Start",
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
@@ -227,16 +208,16 @@ fun TaskPreviewScreen(
                     enabled = currentState == StopwatchState.Started,
                     colors = ButtonDefaults.buttonColors(
                         disabledContainerColor = colorResource(R.color.PrimaryColor),
-                        containerColor = colorResource(R.color.PrimaryColorText)
+                        containerColor = colorResource(R.color.PrimaryColorText),
                     ),
                 ) {
                     Text(text = "Done for now")
                 }
             }
+        }
     }
     Spacer(
         modifier = Modifier
-            .fillMaxHeight(0.1f)
+            .fillMaxHeight(0.1f),
     )
 }
-

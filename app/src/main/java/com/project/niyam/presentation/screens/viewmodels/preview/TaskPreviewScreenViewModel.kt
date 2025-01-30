@@ -30,7 +30,7 @@ data class PreviewScreenUIState(
 @HiltViewModel
 class TaskPreviewScreenViewModel @Inject constructor(
     private val taskRepositoryImpl: TaskRepository,
-    private val prefUtils: PrefUtils
+    private val prefUtils: PrefUtils,
 ) :
     ViewModel() {
 
@@ -73,7 +73,6 @@ class TaskPreviewScreenViewModel @Inject constructor(
             }
         }
     }
-
 
     fun subTaskDone(index: Int) = viewModelScope.launch {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()

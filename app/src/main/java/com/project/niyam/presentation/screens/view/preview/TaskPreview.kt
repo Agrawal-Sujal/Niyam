@@ -58,7 +58,7 @@ class TaskPreview : ComponentActivity() {
                             object : ServiceConnection {
                                 override fun onServiceConnected(
                                     className: ComponentName,
-                                    service: IBinder
+                                    service: IBinder,
                                 ) {
                                     val binder = service as StrictTaskService.StrictTaskBinder
                                     strictTaskService = binder.getService()
@@ -73,7 +73,7 @@ class TaskPreview : ComponentActivity() {
                             object : ServiceConnection {
                                 override fun onServiceConnected(
                                     className: ComponentName,
-                                    service: IBinder
+                                    service: IBinder,
                                 ) {
                                     val binder = service as StopWatchService.StopwatchBinder
                                     stopwatchService = binder.getService()
@@ -108,18 +108,18 @@ class TaskPreview : ComponentActivity() {
                             }
                         }
 
-
                         if (isBound) {
-                            if (strict)
+                            if (strict) {
                                 PreviewScreen(
                                     stopWatchService = strictTaskService,
-                                    id = id.toString().toInt()
+                                    id = id.toString().toInt(),
                                 )
-                            else
+                            } else {
                                 TaskPreviewScreen(
                                     stopWatchService = stopwatchService,
-                                    id = id.toString().toInt()
+                                    id = id.toString().toInt(),
                                 )
+                            }
                         }
                     }
                 }
@@ -127,7 +127,7 @@ class TaskPreview : ComponentActivity() {
         }
     }
 
-        override fun onDestroy() {
+    override fun onDestroy() {
         super.onDestroy()
         if (isBound) {
             unbindService(connection)
@@ -136,36 +136,36 @@ class TaskPreview : ComponentActivity() {
     }
 }
 
-//package com.project.niyam.presentation.screens.view.preview
+// package com.project.niyam.presentation.screens.view.preview
 //
-//import android.Manifest
-//import android.content.ComponentName
-//import android.content.Context
-//import android.content.Intent
-//import android.content.ServiceConnection
-//import android.os.Build
-//import android.os.Bundle
-//import android.os.IBinder
-//import android.util.Log
-//import androidx.activity.ComponentActivity
-//import androidx.activity.compose.setContent
-//import androidx.annotation.RequiresApi
-//import androidx.compose.material3.Surface
-//import androidx.compose.runtime.getValue
-//import androidx.compose.runtime.mutableStateOf
-//import androidx.compose.runtime.setValue
-//import androidx.compose.ui.res.colorResource
-//import androidx.core.app.ActivityCompat
-//import com.project.niyam.R
-//import com.project.niyam.domain.services.StopWatchService
-//import com.project.niyam.domain.services.StopwatchState
-//import com.project.niyam.domain.services.StrictTaskService
-//import com.project.niyam.ui.theme.NiyamTheme
-//import com.project.niyam.utils.Constants.STOPWATCH_STATE
-//import dagger.hilt.android.AndroidEntryPoint
+// import android.Manifest
+// import android.content.ComponentName
+// import android.content.Context
+// import android.content.Intent
+// import android.content.ServiceConnection
+// import android.os.Build
+// import android.os.Bundle
+// import android.os.IBinder
+// import android.util.Log
+// import androidx.activity.ComponentActivity
+// import androidx.activity.compose.setContent
+// import androidx.annotation.RequiresApi
+// import androidx.compose.material3.Surface
+// import androidx.compose.runtime.getValue
+// import androidx.compose.runtime.mutableStateOf
+// import androidx.compose.runtime.setValue
+// import androidx.compose.ui.res.colorResource
+// import androidx.core.app.ActivityCompat
+// import com.project.niyam.R
+// import com.project.niyam.domain.services.StopWatchService
+// import com.project.niyam.domain.services.StopwatchState
+// import com.project.niyam.domain.services.StrictTaskService
+// import com.project.niyam.ui.theme.NiyamTheme
+// import com.project.niyam.utils.Constants.STOPWATCH_STATE
+// import dagger.hilt.android.AndroidEntryPoint
 //
-//@AndroidEntryPoint
-//class TaskPreview : ComponentActivity() {
+// @AndroidEntryPoint
+// class TaskPreview : ComponentActivity() {
 //    private var isBound by mutableStateOf(false)
 //    private var stopwatchService: StopWatchService? = null
 //    private var strictTaskService: StrictTaskService? = null
@@ -256,4 +256,4 @@ class TaskPreview : ComponentActivity() {
 //        }
 //        connection = null
 //    }
-//}
+// }

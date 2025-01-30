@@ -34,9 +34,6 @@ import com.project.niyam.domain.services.ServiceHelper
 import com.project.niyam.domain.services.StrictTaskService
 import com.project.niyam.domain.services.StrictTaskState
 import com.project.niyam.presentation.screens.viewmodels.preview.PreviewScreenViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -64,7 +61,7 @@ fun PreviewScreen(
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             if (hours != "00") {
                 Text(
@@ -101,18 +98,19 @@ fun PreviewScreen(
         Spacer(
             modifier = Modifier
                 .height(12.dp)
-                .weight(0.15f)
+                .weight(0.15f),
         )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .weight(1f), colors = CardColors(
+                .weight(1f),
+            colors = CardColors(
                 contentColor = colorResource(R.color.NormalText),
                 containerColor = colorResource(R.color.PrimaryColor),
                 disabledContainerColor = colorResource(R.color.PrimaryColor),
-                disabledContentColor = colorResource(R.color.PrimaryColor)
-            )
+                disabledContentColor = colorResource(R.color.PrimaryColor),
+            ),
         ) {
             val pagerState = rememberPagerState(pageCount = {
                 uiState.subTasks.size
@@ -121,7 +119,7 @@ fun PreviewScreen(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(12.dp)
+                    .padding(12.dp),
             ) { page ->
                 // Our page content
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -129,7 +127,7 @@ fun PreviewScreen(
                     Text(
                         uiState.subTasks[page].subTaskName,
                         fontSize = 24.sp,
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
@@ -150,12 +148,12 @@ fun PreviewScreen(
                                 viewModel.updateComplete()
                                 ServiceHelper.triggerStrictTaskService(
                                     context = context,
-                                    StrictTaskState.COMPLETED.name
+                                    StrictTaskState.COMPLETED.name,
                                 )
                             }
                         },
                         enabled = !uiState.subTasks[page].isCompleted,
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     ) {
                         Text(
                             text = "Done",
@@ -168,10 +166,7 @@ fun PreviewScreen(
         Spacer(
             modifier = Modifier
                 .fillMaxHeight(0.1f)
-                .weight(0.2f)
+                .weight(0.2f),
         )
-
     }
 }
-
-

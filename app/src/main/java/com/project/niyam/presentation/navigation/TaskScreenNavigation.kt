@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.project.niyam.presentation.screens.view.tasks.CreateStrictTask
 import com.project.niyam.presentation.screens.view.tasks.CreateStrictSubTask
+import com.project.niyam.presentation.screens.view.tasks.CreateStrictTask
 import com.project.niyam.presentation.screens.view.tasks.CreateSubTask
 import com.project.niyam.presentation.screens.view.tasks.CreateTask
 import com.project.niyam.presentation.screens.view.tasks.TasksHomeScreen
@@ -21,7 +21,7 @@ fun TasksScreenNavigation(
     changeBottomNavigation: (Int) -> Unit,
     context: Context,
     viewModel: CreateStrictTaskViewModel,
-    taskViewModel: CreateTaskViewModel
+    taskViewModel: CreateTaskViewModel,
 ) {
     val navController = rememberNavController()
 
@@ -38,7 +38,7 @@ fun TasksScreenNavigation(
                 context = context,
                 onCreateTask = { date, id ->
                     navController.navigate(CreateTaskScreen(date = date, id = id))
-                }
+                },
             )
         }
 
@@ -55,7 +55,7 @@ fun TasksScreenNavigation(
                 navigateToCreateSubTaskScreen = { idx, id ->
                     navController.navigate(CreateSubStrictTaskScreen(idx = idx, id = id))
                 },
-                id = id
+                id = id,
             )
         }
         composable<CreateTaskScreen> {
@@ -71,7 +71,7 @@ fun TasksScreenNavigation(
                 navigateToCreateSubTaskScreen = { idx ->
                     navController.navigate(CreateSubTaskScreen(idx = idx))
                 },
-                id=id
+                id = id,
             )
         }
 
@@ -80,19 +80,21 @@ fun TasksScreenNavigation(
             val id = it.arguments?.getString("id") ?: "-1"
             changeBottomNavigation(0)
             CreateStrictSubTask(
-                viewModel, navigateToCreateTaskScreen = {
+                viewModel,
+                navigateToCreateTaskScreen = {
                     navController.navigateUp()
-                }, idx = idx.toInt(),
-                id = id.toInt()
+                },
+                idx = idx.toInt(),
+                id = id.toInt(),
             )
         }
 
         composable<CreateSubTaskScreen> {
-            val idx = it.arguments?.getString("idx")?:"-1"
+            val idx = it.arguments?.getString("idx") ?: "-1"
             changeBottomNavigation(0)
             CreateSubTask(taskViewModel, navigateToCreateTaskScreen = {
                 navController.navigateUp()
-            },idx.toInt())
+            }, idx.toInt())
         }
     }
 }

@@ -20,7 +20,6 @@ object ServiceHelper {
     private const val FLAG =
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
-
     fun strictClickPendingIntent(context: Context, id: String): PendingIntent {
         val clickIntent = Intent(context, TaskPreview::class.java).apply {
             Log.d("ServiceHelper", id)
@@ -95,7 +94,7 @@ object ServiceHelper {
         )
     }
 
-    fun triggerStrictTaskService(context:Context,msg:String){
+    fun triggerStrictTaskService(context: Context, msg: String) {
         Intent(context, StrictTaskService::class.java).apply {
             putExtra(STRICT_TASK_STATE, msg)
             action = "subTaskPreview"

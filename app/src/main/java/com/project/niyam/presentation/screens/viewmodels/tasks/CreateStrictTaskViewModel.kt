@@ -25,7 +25,7 @@ data class CreateStrictTaskUiState(
     val endH: String = "",
     val startMin: String = "",
     val endMIn: String = "",
-    val loaded: Boolean = false
+    val loaded: Boolean = false,
 )
 
 data class CreateSubTaskUiState(
@@ -87,7 +87,7 @@ class CreateStrictTaskViewModel @Inject constructor(
         val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
         subTasks[idx] = CreateSubTaskUiState(
             subTaskName = _uiStateSubTask.value.subTaskName,
-            subTaskDescription = _uiStateSubTask.value.subTaskDescription
+            subTaskDescription = _uiStateSubTask.value.subTaskDescription,
         )
         _uiState.value = _uiState.value.copy(subTasks = subTasks)
         _uiStateSubTask.value = CreateSubTaskUiState()
@@ -112,7 +112,6 @@ class CreateStrictTaskViewModel @Inject constructor(
     fun updateEndMin(min: String) {
         _uiState.value = _uiState.value.copy(endMIn = min)
     }
-
 
     fun updateName(name: String) {
         _uiState.value = _uiState.value.copy(name = name)
@@ -145,17 +144,21 @@ class CreateStrictTaskViewModel @Inject constructor(
 
     private fun updateStartAndEndTime() {
         var startHour: String = _uiState.value.startH
-        if (startHour.length == 1)
+        if (startHour.length == 1) {
             startHour = "0$startHour"
+        }
         var startMin: String = _uiState.value.startMin
-        if (startMin.length == 1)
+        if (startMin.length == 1) {
             startMin = "0$startMin"
+        }
         var endH: String = _uiState.value.endH
-        if (endH.length == 1)
+        if (endH.length == 1) {
             endH = "0$endH"
+        }
         var endMin: String = _uiState.value.endMIn
-        if (endMin.length == 1)
+        if (endMin.length == 1) {
             endMin = "0$endMin"
+        }
 
         val start: String = "$startHour:$startMin"
         val end: String = "$endH:$endMin"
@@ -164,7 +167,6 @@ class CreateStrictTaskViewModel @Inject constructor(
     }
 
     suspend fun updateTask(date: String, id: String) {
-
         Log.d("Testing", "_uiState.value : " + _uiState.value.toString())
         updateStartAndEndTime()
         repository.updateStrictTasks(_uiState.value.toStrictTasks(date = date, id))

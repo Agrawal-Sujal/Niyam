@@ -1,23 +1,13 @@
 package com.project.niyam.domain.services
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
-import com.project.niyam.data.TaskNotification
 import com.project.niyam.domain.model.Tasks
 import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_ID
-import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_NAME
-import com.project.niyam.utils.Constants.NOTIFICATION_ID
 import com.project.niyam.utils.Constants.PREF_UTILS_TASK
 import com.project.niyam.utils.Constants.STOPWATCH_STATE
 import com.project.niyam.utils.PrefUtils
@@ -36,7 +26,6 @@ import javax.inject.Inject
 import kotlin.concurrent.fixedRateTimer
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-
 
 @AndroidEntryPoint
 class StopWatchService : Service() {
@@ -81,7 +70,6 @@ class StopWatchService : Service() {
                     }
 
                     StopwatchState.Started.name -> {
-
 //                        if (currentState.value == StopwatchState.Idle)
                         startStopwatch { hours, minutes, seconds ->
                         }
@@ -112,11 +100,10 @@ class StopWatchService : Service() {
         taskRepository.updateTasks(
             task.copy(
                 secondsRemaining = duration.inWholeSeconds.toString(),
-                isCompleted = isCompleted
+                isCompleted = isCompleted,
             ),
         )
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun fetchEndTime() {
@@ -139,7 +126,7 @@ class StopWatchService : Service() {
 //                cancelStopwatch()
                 ServiceHelper.triggerForegroundService(
                     this@StopWatchService,
-                    StopwatchState.Canceled.name
+                    StopwatchState.Canceled.name,
                 )
             }
             updateTimeUnits()
@@ -190,5 +177,5 @@ enum class StopwatchState {
     Stopped,
     Canceled,
     Entered,
-    Completed
+    Completed,
 }

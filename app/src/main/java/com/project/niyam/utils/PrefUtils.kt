@@ -27,5 +27,4 @@ class PrefUtils @Inject constructor(@ApplicationContext val context: Context) {
             it[stringPreferencesKey(key)]
         }.first()
     }
-
 }

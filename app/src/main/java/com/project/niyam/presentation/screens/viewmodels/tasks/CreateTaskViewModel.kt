@@ -6,9 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.presentation.toCreateStrictTaskUiState
 import com.project.niyam.presentation.toCreateTaskUiState
 import com.project.niyam.presentation.toTasks
 import com.project.niyam.utils.DateTimeDetail
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 data class CreateTaskUiState(
     val name: String = "",
     val description: String = "",
@@ -27,7 +24,7 @@ data class CreateTaskUiState(
     val subTasks: List<CreateSubTaskUiState> = listOf(),
     val minutesRemaining: String = "",
     val days: String = "",
-    val loaded: Boolean = false
+    val loaded: Boolean = false,
 )
 
 @HiltViewModel
@@ -43,8 +40,6 @@ class CreateTaskViewModel @Inject constructor(
     fun updateSubTaskName(subTaskName: String) {
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskName = subTaskName)
     }
-
-
 
     fun updateSubTaskDescription(subTaskDescription: String) {
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskDescription = subTaskDescription)
@@ -82,7 +77,7 @@ class CreateTaskViewModel @Inject constructor(
         val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
         subTasks[idx] = CreateSubTaskUiState(
             subTaskName = _uiStateSubTask.value.subTaskName,
-            subTaskDescription = _uiStateSubTask.value.subTaskDescription
+            subTaskDescription = _uiStateSubTask.value.subTaskDescription,
         )
         _uiState.value = _uiState.value.copy(subTasks = subTasks)
         _uiStateSubTask.value = CreateSubTaskUiState()

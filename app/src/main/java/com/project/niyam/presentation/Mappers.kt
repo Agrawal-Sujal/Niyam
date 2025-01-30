@@ -11,7 +11,6 @@ import com.project.niyam.presentation.screens.viewmodels.preview.StrictPreviewSc
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskUiState
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateSubTaskUiState
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskUiState
-import com.project.niyam.utils.calculateDaysBetween
 import com.project.niyam.utils.daysRemaining
 
 fun StrictTasks.toStrictPreviewScreenUIState(currentIndex: Int): StrictPreviewScreenUIState {
@@ -54,7 +53,7 @@ fun Tasks.toPreviewScreenUIState(currentIndex: Int): PreviewScreenUIState {
         isCompleted = this.isCompleted,
         subTasks = this.subTasks,
         currentIndex = currentIndex,
-        minutesRemaining = this.secondsRemaining
+        minutesRemaining = this.secondsRemaining,
     )
 }
 
@@ -80,12 +79,12 @@ fun CreateStrictTaskUiState.toStrictTasks(date: String = "", id: String = "0"): 
         startTime = this.startTime,
         endTime = this.endTime,
         subTasks = this.subTasks.map { it.toSubTasks() },
-        date = date
+        date = date,
     )
 }
 
 // Mapper for StrictTasks to CreateTaskUiState
-//fun StrictTasks.toCreateTaskUiState(): CreateTaskUiState {
+// fun StrictTasks.toCreateTaskUiState(): CreateTaskUiState {
 //    return CreateTaskUiState(
 //        name = this.taskName,
 //        description = this.taskDescription,
@@ -93,13 +92,13 @@ fun CreateStrictTaskUiState.toStrictTasks(date: String = "", id: String = "0"): 
 //        endTime = this.endTime,
 //        subTasks = this.subTasks.map { it.toCreateSubTaskUiState() }
 //    )
-//}
+// }
 
 // Mapper for CreateSubTaskUiState to SubTasks
 fun CreateSubTaskUiState.toSubTasks(): SubTasks {
     return SubTasks(
         subTaskName = this.subTaskName,
-        subTaskDescription = this.subTaskDescription
+        subTaskDescription = this.subTaskDescription,
     )
 }
 
@@ -107,12 +106,11 @@ fun CreateSubTaskUiState.toSubTasks(): SubTasks {
 fun SubTasks.toCreateSubTaskUiState(): CreateSubTaskUiState {
     return CreateSubTaskUiState(
         subTaskName = this.subTaskName,
-        subTaskDescription = this.subTaskDescription
+        subTaskDescription = this.subTaskDescription,
     )
 }
 
 fun CreateTaskUiState.toTasks(id: Int = 0): Tasks {
-
     return Tasks(
         id = id,
         taskName = this.name,
@@ -120,9 +118,8 @@ fun CreateTaskUiState.toTasks(id: Int = 0): Tasks {
         startDate = this.startDate,
         endDate = this.endDate,
         subTasks = this.subTasks.map { it.toSubTasks() },
-        secondsRemaining = (this.minutesRemaining.toInt() * 60).toString()
+        secondsRemaining = (this.minutesRemaining.toInt() * 60).toString(),
     )
-
 }
 
 fun StrictTasks.toCreateStrictTaskUiState(): CreateStrictTaskUiState {
@@ -135,16 +132,16 @@ fun StrictTasks.toCreateStrictTaskUiState(): CreateStrictTaskUiState {
         startH = this.startTime.take(2),
         startMin = this.startTime.takeLast(2),
         endH = this.endTime.take(2),
-        endMIn = this.endTime.takeLast(2)
+        endMIn = this.endTime.takeLast(2),
     )
 }
 
-//fun SubTasks.toCreateSubTaskUiState(): CreateSubTaskUiState {
+// fun SubTasks.toCreateSubTaskUiState(): CreateSubTaskUiState {
 //    return CreateSubTaskUiState(
 //        subTaskName = this.subTaskName,
 //        subTaskDescription = this.subTaskDescription
 //    )
-//}
+// }
 @RequiresApi(Build.VERSION_CODES.O)
 fun Tasks.toCreateTaskUiState(): CreateTaskUiState {
     return CreateTaskUiState(
@@ -155,6 +152,6 @@ fun Tasks.toCreateTaskUiState(): CreateTaskUiState {
         subTasks = this.subTasks.map { it.toCreateSubTaskUiState() },
         minutesRemaining = if (this.secondsRemaining == "") "0" else (this.secondsRemaining.toInt() / 60).toString(),
         days = daysRemaining(this.endDate).toString(),
-        loaded = true
+        loaded = true,
     )
 }

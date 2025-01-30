@@ -35,7 +35,7 @@ data class StrictPreviewScreenUIState(
 class PreviewScreenViewModel @Inject constructor(
     private val strictTaskRepositoryImpl: StrictTaskRepository,
     @ApplicationContext val context: Context,
-    private val prefUtils: PrefUtils
+    private val prefUtils: PrefUtils,
 ) :
     ViewModel() {
 

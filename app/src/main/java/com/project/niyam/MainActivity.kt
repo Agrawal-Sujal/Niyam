@@ -30,10 +30,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -52,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var prefUtils: PrefUtils
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,8 +116,8 @@ class MainActivity : ComponentActivity() {
                                             selectedIndicatorColor = colorResource(R.color.PrimaryColor),
                                             unselectedIconColor = colorResource(R.color.white),
                                             unselectedTextColor = colorResource(R.color.white),
-                                            disabledTextColor = colorResource(R.color.white)
-                                        )
+                                            disabledTextColor = colorResource(R.color.white),
+                                        ),
                                     )
                                 }
                             }
@@ -129,7 +128,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
-                        color = colorResource(R.color.BackGroundColor)
+                        color = colorResource(R.color.BackGroundColor),
                     ) {
                         NavHost(
                             navController = navController,
@@ -142,7 +141,7 @@ class MainActivity : ComponentActivity() {
                                     { showBottomNavigation = it },
                                     context = this@MainActivity,
                                     viewModel,
-                                    taskViewModel
+                                    taskViewModel,
                                 )
                             }
                             composable<HomePageNavigation.Setting> {

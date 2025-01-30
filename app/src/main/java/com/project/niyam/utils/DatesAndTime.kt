@@ -9,8 +9,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
-import java.util.Locale
 import java.util.Date
+import java.util.Locale
 enum class DateTimeDetail {
     FULL_DAY_NAME,
     SHORT_DAY_NAME,
@@ -90,7 +90,6 @@ fun convertToLocalTime(hardCodedTime: String): String {
     return localTimeAdjusted.format(DateTimeFormatter.ofPattern("HH:mm"))
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 fun daysRemaining(targetDate: String): Long {
     try {
@@ -104,7 +103,7 @@ fun daysRemaining(targetDate: String): Long {
         val today = LocalDate.now()
 
         // Calculate the difference in days
-        return ChronoUnit.DAYS.between(today, target)+1L
+        return ChronoUnit.DAYS.between(today, target) + 1L
     } catch (e: Exception) {
         println("Invalid date format. Please use 'dd-MM-yyyy'. Error: ${e.message}")
         return -1
@@ -124,7 +123,7 @@ fun getDateAfterDays(days: Long): String {
     return futureDate.format(formatter)
 }
 
-    fun convertSecondsToTime(seconds: Int): String {
+fun convertSecondsToTime(seconds: Int): String {
     val hours = seconds / 3600
     val minutes = (seconds % 3600) / 60
     val remainingSeconds = seconds % 60
@@ -153,7 +152,6 @@ fun calculateDaysBetween(startDate: String, endDate: String): String {
         "0"
     }
 }
-
 
 fun getCurrentTime(): String {
     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())

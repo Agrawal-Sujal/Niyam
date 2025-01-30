@@ -33,7 +33,7 @@ data class TasksHomeScreenUIState(
 class TasksHomeScreenViewModel @Inject constructor(
     private val strictTaskRepository: StrictTaskRepository,
     private val taskRepository: TaskRepository,
-    private val prefUtils: PrefUtils
+    private val prefUtils: PrefUtils,
 ) :
     ViewModel() {
 

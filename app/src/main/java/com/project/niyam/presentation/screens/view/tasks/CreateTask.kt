@@ -1,10 +1,8 @@
 package com.project.niyam.presentation.screens.view.tasks
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +13,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +39,7 @@ fun CreateTask(
     date: String,
     onClick: () -> Unit,
     navigateToCreateSubTaskScreen: (String) -> Unit,
-    id: String
+    id: String,
 ) {
     val uiState by viewModel.uiState
     viewModel.updateDate(date)
@@ -58,42 +53,43 @@ fun CreateTask(
             TextField(
                 value = uiState.name,
                 onValueChange = { viewModel.updateName(it) },
-                label = "Task Name"
+                label = "Task Name",
             )
             TextField(
                 value = uiState.description,
                 onValueChange = { viewModel.updateDescription(it) },
-                label = "Task Description"
+                label = "Task Description",
             )
             TextField(
                 value = uiState.minutesRemaining,
                 onValueChange = { viewModel.updateMinutes(it) },
                 label = "Time in minutes",
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Number,
             )
             TextField(
                 value = uiState.days,
                 onValueChange = { viewModel.updateDays(it) },
                 label = "Days to complete",
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Number,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     "Sub Tasks",
                     color = colorResource(R.color.PrimaryColorText),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
                 )
                 FloatingActionButton(
                     onClick = {
                         navigateToCreateSubTaskScreen("-1")
-                    }, containerColor = colorResource(R.color.PrimaryColor),
-                    modifier = Modifier.padding(end = 12.dp)
+                    },
+                    containerColor = colorResource(R.color.PrimaryColor),
+                    modifier = Modifier.padding(end = 12.dp),
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
@@ -102,13 +98,14 @@ fun CreateTask(
             uiState.subTasks.forEachIndexed { it1, it ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     SubTask(
                         name = it.subTaskName,
                         description = it.subTaskDescription,
                         onDelete = { viewModel.removeSubTask(it) },
-                        onEdit = { navigateToCreateSubTaskScreen(it1.toString()) })
+                        onEdit = { navigateToCreateSubTaskScreen(it1.toString()) },
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -118,9 +115,11 @@ fun CreateTask(
                         .padding(12.dp),
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
-                            if (id == "-1")
+                            if (id == "-1") {
                                 viewModel.saveTask()
-                            else viewModel.updateTask(id = id.toInt())
+                            } else {
+                                viewModel.updateTask(id = id.toInt())
+                            }
                         }
                         onClick()
                     },
@@ -128,12 +127,14 @@ fun CreateTask(
                         containerColor = colorResource(R.color.PrimaryColorText),
                         contentColor = colorResource(R.color.NormalText),
                         disabledContainerColor = colorResource(R.color.PrimaryColorText),
-                        disabledContentColor = colorResource(R.color.PrimaryColorText)
-                    )
+                        disabledContentColor = colorResource(R.color.PrimaryColorText),
+                    ),
                 ) {
-                    if (id == "-1")
+                    if (id == "-1") {
                         Text("Save", color = Color.Black, fontSize = 20.sp)
-                    else Text("Update", color = Color.Black, fontSize = 20.sp)
+                    } else {
+                        Text("Update", color = Color.Black, fontSize = 20.sp)
+                    }
                 }
             }
         }

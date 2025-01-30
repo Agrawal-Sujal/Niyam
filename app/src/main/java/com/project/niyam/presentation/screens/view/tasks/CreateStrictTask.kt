@@ -53,7 +53,7 @@ fun CreateStrictTask(
     date: String,
     onClick: () -> Unit,
     navigateToCreateSubTaskScreen: (String, String) -> Unit,
-    id: String
+    id: String,
 ) {
     val uiState by viewModel.uiState
     viewModel.updateDate(date)
@@ -86,12 +86,12 @@ fun CreateStrictTask(
                     modifier = Modifier
                         .padding(start = 8.dp, end = 8.dp, bottom = 12.dp, top = 0.dp)
                         .weight(1f),
-                    isError = if (uiState.startH != "") uiState.startH.toInt() > 24 else false
+                    isError = if (uiState.startH != "") uiState.startH.toInt() > 24 else false,
                 )
                 Text(
                     ":",
                     modifier = Modifier.align(alignment = Alignment.CenterVertically),
-                    fontSize = 30.sp
+                    fontSize = 30.sp,
                 )
                 TextField(
                     label = "Minute",
@@ -116,12 +116,12 @@ fun CreateStrictTask(
                     modifier = Modifier
                         .padding(start = 8.dp, end = 8.dp, bottom = 12.dp, top = 0.dp)
                         .weight(1f),
-                    isError = if (uiState.endH != "") uiState.endH.toInt() > 24 else false
+                    isError = if (uiState.endH != "") uiState.endH.toInt() > 24 else false,
                 )
                 Text(
                     ":",
                     modifier = Modifier.align(alignment = Alignment.CenterVertically),
-                    fontSize = 30.sp
+                    fontSize = 30.sp,
                 )
                 TextField(
                     label = "Minute",
@@ -138,18 +138,19 @@ fun CreateStrictTask(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     "Sub Tasks",
                     color = colorResource(R.color.PrimaryColorText),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
                 )
                 FloatingActionButton(
                     onClick = {
                         navigateToCreateSubTaskScreen("-1", "-1")
-                    }, containerColor = colorResource(R.color.PrimaryColor),
-                    modifier = Modifier.padding(end = 12.dp)
+                    },
+                    containerColor = colorResource(R.color.PrimaryColor),
+                    modifier = Modifier.padding(end = 12.dp),
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
@@ -158,13 +159,14 @@ fun CreateStrictTask(
             uiState.subTasks.forEachIndexed { it1, it ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     SubTask(
                         name = it.subTaskName,
                         description = it.subTaskDescription,
                         onDelete = { viewModel.removeSubTask(it) },
-                        onEdit = { navigateToCreateSubTaskScreen(it1.toString(), id) })
+                        onEdit = { navigateToCreateSubTaskScreen(it1.toString(), id) },
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -175,9 +177,11 @@ fun CreateStrictTask(
                     onClick = {
                         if (viewModel.checkTask()) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                if (id == "-1")
+                                if (id == "-1") {
                                     viewModel.saveTask(date = date)
-                                else viewModel.updateTask(date = date, id)
+                                } else {
+                                    viewModel.updateTask(date = date, id)
+                                }
                             }
                             onClick()
                         } else {
@@ -189,12 +193,14 @@ fun CreateStrictTask(
                         containerColor = colorResource(R.color.PrimaryColorText),
                         contentColor = colorResource(R.color.NormalText),
                         disabledContainerColor = colorResource(R.color.PrimaryColorText),
-                        disabledContentColor = colorResource(R.color.PrimaryColorText)
-                    )
+                        disabledContentColor = colorResource(R.color.PrimaryColorText),
+                    ),
                 ) {
-                    if (id == "-1")
+                    if (id == "-1") {
                         Text("Save", color = Color.Black, fontSize = 20.sp)
-                    else Text("Update", color = Color.Black, fontSize = 20.sp)
+                    } else {
+                        Text("Update", color = Color.Black, fontSize = 20.sp)
+                    }
                 }
             }
         }
@@ -206,12 +212,13 @@ fun SubTask(name: String, description: String, onDelete: () -> Unit, onEdit: () 
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .padding(bottom = 8.dp), colors = CardColors(
+            .padding(bottom = 8.dp),
+        colors = CardColors(
             contentColor = colorResource(R.color.NormalText),
             containerColor = colorResource(R.color.PrimaryColor),
             disabledContainerColor = colorResource(R.color.PrimaryColor),
-            disabledContentColor = colorResource(R.color.NormalText)
-        )
+            disabledContentColor = colorResource(R.color.NormalText),
+        ),
     ) {
         Column {
             Text(name, fontSize = 32.sp, modifier = Modifier.padding(12.dp))
@@ -222,18 +229,18 @@ fun SubTask(name: String, description: String, onDelete: () -> Unit, onEdit: () 
                     contentDescription = "Delete Icon",
                     modifier = Modifier.clickable {
                         onDelete()
-                    })
+                    },
+                )
                 Icon(
                     Icons.Default.Edit,
                     contentDescription = "Edit Icon",
                     modifier = Modifier.clickable {
                         onEdit()
-                    })
+                    },
+                )
             }
         }
-
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -245,7 +252,7 @@ fun TextField(
     keyboardType: KeyboardType? = null,
     last: Boolean = false,
     modifier: Modifier? = null,
-    isError: Boolean = false
+    isError: Boolean = false,
 
 ) {
     OutlinedTextField(
@@ -263,14 +270,12 @@ fun TextField(
             unfocusedBorderColor = colorResource(R.color.NormalText),
             cursorColor = colorResource(R.color.PrimaryColorText),
             focusedTextColor = colorResource(R.color.NormalText),
-            errorBorderColor = Color.Red
+            errorBorderColor = Color.Red,
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType ?: KeyboardType.Text,
-            imeAction = if (last) ImeAction.Done else ImeAction.Next
+            imeAction = if (last) ImeAction.Done else ImeAction.Next,
         ),
-        isError = isError
+        isError = isError,
     )
-
-
 }

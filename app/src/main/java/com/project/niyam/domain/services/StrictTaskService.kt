@@ -1,6 +1,5 @@
 package com.project.niyam.domain.services
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -94,25 +93,23 @@ class StrictTaskService : Service() {
     //    @SuppressLint("ForegroundServiceType")
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startForegroundService() {
-
         createNotificationChannel()
         ServiceCompat.startForeground(
             this,
             NOTIFICATION_ID,
             notificationBuilder.setContentIntent(ServiceHelper.strictClickPendingIntent(this, id!!))
                 .build(),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST,
         )
         startStopwatch { hours, minutes, seconds ->
             updateNotification(hours, minutes, seconds)
         }
 //        startForeground(NOTIFICATION_ID, notificationBuilder.build())
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startStopwatch(
-        onTick: (h: String, m: String, s: String) -> Unit
+        onTick: (h: String, m: String, s: String) -> Unit,
     ) {
         duration = calculateDifference()
         timer = fixedRateTimer(initialDelay = 1000L, period = 1000L) {
@@ -147,7 +144,7 @@ class StrictTaskService : Service() {
     private fun updateNotification(hours: String, minutes: String, seconds: String) {
         notificationManager.notify(
             NOTIFICATION_ID,
-            notificationBuilder.setContentText("$hours:$minutes:$seconds").build()
+            notificationBuilder.setContentText("$hours:$minutes:$seconds").build(),
         )
     }
 
@@ -170,7 +167,7 @@ class StrictTaskService : Service() {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_LOW,
             )
             notificationManager.createNotificationChannel(channel)
         }
@@ -192,5 +189,5 @@ class StrictTaskService : Service() {
 enum class StrictTaskState {
     IDLE,
     STARTED,
-    COMPLETED
+    COMPLETED,
 }
