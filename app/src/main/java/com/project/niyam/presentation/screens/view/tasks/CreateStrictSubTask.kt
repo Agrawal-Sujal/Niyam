@@ -10,17 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskViewModel
-import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -63,9 +58,7 @@ fun CreateStrictSubTask(
             if (idx == -1) {
                 Button(
                     onClick = {
-//                        if (id == -1)
                         viewModel.saveSubTask()
-//                        else viewModel.saveSubTaskWithId()
                         navigateToCreateTaskScreen()
                     }, modifier = Modifier
                         .fillMaxWidth(0.35f)
@@ -73,11 +66,8 @@ fun CreateStrictSubTask(
                 ) { Text("Done") }
                 Button(
                     onClick = {
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                        if (id == -1)
                         viewModel.saveSubTask()
-//                        else viewModel.saveSubTaskWithId()
-//                        }
+
                     }, modifier = Modifier
                         .fillMaxWidth(0.35f)
                         .weight(5f)
@@ -86,10 +76,7 @@ fun CreateStrictSubTask(
             } else {
                 Button(onClick = {
                     runBlocking {
-//                        if (id == -1)
                         viewModel.updateSubTask(idx)
-//                        else
-//                            viewModel.updateSubTaskWithId(idx)
                         navigateToCreateTaskScreen()
                     }
                 }, modifier = Modifier.fillMaxWidth(0.35f)) {

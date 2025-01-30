@@ -1,6 +1,7 @@
 package com.project.niyam.data.datasources.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -22,5 +23,8 @@ interface TasksDAO {
     suspend fun updateTask(task: Tasks)
 
     @Query("SELECT secondsRemaining FROM Tasks WHERE id=:id")
-    fun getEndTime(id:Int):Flow<String>
+    fun getEndTime(id: Int): Flow<String>
+
+    @Delete
+    suspend fun deleteTask(task: Tasks)
 }

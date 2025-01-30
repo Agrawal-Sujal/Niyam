@@ -68,7 +68,10 @@ fun TasksScreenNavigation(
                 onClick = {
                     navController.navigateUp()
                 },
-                navigateToCreateSubTaskScreen = { navController.navigate(CreateSubTaskScreen) },
+                navigateToCreateSubTaskScreen = { idx ->
+                    navController.navigate(CreateSubTaskScreen(idx = idx))
+                },
+                id=id
             )
         }
 
@@ -85,10 +88,11 @@ fun TasksScreenNavigation(
         }
 
         composable<CreateSubTaskScreen> {
+            val idx = it.arguments?.getString("idx")?:"-1"
             changeBottomNavigation(0)
             CreateSubTask(taskViewModel, navigateToCreateTaskScreen = {
                 navController.navigateUp()
-            })
+            },idx.toInt())
         }
     }
 }

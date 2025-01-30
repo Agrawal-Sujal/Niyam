@@ -48,6 +48,10 @@ class CreateStrictTaskViewModel @Inject constructor(
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskName = subTaskName)
     }
 
+    init {
+        _uiState.value = CreateStrictTaskUiState()
+    }
+
     fun loadStrictTask(id: Int) {
         if (!_uiState.value.loaded) {
             viewModelScope.launch {
@@ -89,31 +93,6 @@ class CreateStrictTaskViewModel @Inject constructor(
         _uiStateSubTask.value = CreateSubTaskUiState()
     }
 
-//    suspend fun updateSubTaskWithId(idx: Int) {
-//        val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
-//        subTasks[idx] = CreateSubTaskUiState(
-//            subTaskName = _uiStateSubTask.value.subTaskName,
-//            subTaskDescription = _uiStateSubTask.value.subTaskDescription
-//        )
-//        _uiState.value = _uiState.value.copy(subTasks = subTasks)
-//        _uiStateSubTask.value = CreateSubTaskUiState()
-//        Log.d(
-//            "Testing",
-//            "Update Sub Task With Id is called " + _uiState.value.subTasks[idx].toString()
-//        )
-//        repository.updateStrictTasks(_uiState.value.toStrictTasks(date = date))
-//    }
-
-//    fun saveSubTaskWithId() {
-//        val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
-//        subTasks.add(_uiStateSubTask.value)
-//        _uiState.value = _uiState.value.copy(subTasks = subTasks)
-//        _uiStateSubTask.value = CreateSubTaskUiState()
-//        viewModelScope.launch {
-//            repository.updateStrictTasks(_uiState.value.toStrictTasks(date = date))
-//        }
-//    }
-
     fun updateDate(date: String) {
         this.date = date
     }
@@ -152,37 +131,19 @@ class CreateStrictTaskViewModel @Inject constructor(
     }
 
     fun checkTask(): Boolean {
+        updateStartAndEndTime()
         val info = _uiState.value
-        return !(info.name == "" || info.endH == "" || info.endMIn == "" || info.startMin == "" || info.startH == "" || info.subTasks.isEmpty())
-
+        return !(info.name == "" || info.endH == "" || info.endMIn == "" || info.startMin == "" || info.startH == "" || info.startTime > info.endTime || (info.endH.toInt() < 0 || info.endH.toInt() >= 24) || (info.startH.toInt() < 0 || info.startH.toInt() >= 24) || (info.startMin.toInt() < 0 || info.startMin.toInt() > 60) || (info.endMIn.toInt() < 0 || info.endMIn.toInt() > 60))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun saveTask(date: String) {
-        var startHour: String = _uiState.value.startH
-        if (startHour.length == 1)
-            startHour = "0$startHour"
-        var startMin: String = _uiState.value.startMin
-        if (startMin.length == 1)
-            startMin = "0$startMin"
-        var endH: String = _uiState.value.endH
-        if (endH.length == 1)
-            endH = "0$endH"
-        var endMin: String = _uiState.value.endMIn
-        if (endMin.length == 1)
-            endMin = "0$endMin"
-
-        val start: String = "$startHour:$startMin"
-        val end: String = "$endH:$endMin"
-        updateStartDate(start)
-        updateEndDate(end)
+        updateStartAndEndTime()
         repository.insertStrictTasks(_uiState.value.toStrictTasks(date = date))
         _uiState.value = CreateStrictTaskUiState()
     }
 
-    suspend fun updateTask(date: String,id:String) {
-
-        Log.d("Testing", "_uiState.value : " + _uiState.value.toString())
+    private fun updateStartAndEndTime() {
         var startHour: String = _uiState.value.startH
         if (startHour.length == 1)
             startHour = "0$startHour"
@@ -200,7 +161,13 @@ class CreateStrictTaskViewModel @Inject constructor(
         val end: String = "$endH:$endMin"
         updateStartDate(start)
         updateEndDate(end)
-        repository.updateStrictTasks(_uiState.value.toStrictTasks(date = date,id))
+    }
+
+    suspend fun updateTask(date: String, id: String) {
+
+        Log.d("Testing", "_uiState.value : " + _uiState.value.toString())
+        updateStartAndEndTime()
+        repository.updateStrictTasks(_uiState.value.toStrictTasks(date = date, id))
         _uiState.value = CreateStrictTaskUiState()
     }
 }

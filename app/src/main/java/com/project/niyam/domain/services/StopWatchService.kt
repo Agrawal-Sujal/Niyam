@@ -18,7 +18,9 @@ import com.project.niyam.domain.repository.TaskRepository
 import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_NAME
 import com.project.niyam.utils.Constants.NOTIFICATION_ID
+import com.project.niyam.utils.Constants.PREF_UTILS_TASK
 import com.project.niyam.utils.Constants.STOPWATCH_STATE
+import com.project.niyam.utils.PrefUtils
 import com.project.niyam.utils.convertSecondsToTime
 import com.project.niyam.utils.pad
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +43,8 @@ class StopWatchService : Service() {
     @Inject
     lateinit var taskRepository: TaskRepository
 
+    @Inject
+    lateinit var prefUtils: PrefUtils
 
     private val binder = StopwatchBinder()
     private lateinit var timer: Timer
@@ -88,9 +92,9 @@ class StopWatchService : Service() {
                     }
 
                     StopwatchState.Canceled.name -> {
+                        stopStopwatch()
                         updateEndTime()
                         cancelStopwatch()
-                        stopForegroundService()
                     }
 
                     StopwatchState.Completed.name -> {
@@ -113,10 +117,6 @@ class StopWatchService : Service() {
         )
     }
 
-    private fun stopForegroundService() {
-//        stopForeground(STOP_FOREGROUND_REMOVE)
-//        stopSelf()
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun fetchEndTime() {
@@ -130,6 +130,10 @@ class StopWatchService : Service() {
         timer = fixedRateTimer(initialDelay = 1000L, period = 1000L) {
             duration = duration.minus(10.seconds)
             if (duration.isNegative()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    prefUtils.saveString(PREF_UTILS_TASK, "0")
+                    taskRepository.updateTasks(task.copy(isCompleted = true))
+                }
                 duration = Duration.ZERO
                 stopStopwatch()
 //                cancelStopwatch()

@@ -42,7 +42,6 @@ class PreviewScreenViewModel @Inject constructor(
     private val _uiState = mutableStateOf(StrictPreviewScreenUIState())
     val uiState: State<StrictPreviewScreenUIState> = _uiState
     var id: Int = 0
-    var isStrict: Boolean = false
 
     fun updateID(id: Int, context: Context) {
         if (id != this.id) {
@@ -76,17 +75,14 @@ class PreviewScreenViewModel @Inject constructor(
     fun subTaskDone(index: Int) = viewModelScope.launch {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()
 
-        // Update the specific subtask
         val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
         currentSubTasks[index] = updatedSubTask
 
-        // Update the state with a new list
         _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
         updateStrictTask()
     }
 
     private suspend fun updateStrictTask() {
         strictTaskRepositoryImpl.updateStrictTasks(_uiState.value.toStrictTasks())
-//        Log.i("uiState", _uiState.value.toString())
     }
 }

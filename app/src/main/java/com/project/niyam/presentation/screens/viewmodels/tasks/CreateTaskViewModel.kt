@@ -5,12 +5,17 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
+import com.project.niyam.presentation.toCreateStrictTaskUiState
+import com.project.niyam.presentation.toCreateTaskUiState
 import com.project.niyam.presentation.toTasks
 import com.project.niyam.utils.DateTimeDetail
 import com.project.niyam.utils.getDateAfterDays
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -21,7 +26,8 @@ data class CreateTaskUiState(
     val endDate: String = "",
     val subTasks: List<CreateSubTaskUiState> = listOf(),
     val minutesRemaining: String = "",
-    val days: String = ""
+    val days: String = "",
+    val loaded: Boolean = false
 )
 
 @HiltViewModel
@@ -38,13 +44,46 @@ class CreateTaskViewModel @Inject constructor(
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskName = subTaskName)
     }
 
+
+
     fun updateSubTaskDescription(subTaskDescription: String) {
         _uiStateSubTask.value = _uiStateSubTask.value.copy(subTaskDescription = subTaskDescription)
+    }
+
+    fun loadSubTask(idx: Int) {
+        _uiStateSubTask.value = _uiState.value.subTasks[idx]
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun loadSTask(id: Int) {
+        if (!_uiState.value.loaded) {
+            viewModelScope.launch {
+                val task = repository.getTaskById(id).first()
+                _uiState.value = task.toCreateTaskUiState()
+                _uiState.value = _uiState.value.copy(loaded = true)
+            }
+        }
     }
 
     fun saveSubTask() {
         val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
         subTasks.add(_uiStateSubTask.value)
+        _uiState.value = _uiState.value.copy(subTasks = subTasks)
+        _uiStateSubTask.value = CreateSubTaskUiState()
+    }
+
+    fun removeSubTask(subTaskUiState: CreateSubTaskUiState) {
+        val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
+        subTasks.remove(subTaskUiState)
+        _uiState.value = _uiState.value.copy(subTasks = subTasks)
+    }
+
+    fun updateSubTask(idx: Int) {
+        val subTasks: MutableList<CreateSubTaskUiState> = _uiState.value.subTasks.toMutableList()
+        subTasks[idx] = CreateSubTaskUiState(
+            subTaskName = _uiStateSubTask.value.subTaskName,
+            subTaskDescription = _uiStateSubTask.value.subTaskDescription
+        )
         _uiState.value = _uiState.value.copy(subTasks = subTasks)
         _uiStateSubTask.value = CreateSubTaskUiState()
     }
@@ -63,9 +102,14 @@ class CreateTaskViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateDays(days: String) {
+        _uiState.value = _uiState.value.copy(days = days)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateDay() {
         val startDate = DateTimeDetail.FULL_DATE.getDetail()
-        val endDate = getDateAfterDays(days.toString().toLong()-1L)
-        _uiState.value = _uiState.value.copy(startDate = startDate, endDate = endDate, days = days)
+        val endDate = getDateAfterDays(_uiState.value.days.toLong() - 1L)
+        _uiState.value = _uiState.value.copy(startDate = startDate, endDate = endDate)
     }
 
     fun updateMinutes(minutes: String) {
@@ -73,8 +117,16 @@ class CreateTaskViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun saveTask(date: String) {
-        repository.insertTasks(_uiState.value.toTasks(date = date,))
+    suspend fun saveTask() {
+        updateDay()
+        repository.insertTasks(_uiState.value.toTasks())
+        _uiState.value = CreateTaskUiState()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun updateTask(id: Int) {
+        updateDay()
+        repository.updateTasks(_uiState.value.toTasks(id = id))
         _uiState.value = CreateTaskUiState()
     }
 }

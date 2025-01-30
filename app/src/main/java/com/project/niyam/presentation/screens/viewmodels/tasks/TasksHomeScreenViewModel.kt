@@ -118,4 +118,10 @@ class TasksHomeScreenViewModel @Inject constructor(
             strictTaskRepository.deleteStrictTask(tasks)
         }
     }
+
+    fun removeTask(task: Tasks) {
+        viewModelScope.launch {
+            taskRepository.deleteTask(task)
+        }
+    }
 }

@@ -14,4 +14,6 @@ interface TaskRepository {
     suspend fun updateTasks(tasks: Tasks)
 
     fun getEndTime(id:Int):Flow<String>
+
+    suspend fun deleteTask(tasks: Tasks)
 }

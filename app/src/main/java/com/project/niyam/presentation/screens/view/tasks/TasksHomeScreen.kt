@@ -55,7 +55,10 @@ import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
 import com.project.niyam.utils.daysRemaining
 import kotlinx.coroutines.runBlocking
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Date
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -188,10 +191,12 @@ fun RoutinePartUI(
     onCreateStrictTask: (String, String) -> Unit,
     onCreateTask: (String, String) -> Unit
 ) {
+    val task = remember(key1 = date) { viewModel.getAllTask(date) }.collectAsState().value
+
     val routineList = remember(key1 = date) {
         viewModel.getAllStrictTask(date)
     }.collectAsState().value
-    val task = remember(key1 = date) { viewModel.getAllTask(date) }.collectAsState().value
+    Log.d("Testing", "Normal Tasks$task on date : $date")
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,7 +219,9 @@ fun RoutinePartUI(
                     },
                     onEdit = {
                         onCreateStrictTask(date, item.id.toString())
-                    }
+                    },
+                    enable = isToday(date) && isCurrentTimeInRange(item.startTime, item.endTime)
+
                 )
             }
             Divider(
@@ -224,7 +231,7 @@ fun RoutinePartUI(
             )
             task.forEach { item ->
                 val daysRemaining: String = daysRemaining(item.endDate).toString()
-                if (daysRemaining == "0")
+                if (daysRemaining == "1")
                     StrictTaskUI(
                         id = item.id,
                         task = item.taskName,
@@ -235,15 +242,16 @@ fun RoutinePartUI(
                         isStrict = false,
                         onTaskSelected,
                         viewModel,
-                        onDelete = {},
-                        onEdit = {}
+                        onDelete = { viewModel.removeTask(item) },
+                        onEdit = { onCreateTask(date, item.id.toString()) },
+                        enable = isToday(date = date)
                     )
             }
 
             Text("Weekly Tasks", color = colorResource(R.color.PrimaryColorText))
             task.forEach { item ->
                 val daysRemaining: String = daysRemaining(item.endDate).toString()
-                if (daysRemaining != "0")
+                if (daysRemaining != "1")
                     StrictTaskUI(
                         id = item.id,
                         task = item.taskName,
@@ -254,8 +262,9 @@ fun RoutinePartUI(
                         isStrict = false,
                         onTaskSelected,
                         viewModel,
-                        onDelete = {},
-                        onEdit = {}
+                        onDelete = { viewModel.removeTask(item) },
+                        onEdit = { onCreateTask(date, item.id.toString()) },
+                        enable = isToday(date = date)
                     )
             }
         }
@@ -276,7 +285,8 @@ fun StrictTaskUI(
     onTaskSelected: (Int) -> Unit,
     viewModel: TasksHomeScreenViewModel,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    enable: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -295,7 +305,8 @@ fun StrictTaskUI(
             onTaskSelected,
             viewModel,
             onDelete,
-            onEdit
+            onEdit,
+            enable = enable
         )
     }
 }
@@ -313,27 +324,33 @@ fun TaskUI(
     onTaskSelected: (Int) -> Unit,
     viewModel: TasksHomeScreenViewModel,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    enable: Boolean
 ) {
     Card(
         modifier = Modifier
             .clickable {
-                runBlocking {
-                    val taskRunningId2 = viewModel.getTaskRunning().toInt()
-                    Log.d("Testing", "Running Task Id : $taskRunningId2 , selected Item Id : $id")
-                    if (taskRunningId2 == id || taskRunningId2 == 0) {
-                        onTaskSelected(id)
-                        val intent = Intent(context, TaskPreview::class.java)
-                        intent.action = "subTask"
-                        intent.putExtra("id", id.toString())
-                        if (isStrict) intent.putExtra("Strict", "true")
-                        else intent.putExtra("Strict", "false")
-                        context.startActivity(intent)
-                    } else {
-                        Toast.makeText(context, "Task is already running", Toast.LENGTH_SHORT)
-                            .show()
+                if (enable)
+                    runBlocking {
+                        val taskRunningId2 = viewModel.getTaskRunning().toInt()
+                        Log.d(
+                            "Testing",
+                            "Running Task Id : $taskRunningId2 , selected Item Id : $id"
+                        )
+                        if (taskRunningId2 == id || taskRunningId2 == 0) {
+                            if (isStrict)
+                                onTaskSelected(id)
+                            val intent = Intent(context, TaskPreview::class.java)
+                            intent.action = "subTask"
+                            intent.putExtra("id", id.toString())
+                            if (isStrict) intent.putExtra("Strict", "true")
+                            else intent.putExtra("Strict", "false")
+                            context.startActivity(intent)
+                        } else {
+                            Toast.makeText(context, "Task is already running", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
-                }
             }
             .fillMaxWidth(),
         colors = CardColors(
@@ -370,7 +387,6 @@ fun TaskUI(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-
                             }
                         }
                         .padding(4.dp),
@@ -450,4 +466,16 @@ fun ExpandableFABExample(onCreateTask: () -> Unit, onCreateStrictTask: () -> Uni
             }
         }
     }
+}
+
+fun isToday(date: String): Boolean {
+    return DateTimeDetail.FULL_DATE.getDetail() == date
+}
+
+
+fun isCurrentTimeInRange(startTime: String, endTime: String): Boolean {
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val currentTime = sdf.format(Date())
+
+    return currentTime in startTime..endTime
 }

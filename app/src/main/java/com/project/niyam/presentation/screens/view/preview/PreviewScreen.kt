@@ -52,9 +52,6 @@ fun PreviewScreen(
     val currentState by stopWatchService.currentState
     val uiState by viewModel.uiState
 
-    if (currentState == StrictTaskState.COMPLETED) {
-        Text("Task Completed")
-    }
     viewModel.updateID(id, context)
 
     Column(
@@ -65,7 +62,6 @@ fun PreviewScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -143,7 +139,6 @@ fun PreviewScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = {
-//                            CoroutineScope(Dispatchers.IO).launch {
                             viewModel.subTaskDone(page)
                             var check = true
                             uiState.subTasks.forEach {
@@ -157,7 +152,6 @@ fun PreviewScreen(
                                     context = context,
                                     StrictTaskState.COMPLETED.name
                                 )
-//                                }
                             }
                         },
                         enabled = !uiState.subTasks[page].isCompleted,

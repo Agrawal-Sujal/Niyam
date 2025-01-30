@@ -202,7 +202,7 @@ fun CreateStrictTask(
 }
 
 @Composable
-private fun SubTask(name: String, description: String, onDelete: () -> Unit, onEdit: () -> Unit) {
+fun SubTask(name: String, description: String, onDelete: () -> Unit, onEdit: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)

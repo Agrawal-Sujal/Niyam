@@ -12,10 +12,10 @@ import javax.inject.Inject
 
 class PrefUtils @Inject constructor(@ApplicationContext val context: Context) {
 
-     private val Context.dataStore by preferencesDataStore("local")
+    private val Context.dataStore by preferencesDataStore("local")
 
     suspend fun saveString(key: String, value: String) {
-        Log.d("PrefUtils", key + value)
+        Log.d("PrefUtils", "$key $value")
         context.dataStore.edit {
             it[stringPreferencesKey(key)] = value
         }

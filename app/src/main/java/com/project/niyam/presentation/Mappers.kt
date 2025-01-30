@@ -1,6 +1,8 @@
 package com.project.niyam.presentation
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.project.niyam.domain.model.StrictTasks
 import com.project.niyam.domain.model.SubTasks
 import com.project.niyam.domain.model.Tasks
@@ -9,6 +11,8 @@ import com.project.niyam.presentation.screens.viewmodels.preview.StrictPreviewSc
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskUiState
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateSubTaskUiState
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskUiState
+import com.project.niyam.utils.calculateDaysBetween
+import com.project.niyam.utils.daysRemaining
 
 fun StrictTasks.toStrictPreviewScreenUIState(currentIndex: Int): StrictPreviewScreenUIState {
     Log.i("uiState", "Preview mapper called")
@@ -107,9 +111,10 @@ fun SubTasks.toCreateSubTaskUiState(): CreateSubTaskUiState {
     )
 }
 
-fun CreateTaskUiState.toTasks(date: String = ""): Tasks {
+fun CreateTaskUiState.toTasks(id: Int = 0): Tasks {
 
     return Tasks(
+        id = id,
         taskName = this.name,
         taskDescription = this.description,
         startDate = this.startDate,
@@ -140,3 +145,16 @@ fun StrictTasks.toCreateStrictTaskUiState(): CreateStrictTaskUiState {
 //        subTaskDescription = this.subTaskDescription
 //    )
 //}
+@RequiresApi(Build.VERSION_CODES.O)
+fun Tasks.toCreateTaskUiState(): CreateTaskUiState {
+    return CreateTaskUiState(
+        name = this.taskName,
+        description = this.taskDescription,
+        startDate = this.startDate,
+        endDate = this.endDate,
+        subTasks = this.subTasks.map { it.toCreateSubTaskUiState() },
+        minutesRemaining = if (this.secondsRemaining == "") "0" else (this.secondsRemaining.toInt() / 60).toString(),
+        days = daysRemaining(this.endDate).toString(),
+        loaded = true
+    )
+}

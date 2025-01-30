@@ -26,4 +26,8 @@ class TaskRepositoryImpl @Inject constructor(private val tasksDAO: TasksDAO) : T
     override fun getEndTime(id: Int): Flow<String> {
         return tasksDAO.getEndTime(id)
     }
+
+    override suspend fun deleteTask(tasks: Tasks) {
+        return tasksDAO.deleteTask(tasks)
+    }
 }

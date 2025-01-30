@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
-
+import java.util.Date
 enum class DateTimeDetail {
     FULL_DAY_NAME,
     SHORT_DAY_NAME,
@@ -36,7 +36,7 @@ enum class DateTimeDetail {
             FULL_YEAR -> "yyyy"
             SHORT_YEAR -> "yy"
             DATE -> "d"
-            FULL_DATE -> "d MMMM yyyy"
+            FULL_DATE -> "yyyy-MM-DD"
             HOUR_24 -> "HH"
             HOUR_12 -> "hh"
             MINUTE -> "mm"
@@ -65,7 +65,7 @@ enum class DateDetail {
             SHORT_MONTH_NAME -> DateTimeFormatter.ofPattern("MMM", Locale.getDefault())
             FULL_YEAR -> DateTimeFormatter.ofPattern("yyyy", Locale.getDefault())
             DATE -> DateTimeFormatter.ofPattern("d", Locale.getDefault())
-            FULL_DATE -> DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
+            FULL_DATE -> DateTimeFormatter.ofPattern("yyyy-MM-DD", Locale.getDefault())
         }
         return localDate.format(formatter)
     }
@@ -95,7 +95,7 @@ fun convertToLocalTime(hardCodedTime: String): String {
 fun daysRemaining(targetDate: String): Long {
     try {
         // Define the date formatter for "dd-MM-yyyy" format
-        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD")
 
         // Parse the target date
         val target = LocalDate.parse(targetDate, formatter)
@@ -104,7 +104,7 @@ fun daysRemaining(targetDate: String): Long {
         val today = LocalDate.now()
 
         // Calculate the difference in days
-        return ChronoUnit.DAYS.between(today, target)
+        return ChronoUnit.DAYS.between(today, target)+1L
     } catch (e: Exception) {
         println("Invalid date format. Please use 'dd-MM-yyyy'. Error: ${e.message}")
         return -1
@@ -120,7 +120,7 @@ fun getDateAfterDays(days: Long): String {
     val futureDate = today.plusDays(days)
 
     // Format the date in "dd-MM-yyyy" format
-    val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD")
     return futureDate.format(formatter)
 }
 
@@ -140,4 +140,22 @@ fun convertToMinutes(time: String): Int {
 
     // Calculate total minutes
     return hours * 60 + minutes
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun calculateDaysBetween(startDate: String, endDate: String): String {
+    return try {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val start = LocalDate.parse(startDate, formatter)
+        val end = LocalDate.parse(endDate, formatter)
+        ChronoUnit.DAYS.between(start, end).toString()
+    } catch (e: Exception) {
+        "0"
+    }
+}
+
+
+fun getCurrentTime(): String {
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return sdf.format(Date())
 }

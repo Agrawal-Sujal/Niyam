@@ -1,6 +1,5 @@
 package com.project.niyam.presentation.screens.viewmodels.preview
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -8,10 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.niyam.domain.model.SubTasks
 import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.domain.services.ServiceHelper
 import com.project.niyam.presentation.toPreviewScreenUIState
 import com.project.niyam.presentation.toTasks
-import com.project.niyam.utils.Constants.ACTION_SERVICE_START
+import com.project.niyam.utils.Constants
+import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +28,10 @@ data class PreviewScreenUIState(
 )
 
 @HiltViewModel
-class TaskPreviewScreenViewModel @Inject constructor(private val taskRepositoryImpl: TaskRepository) :
+class TaskPreviewScreenViewModel @Inject constructor(
+    private val taskRepositoryImpl: TaskRepository,
+    private val prefUtils: PrefUtils
+) :
     ViewModel() {
 
     private val _uiState = mutableStateOf(PreviewScreenUIState())
@@ -41,6 +43,20 @@ class TaskPreviewScreenViewModel @Inject constructor(private val taskRepositoryI
             this.id = id
             getStrictTask()
         }
+    }
+
+    fun updateComplete() = viewModelScope.launch {
+        prefUtils.saveString(Constants.PREF_UTILS_TASK, "0")
+        _uiState.value = _uiState.value.copy(isCompleted = true)
+        updateStrictTask()
+    }
+
+    fun offPrefUtil() = viewModelScope.launch {
+        prefUtils.saveString(Constants.PREF_UTILS_TASK, "0")
+    }
+
+    fun onPrefUtil(id: Int) = viewModelScope.launch {
+        prefUtils.saveString(Constants.PREF_UTILS_TASK, id.toString())
     }
 
     private fun getStrictTask() {
@@ -58,44 +74,19 @@ class TaskPreviewScreenViewModel @Inject constructor(private val taskRepositoryI
         }
     }
 
-    fun increaseIndex() {
-        val currentIndex = _uiState.value.currentIndex
-        _uiState.value = _uiState.value.copy(currentIndex = currentIndex + 1)
-        Log.i("uiState increase", _uiState.value.toString())
-    }
 
-    fun decreaseIndex() {
-        val currentIndex = _uiState.value.currentIndex
-        _uiState.value = _uiState.value.copy(currentIndex = currentIndex - 1)
-        Log.i("uiState decrease", _uiState.value.toString())
-    }
-
-    fun subTaskDone() = viewModelScope.launch {
-//        val subTask = _uiState.value.subTasks
-//        subTask[_uiState.value.currentIndex].isCompleted = true
-//        Log.i("uiState", _uiState.value.toString())
-//        _uiState.value = _uiState.value.copy(
-//            subTasks = subTask,
-//        )
-//        Log.i("uiState", _uiState.value.toString())
+    fun subTaskDone(index: Int) = viewModelScope.launch {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()
-        val currentIndex = _uiState.value.currentIndex
 
-        // Update the specific subtask
-        val updatedSubTask = currentSubTasks[currentIndex].copy(isCompleted = true)
-        currentSubTasks[currentIndex] = updatedSubTask
-
-        // Update the state with a new list
+        val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
+        currentSubTasks[index] = updatedSubTask
         _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
-
-        // Log the updated UI state for debugging
-//        Log.i("Updated UI State", _uiState.value.toString())
         updateStrictTask()
-//        Log.i("uiState", _uiState.value.toString())
+        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
+        updateStrictTask()
     }
 
     private suspend fun updateStrictTask() {
         taskRepositoryImpl.updateTasks(_uiState.value.toTasks())
-//        Log.i("uiState", _uiState.value.toString())
     }
 }
