@@ -64,7 +64,7 @@ class CreateTaskViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateDays(days: String) {
         val startDate = DateTimeDetail.FULL_DATE.getDetail()
-        val endDate = getDateAfterDays(days.toString().toLong())
+        val endDate = getDateAfterDays(days.toString().toLong()-1L)
         _uiState.value = _uiState.value.copy(startDate = startDate, endDate = endDate, days = days)
     }
 
@@ -74,7 +74,7 @@ class CreateTaskViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun saveTask(date: String) {
-        repository.insertTasks(_uiState.value.toTasks(date = date))
+        repository.insertTasks(_uiState.value.toTasks(date = date,))
         _uiState.value = CreateTaskUiState()
     }
 }

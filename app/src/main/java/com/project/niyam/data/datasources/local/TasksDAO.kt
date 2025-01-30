@@ -21,6 +21,6 @@ interface TasksDAO {
     @Update
     suspend fun updateTask(task: Tasks)
 
-    @Query("SELECT minutesRemaining FROM Tasks WHERE id=:id")
+    @Query("SELECT secondsRemaining FROM Tasks WHERE id=:id")
     fun getEndTime(id:Int):Flow<String>
 }

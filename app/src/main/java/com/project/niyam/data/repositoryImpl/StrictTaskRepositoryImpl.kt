@@ -27,4 +27,8 @@ class StrictTaskRepositoryImpl @Inject constructor(private val strictTasksDAO: S
     override suspend fun updateStrictTasks(strictTasks: StrictTasks) {
         return strictTasksDAO.updateStrictTask(strictTasks)
     }
+
+    override suspend fun deleteStrictTask(strictTask: StrictTasks) {
+        return strictTasksDAO.deleteStrictTask(strictTask)
+    }
 }

@@ -12,7 +12,7 @@ data class Tasks(
     val id: Int = 0,
     val taskName: String = "",
     var taskDescription: String = "",
-    val minutesRemaining: String = "",
+    val secondsRemaining: String = "",
     val startDate: String = "",
     val isCompleted: Boolean = false,
     val subTasks: List<SubTasks> = listOf(),

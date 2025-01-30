@@ -50,7 +50,7 @@ fun Tasks.toPreviewScreenUIState(currentIndex: Int): PreviewScreenUIState {
         isCompleted = this.isCompleted,
         subTasks = this.subTasks,
         currentIndex = currentIndex,
-        minutesRemaining = this.minutesRemaining
+        minutesRemaining = this.secondsRemaining
     )
 }
 
@@ -64,12 +64,13 @@ fun PreviewScreenUIState.toTasks(): Tasks {
         endDate = this.endDate,
         isCompleted = this.isCompleted,
         subTasks = this.subTasks,
-        minutesRemaining = this.minutesRemaining,
+        secondsRemaining = this.minutesRemaining,
     )
 }
 
-fun CreateStrictTaskUiState.toStrictTasks(date: String = ""): StrictTasks {
+fun CreateStrictTaskUiState.toStrictTasks(date: String = "", id: String = "0"): StrictTasks {
     return StrictTasks(
+        id = id.toInt(),
         taskName = this.name,
         taskDescription = this.description,
         startTime = this.startTime,
@@ -114,7 +115,28 @@ fun CreateTaskUiState.toTasks(date: String = ""): Tasks {
         startDate = this.startDate,
         endDate = this.endDate,
         subTasks = this.subTasks.map { it.toSubTasks() },
-        minutesRemaining = this.minutesRemaining
+        secondsRemaining = (this.minutesRemaining.toInt() * 60).toString()
     )
 
 }
+
+fun StrictTasks.toCreateStrictTaskUiState(): CreateStrictTaskUiState {
+    return CreateStrictTaskUiState(
+        name = this.taskName,
+        description = this.taskDescription,
+        startTime = this.startTime,
+        endTime = this.endTime,
+        subTasks = this.subTasks.map { it.toCreateSubTaskUiState() },
+        startH = this.startTime.take(2),
+        startMin = this.startTime.takeLast(2),
+        endH = this.endTime.take(2),
+        endMIn = this.endTime.takeLast(2)
+    )
+}
+
+//fun SubTasks.toCreateSubTaskUiState(): CreateSubTaskUiState {
+//    return CreateSubTaskUiState(
+//        subTaskName = this.subTaskName,
+//        subTaskDescription = this.subTaskDescription
+//    )
+//}

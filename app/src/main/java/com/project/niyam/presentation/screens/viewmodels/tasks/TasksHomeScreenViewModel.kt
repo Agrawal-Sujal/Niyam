@@ -10,12 +10,15 @@ import com.project.niyam.domain.model.StrictTasks
 import com.project.niyam.domain.model.Tasks
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
+import com.project.niyam.utils.Constants
 import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
+import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -30,6 +33,7 @@ data class TasksHomeScreenUIState(
 class TasksHomeScreenViewModel @Inject constructor(
     private val strictTaskRepository: StrictTaskRepository,
     private val taskRepository: TaskRepository,
+    private val prefUtils: PrefUtils
 ) :
     ViewModel() {
 
@@ -47,6 +51,16 @@ class TasksHomeScreenViewModel @Inject constructor(
         )
         println(DateDetail.FULL_DATE.getDetail(startDate))
         println(DateDetail.FULL_DATE.getDetail(endDate))
+    }
+
+    suspend fun getTaskRunning(): String {
+        return prefUtils.getString(Constants.PREF_UTILS_TASK)?.first()?.toString() ?: "0"
+    }
+
+    fun setRunningTask(id: Int) {
+        viewModelScope.launch {
+            prefUtils.saveString(Constants.PREF_UTILS_TASK, id.toString())
+        }
     }
 
     fun changeDate(date: String) {
@@ -97,5 +111,11 @@ class TasksHomeScreenViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList(),
             )
+    }
+
+    fun removeStrictTask(tasks: StrictTasks) {
+        viewModelScope.launch {
+            strictTaskRepository.deleteStrictTask(tasks)
+        }
     }
 }

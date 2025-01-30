@@ -14,13 +14,13 @@ sealed interface HomePageNavigation {
 object TasksHomeScreen
 
 @Serializable
-data class CreateTaskScreen(val date: String)
+data class CreateTaskScreen(val date: String,val id:String)
 
 @Serializable
-data class CreateStrictTaskScreen(val date:String)
+data class CreateStrictTaskScreen(val date: String, val id: String)
 
 @Serializable
-object CreateSubStrictTaskScreen
+data class CreateSubStrictTaskScreen(val idx: String,val id:String)
 
 @Serializable
 object CreateSubTaskScreen

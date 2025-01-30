@@ -1,6 +1,7 @@
 package com.project.niyam.data.datasources.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -24,4 +25,7 @@ interface StrictTasksDAO {
 
     @Update
     suspend fun updateStrictTask(strictTask: StrictTasks)
+
+    @Delete
+    suspend fun deleteStrictTask(strictTask: StrictTasks)
 }

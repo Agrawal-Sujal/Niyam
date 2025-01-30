@@ -1,19 +1,21 @@
 package com.project.niyam.presentation.screens.viewmodels.preview
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.niyam.domain.model.SubTasks
 import com.project.niyam.domain.repository.StrictTaskRepository
-import com.project.niyam.domain.services.ServiceHelper
 import com.project.niyam.presentation.toStrictPreviewScreenUIState
 import com.project.niyam.presentation.toStrictTasks
-import com.project.niyam.utils.Constants.ACTION_SERVICE_START
+import com.project.niyam.utils.Constants
+import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +32,11 @@ data class StrictPreviewScreenUIState(
 )
 
 @HiltViewModel
-class PreviewScreenViewModel @Inject constructor(private val strictTaskRepositoryImpl: StrictTaskRepository) :
+class PreviewScreenViewModel @Inject constructor(
+    private val strictTaskRepositoryImpl: StrictTaskRepository,
+    @ApplicationContext val context: Context,
+    private val prefUtils: PrefUtils
+) :
     ViewModel() {
 
     private val _uiState = mutableStateOf(StrictPreviewScreenUIState())
@@ -38,23 +44,18 @@ class PreviewScreenViewModel @Inject constructor(private val strictTaskRepositor
     var id: Int = 0
     var isStrict: Boolean = false
 
-    fun updateID(id: Int,context: Context) {
-        if(id!=this.id) {
+    fun updateID(id: Int, context: Context) {
+        if (id != this.id) {
             this.id = id
-//            ServiceHelper.run { triggerForegroundService(context = context , action = ACTION_SERVICE_START) }
-
             getStrictTask()
         }
     }
 
-
-//    fun updateIsStrict(strict: Boolean,context:Context,) {
-//        if(this.isStrict!=strict) {
-//            this.isStrict = strict
-//            if(strict){
-//            }
-//        }
-//    }
+    fun updateComplete() = viewModelScope.launch {
+        prefUtils.saveString(Constants.PREF_UTILS_TASK, "0")
+        _uiState.value = _uiState.value.copy(isCompleted = true, endTime = _uiState.value.startTime)
+        updateStrictTask()
+    }
 
     private fun getStrictTask() {
         viewModelScope.launch {
@@ -71,40 +72,17 @@ class PreviewScreenViewModel @Inject constructor(private val strictTaskRepositor
         }
     }
 
-    fun increaseIndex() {
-        val currentIndex = _uiState.value.currentIndex
-        _uiState.value = _uiState.value.copy(currentIndex = currentIndex + 1)
-        Log.i("uiState increase", _uiState.value.toString())
-    }
-
-    fun decreaseIndex() {
-        val currentIndex = _uiState.value.currentIndex
-        _uiState.value = _uiState.value.copy(currentIndex = currentIndex - 1)
-        Log.i("uiState decrease", _uiState.value.toString())
-    }
-
-    fun subTaskDone() = viewModelScope.launch {
-//        val subTask = _uiState.value.subTasks
-//        subTask[_uiState.value.currentIndex].isCompleted = true
-//        Log.i("uiState", _uiState.value.toString())
-//        _uiState.value = _uiState.value.copy(
-//            subTasks = subTask,
-//        )
-//        Log.i("uiState", _uiState.value.toString())
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun subTaskDone(index: Int) = viewModelScope.launch {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()
-        val currentIndex = _uiState.value.currentIndex
 
         // Update the specific subtask
-        val updatedSubTask = currentSubTasks[currentIndex].copy(isCompleted = true)
-        currentSubTasks[currentIndex] = updatedSubTask
+        val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
+        currentSubTasks[index] = updatedSubTask
 
         // Update the state with a new list
         _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
-
-        // Log the updated UI state for debugging
-//        Log.i("Updated UI State", _uiState.value.toString())
         updateStrictTask()
-//        Log.i("uiState", _uiState.value.toString())
     }
 
     private suspend fun updateStrictTask() {

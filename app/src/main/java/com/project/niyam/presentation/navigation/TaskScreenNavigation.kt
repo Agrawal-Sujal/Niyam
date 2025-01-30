@@ -32,42 +32,56 @@ fun TasksScreenNavigation(
         composable<TasksHomeScreen> {
             changeBottomNavigation(1)
             TasksHomeScreen(
-                onCreateStrictTask = { navController.navigate(CreateStrictTaskScreen(date = it)) },
+                onCreateStrictTask = { date, id ->
+                    navController.navigate(CreateStrictTaskScreen(date = date, id = id))
+                },
                 context = context,
-                onCreateTask = { navController.navigate(CreateTaskScreen(date = it)) }
+                onCreateTask = { date, id ->
+                    navController.navigate(CreateTaskScreen(date = date, id = id))
+                }
             )
         }
 
         composable<CreateStrictTaskScreen> {
             changeBottomNavigation(0)
             val date = it.arguments?.getString("date")
+            val id = it.arguments?.getString("id") ?: "-1"
             CreateStrictTask(
                 viewModel,
                 date = date!!,
                 onClick = {
-                    navController.navigate(TasksHomeScreen)
+                    navController.navigateUp()
                 },
-                navigateToCreateSubTaskScreen = { navController.navigate(CreateSubStrictTaskScreen) },
+                navigateToCreateSubTaskScreen = { idx, id ->
+                    navController.navigate(CreateSubStrictTaskScreen(idx = idx, id = id))
+                },
+                id = id
             )
         }
         composable<CreateTaskScreen> {
             changeBottomNavigation(0)
             val date = it.arguments?.getString("date")
+            val id = it.arguments?.getString("id") ?: "-1"
             CreateTask(
                 taskViewModel,
                 date = date!!,
                 onClick = {
-                    navController.navigate(TasksHomeScreen)
+                    navController.navigateUp()
                 },
                 navigateToCreateSubTaskScreen = { navController.navigate(CreateSubTaskScreen) },
             )
         }
 
         composable<CreateSubStrictTaskScreen> {
+            val idx = it.arguments?.getString("idx") ?: "-1"
+            val id = it.arguments?.getString("id") ?: "-1"
             changeBottomNavigation(0)
-            CreateStrictSubTask(viewModel, navigateToCreateTaskScreen = {
-                navController.navigateUp()
-            })
+            CreateStrictSubTask(
+                viewModel, navigateToCreateTaskScreen = {
+                    navController.navigateUp()
+                }, idx = idx.toInt(),
+                id = id.toInt()
+            )
         }
 
         composable<CreateSubTaskScreen> {

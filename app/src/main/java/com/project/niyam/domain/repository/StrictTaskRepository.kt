@@ -14,4 +14,6 @@ interface StrictTaskRepository {
     fun getEndTime(id: Int): Flow<String>
 
     suspend fun updateStrictTasks(strictTasks: StrictTasks)
+
+    suspend fun deleteStrictTask(strictTask: StrictTasks)
 }

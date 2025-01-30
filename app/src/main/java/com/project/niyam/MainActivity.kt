@@ -21,6 +21,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,7 +30,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,14 +43,21 @@ import com.project.niyam.presentation.navigation.TasksScreenNavigation
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskViewModel
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
 import com.project.niyam.ui.theme.NiyamTheme
+import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var prefUtils: PrefUtils
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+//        prefUtils.saveString()
         val navigationList: List<BottomNavigationItem> = listOf(
             BottomNavigationItem(
                 title = "Task",
@@ -76,7 +87,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         if (showBottomNavigation == 1) {
-                            NavigationBar {
+                            NavigationBar(containerColor = colorResource(R.color.PrimaryColor)) {
                                 navigationList.forEachIndexed { index, item ->
                                     NavigationBarItem(
                                         selected = selectedItemIndex == index,
@@ -99,13 +110,27 @@ class MainActivity : ComponentActivity() {
                                                 )
                                             }
                                         },
+                                        colors = NavigationBarItemColors(
+                                            disabledIconColor = colorResource(R.color.white),
+                                            selectedIconColor = colorResource(R.color.PrimaryColorText),
+                                            selectedTextColor = colorResource(R.color.PrimaryColorText),
+                                            selectedIndicatorColor = colorResource(R.color.PrimaryColor),
+                                            unselectedIconColor = colorResource(R.color.white),
+                                            unselectedTextColor = colorResource(R.color.white),
+                                            disabledTextColor = colorResource(R.color.white)
+                                        )
                                     )
                                 }
                             }
                         }
                     },
                 ) { innerPadding ->
-                    Surface(modifier = Modifier.padding(innerPadding)) {
+                    Surface(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                        color = colorResource(R.color.BackGroundColor)
+                    ) {
                         NavHost(
                             navController = navController,
                             startDestination = HomePageNavigation.Tasks,

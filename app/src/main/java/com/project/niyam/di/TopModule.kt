@@ -9,6 +9,7 @@ import com.project.niyam.data.repositoryImpl.StrictTaskRepositoryImpl
 import com.project.niyam.data.repositoryImpl.TaskRepositoryImpl
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
+import com.project.niyam.utils.PrefUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,5 +47,11 @@ class TopModule {
     @Provides
     fun provideTaskRepoImpl(taskRepositoryImpl: TaskRepositoryImpl): TaskRepository {
         return taskRepositoryImpl
+    }
+
+    @Provides
+    @Singleton
+    fun providePrefUtil(@ApplicationContext context: Context): PrefUtils {
+        return PrefUtils(context)
     }
 }

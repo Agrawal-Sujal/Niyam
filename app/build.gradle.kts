@@ -18,7 +18,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -88,4 +87,10 @@ dependencies {
 //    implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
 
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Preferences DataStore
+    implementation ("androidx.datastore:datastore-preferences:1.1.2")
+
+    // Proto DataStore (if using Proto)
+    implementation ("androidx.datastore:datastore:1.1.2")
 }

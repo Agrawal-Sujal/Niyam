@@ -61,17 +61,9 @@ fun TaskPreviewScreen(
     val seconds by stopWatchService.seconds
     val currentState by stopWatchService.currentState
     val uiState by viewModel.uiState
-//    val subTasks = uiState.subTasks
-//    val currentIndex = uiState.currentIndex
-//    if (uiState.isEnabled) {
-//        viewModel.getStrictTask(id)
-//        viewModel.updateEnable()
-//    }
+
     viewModel.updateID(id)
-//    viewModel.updateIsStrict(isStrict, context)
-//    LaunchedEffect(key1 = id) {
-//        viewModel.getStrictTask(id)
-//    }
+
 
     Column(
         modifier = Modifier
@@ -120,90 +112,83 @@ fun TaskPreviewScreen(
             )
         }
 
-        Column(
+        Row(
             modifier = Modifier.weight(weight = 9f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-//            AnimatedContent(targetState = hours, transitionSpec = { addAnimation() }) {
             Text(
                 text = hours,
                 style = TextStyle(
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (hours == "00") Color.White else Blue,
+                    color = Color.Blue,
                 ),
             )
-//            }
-//            AnimatedContent(targetState = minutes, transitionSpec = { addAnimation() }) {
             Text(
                 text = minutes,
                 style = TextStyle(
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (minutes == "00") Color.White else Blue,
+                    color = Color.Blue,
                 ),
             )
-//            }
-//            AnimatedContent(targetState = seconds, transitionSpec = { addAnimation() }) {
             Text(
                 text = seconds,
                 style = TextStyle(
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (seconds == "00") Color.White else Blue,
+                    color = Color.Blue,
                 ),
             )
-//            }
         }
-        Row(modifier = Modifier.weight(weight = 1f)) {
-            Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(0.8f),
-                onClick = {
-                    ServiceHelper.triggerForegroundService(
-                        context = context,
-                        msg = if (currentState == StopwatchState.Started) {
-                            StopwatchState.Stopped.name
+        if (hours != "00" || minutes != "00" || seconds != "00")
+            Row(modifier = Modifier.weight(weight = 1f)) {
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(0.8f),
+                    onClick = {
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            msg = if (currentState == StopwatchState.Started) {
+                                StopwatchState.Stopped.name
+                            } else {
+                                StopwatchState.Started.name
+                            },
+                        )
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (currentState == StopwatchState.Started) Red else Blue,
+                        contentColor = Color.White,
+                    ),
+
+                    ) {
+                    Text(
+                        text = if (currentState == StopwatchState.Started) {
+                            "Pause"
+                        } else if ((currentState == StopwatchState.Stopped)) {
+                            "Resume"
                         } else {
-                            StopwatchState.Started.name
+                            "Start"
                         },
                     )
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (currentState == StopwatchState.Started) Red else Blue,
-                    contentColor = Color.White,
-                ),
-
-                ) {
-                Text(
-                    text = if (currentState == StopwatchState.Started) {
-                        "Pause"
-                    } else if ((currentState == StopwatchState.Stopped)) {
-                        "Resume"
-                    } else {
-                        "Start"
+                }
+                Spacer(modifier = Modifier.width(30.dp))
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(0.8f),
+                    onClick = {
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            msg = StopwatchState.Canceled.name,
+                        )
                     },
-                )
+                    enabled = seconds != "00" && currentState != StopwatchState.Started,
+                    colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Blue),
+                ) {
+                    Text(text = "Done for now")
+                }
             }
-            Spacer(modifier = Modifier.width(30.dp))
-            Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(0.8f),
-                onClick = {
-                    ServiceHelper.triggerForegroundService(
-                        context = context,
-                        msg = StopwatchState.Canceled.name,
-                    )
-                },
-                enabled = seconds != "00" && currentState != StopwatchState.Started,
-                colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Blue),
-            ) {
-                Text(text = "Done for now")
-            }
-        }
     }
 }
 

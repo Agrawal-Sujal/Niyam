@@ -6,12 +6,14 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.startForegroundService
 import com.project.niyam.presentation.screens.view.preview.TaskPreview
 import com.project.niyam.utils.Constants.CANCEL_REQUEST_CODE
 import com.project.niyam.utils.Constants.CLICK_REQUEST_CODE
 import com.project.niyam.utils.Constants.RESUME_REQUEST_CODE
 import com.project.niyam.utils.Constants.STOPWATCH_STATE
 import com.project.niyam.utils.Constants.STOP_REQUEST_CODE
+import com.project.niyam.utils.Constants.STRICT_TASK_STATE
 
 object ServiceHelper {
 
@@ -93,12 +95,20 @@ object ServiceHelper {
         )
     }
 
+    fun triggerStrictTaskService(context:Context,msg:String){
+        Intent(context, StrictTaskService::class.java).apply {
+            putExtra(STRICT_TASK_STATE, msg)
+            action = "subTaskPreview"
+            startForegroundService(context, this)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun triggerForegroundService(context: Context, msg: String) {
         Intent(context, StopWatchService::class.java).apply {
             putExtra(STOPWATCH_STATE, msg)
             action = "subTaskPreview"
-            context.startForegroundService(this)
+            startForegroundService(context, this)
         }
     }
 }

@@ -124,8 +124,20 @@ fun getDateAfterDays(days: Long): String {
     return futureDate.format(formatter)
 }
 
-fun convertMinutesToHHMM(minutes: Int): String {
-    val hours = minutes / 60
-    val remainingMinutes = minutes % 60
-    return String.format("%02d:%02d", hours, remainingMinutes)
+    fun convertSecondsToTime(seconds: Int): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val remainingSeconds = seconds % 60
+
+    return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+}
+
+fun convertToMinutes(time: String): Int {
+    // Split the input into hours and minutes
+    val parts = time.split(":")
+    val hours = parts[0].toInt()
+    val minutes = parts[1].toInt()
+
+    // Calculate total minutes
+    return hours * 60 + minutes
 }

@@ -14,10 +14,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.project.niyam.data.StrictTaskNotification
+import com.project.niyam.domain.model.StrictTasks
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_NAME
 import com.project.niyam.utils.Constants.NOTIFICATION_ID
+import com.project.niyam.utils.Constants.PREF_UTILS_TASK
+import com.project.niyam.utils.Constants.STRICT_TASK_STATE
+import com.project.niyam.utils.PrefUtils
 import com.project.niyam.utils.pad
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +47,9 @@ class StrictTaskService : Service() {
     lateinit var strictTaskRepository: StrictTaskRepository
 
     @Inject
+    lateinit var prefUtils: PrefUtils
+
+    @Inject
     @StrictTaskNotification
     lateinit var notificationBuilder: NotificationCompat.Builder
 
@@ -54,6 +61,7 @@ class StrictTaskService : Service() {
     private lateinit var timer: Timer
     private var duration = Duration.ZERO
     private var id: String? = null
+    var task: StrictTasks = StrictTasks()
 
     var currentState = mutableStateOf(StrictTaskState.IDLE)
 
@@ -64,13 +72,19 @@ class StrictTaskService : Service() {
         Log.d("OnStartCommand", "Hii")
         CoroutineScope(Dispatchers.IO).launch {
             if (intent != null && intent.action == "subTaskPreview") {
-                id = intent.getStringExtra("id") ?: "0"
-                Log.d("OnStartCommand", id.toString())
-                if (currentState.value == StrictTaskState.IDLE || currentState.value == StrictTaskState.COMPLETED) {
-                    fetchEndTime()
-                    Log.d("OnStartCommand3", endTime.toString())
-                    startForegroundService()
-                    currentState.value = StrictTaskState.STARTED
+                if (intent.getStringExtra(STRICT_TASK_STATE) == StrictTaskState.COMPLETED.name) {
+                    duration = Duration.ZERO
+//                    strictTaskRepository.updateStrictTasks(task.copy(isCompleted = true))
+                    stopStrictTask()
+                } else {
+                    id = intent.getStringExtra("id") ?: "0"
+                    Log.d("OnStartCommand", id.toString())
+                    if (currentState.value == StrictTaskState.IDLE || currentState.value == StrictTaskState.COMPLETED) {
+                        fetchEndTime()
+                        Log.d("OnStartCommand3", endTime.toString())
+                        startForegroundService()
+                        currentState.value = StrictTaskState.STARTED
+                    }
                 }
             }
         }
@@ -105,6 +119,10 @@ class StrictTaskService : Service() {
             duration = duration.minus(1.seconds)
 
             if (duration.isNegative()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    prefUtils.saveString(PREF_UTILS_TASK, "0")
+                    strictTaskRepository.updateStrictTasks(task.copy(isCompleted = true))
+                }
                 stopStrictTask()
             } else {
                 updateTimeUnits()
@@ -144,6 +162,7 @@ class StrictTaskService : Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun fetchEndTime() {
         endTime = strictTaskRepository.getEndTime(id!!.toInt()).first()
+        task = strictTaskRepository.getStrictTaskById(id!!.toInt()).first()
     }
 
     private fun createNotificationChannel() {
