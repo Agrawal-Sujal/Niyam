@@ -34,6 +34,7 @@ import com.project.niyam.domain.services.ServiceHelper
 import com.project.niyam.domain.services.StrictTaskService
 import com.project.niyam.domain.services.StrictTaskState
 import com.project.niyam.presentation.screens.viewmodels.preview.PreviewScreenViewModel
+import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,7 +47,6 @@ fun PreviewScreen(
     val hours: String = stopWatchService.hours.value
     val minutes = stopWatchService.minutes.value
     val seconds = stopWatchService.seconds.value
-    val currentState by stopWatchService.currentState
     val uiState by viewModel.uiState
 
     viewModel.updateID(id, context)
@@ -137,19 +137,24 @@ fun PreviewScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = {
-                            viewModel.subTaskDone(page)
-                            var check = true
-                            uiState.subTasks.forEach {
-                                if (!it.isCompleted) {
-                                    check = false
+                            runBlocking {
+                                viewModel.subTaskDone(page)
+                                var check = true
+                                uiState.subTasks.forEach {
+                                    if (!it.isCompleted) {
+                                        check = false
+                                    }
                                 }
-                            }
-                            if (check) {
-                                viewModel.updateComplete()
-                                ServiceHelper.triggerStrictTaskService(
-                                    context = context,
-                                    StrictTaskState.COMPLETED.name,
-                                )
+                                if (check) {
+                                    viewModel.subTaskDone(
+                                        page,
+                                        last = true,
+                                    )
+                                    ServiceHelper.triggerStrictTaskService(
+                                        context = context,
+                                        StrictTaskState.COMPLETED.name,
+                                    )
+                                }
                             }
                         },
                         enabled = !uiState.subTasks[page].isCompleted,

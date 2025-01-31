@@ -26,7 +26,7 @@ object NotificationModule {
     ): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Stopwatch")
-            .setContentText("00:00:00")
+            .setContentText("Task is Running")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setOngoing(true)
 //            .addAction(0, "Stop", ServiceHelper.stopPendingIntent(context))

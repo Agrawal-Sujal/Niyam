@@ -151,7 +151,10 @@ fun TaskPreviewScreen(
                                 }
                             }
                             if (check) {
-                                viewModel.updateComplete()
+                                viewModel.subTaskDone(
+                                    page,
+                                    last = true,
+                                )
                                 ServiceHelper.triggerForegroundService(
                                     context = context,
                                     StopwatchState.Completed.name,

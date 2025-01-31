@@ -8,12 +8,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.niyam.domain.model.GeneralInfo
 import com.project.niyam.domain.model.SubTasks
+import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.presentation.toStrictPreviewScreenUIState
 import com.project.niyam.presentation.toStrictTasks
-import com.project.niyam.utils.Constants
-import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ data class StrictPreviewScreenUIState(
 class PreviewScreenViewModel @Inject constructor(
     private val strictTaskRepositoryImpl: StrictTaskRepository,
     @ApplicationContext val context: Context,
-    private val prefUtils: PrefUtils,
+    private val generalInfoRepository: GeneralInfoRepository,
 ) :
     ViewModel() {
 
@@ -50,8 +50,13 @@ class PreviewScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateComplete() = viewModelScope.launch {
-        prefUtils.saveString(Constants.PREF_UTILS_TASK, "0")
+    private suspend fun updateComplete() {
+        generalInfoRepository.updateGeneralInfo(
+            GeneralInfo(
+                strictTaskRunningId = 0,
+                normalTaskRunningId = 0,
+            ),
+        )
         _uiState.value = _uiState.value.copy(isCompleted = true, endTime = _uiState.value.startTime)
         updateStrictTask()
     }
@@ -72,13 +77,13 @@ class PreviewScreenViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun subTaskDone(index: Int) = viewModelScope.launch {
+    suspend fun subTaskDone(index: Int, last: Boolean = false) {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()
 
         val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
         currentSubTasks[index] = updatedSubTask
-
-        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
+        if (last) updateComplete()
+        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks, isCompleted = last)
         updateStrictTask()
     }
 

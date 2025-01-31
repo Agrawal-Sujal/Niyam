@@ -1,16 +1,25 @@
 package com.project.niyam.domain.services
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import com.project.niyam.data.TaskNotification
+import com.project.niyam.domain.model.GeneralInfo
 import com.project.niyam.domain.model.Tasks
+import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.utils.Constants.PREF_UTILS_TASK
+import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_ID
+import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import com.project.niyam.utils.Constants.NOTIFICATION_ID
 import com.project.niyam.utils.Constants.STOPWATCH_STATE
-import com.project.niyam.utils.PrefUtils
 import com.project.niyam.utils.convertSecondsToTime
 import com.project.niyam.utils.pad
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +42,14 @@ class StopWatchService : Service() {
     lateinit var taskRepository: TaskRepository
 
     @Inject
-    lateinit var prefUtils: PrefUtils
+    lateinit var notificationManager: NotificationManager
+
+    @Inject
+    @TaskNotification
+    lateinit var notificationBuilder: NotificationCompat.Builder
+
+    @Inject
+    lateinit var generalInfoRepository: GeneralInfoRepository
 
     private val binder = StopwatchBinder()
     private lateinit var timer: Timer
@@ -55,6 +71,12 @@ class StopWatchService : Service() {
         return binder
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
+    }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         CoroutineScope(Dispatchers.IO).launch {
@@ -64,12 +86,14 @@ class StopWatchService : Service() {
                         if (currentState.value == StopwatchState.Idle) {
                             id = intent.getStringExtra("id") ?: "0"
                             fetchEndTime()
+                            startForegroundService()
                             duration = calculateDifference()
                             updateTimeUnits()
                         }
                     }
 
                     StopwatchState.Started.name -> {
+                        startForegroundService()
 //                        if (currentState.value == StopwatchState.Idle)
                         startStopwatch { hours, minutes, seconds ->
                         }
@@ -105,6 +129,28 @@ class StopWatchService : Service() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun startForegroundService() {
+        createNotificationChannel()
+        ServiceCompat.startForeground(
+            this,
+            NOTIFICATION_ID,
+            notificationBuilder.build(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST,
+        )
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW,
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun fetchEndTime() {
         task = taskRepository.getTaskById(id.toInt()).first()
@@ -118,7 +164,12 @@ class StopWatchService : Service() {
             duration = duration.minus(10.seconds)
             if (duration.isNegative()) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    prefUtils.saveString(PREF_UTILS_TASK, "0")
+                    generalInfoRepository.updateGeneralInfo(
+                        GeneralInfo(
+                            normalTaskRunningId = id.toInt(),
+                            strictTaskRunningId = 0,
+                        ),
+                    )
                     taskRepository.updateTasks(task.copy(isCompleted = true))
                 }
                 duration = Duration.ZERO
@@ -139,6 +190,9 @@ class StopWatchService : Service() {
         if (this::timer.isInitialized) {
             timer.cancel()
         }
+        notificationManager.cancel(NOTIFICATION_ID)
+//        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
         currentState.value = StopwatchState.Stopped
     }
 

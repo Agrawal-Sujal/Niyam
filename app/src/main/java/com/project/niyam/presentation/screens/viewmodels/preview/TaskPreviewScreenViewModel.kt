@@ -5,12 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.niyam.domain.model.GeneralInfo
 import com.project.niyam.domain.model.SubTasks
+import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.TaskRepository
 import com.project.niyam.presentation.toPreviewScreenUIState
 import com.project.niyam.presentation.toTasks
-import com.project.niyam.utils.Constants
-import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +30,7 @@ data class PreviewScreenUIState(
 @HiltViewModel
 class TaskPreviewScreenViewModel @Inject constructor(
     private val taskRepositoryImpl: TaskRepository,
-    private val prefUtils: PrefUtils,
+    private val generalInfoRepository: GeneralInfoRepository,
 ) :
     ViewModel() {
 
@@ -45,18 +45,31 @@ class TaskPreviewScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateComplete() = viewModelScope.launch {
-        prefUtils.saveString(Constants.PREF_UTILS_TASK, "0")
-        _uiState.value = _uiState.value.copy(isCompleted = true)
-        updateStrictTask()
+    private suspend fun updateComplete() {
+        generalInfoRepository.updateGeneralInfo(
+            GeneralInfo(
+                strictTaskRunningId = 0,
+                normalTaskRunningId = 0,
+            ),
+        )
     }
 
     fun offPrefUtil() = viewModelScope.launch {
-        prefUtils.saveString(Constants.PREF_UTILS_TASK, "0")
+        generalInfoRepository.updateGeneralInfo(
+            GeneralInfo(
+                strictTaskRunningId = 0,
+                normalTaskRunningId = 0,
+            ),
+        )
     }
 
     fun onPrefUtil(id: Int) = viewModelScope.launch {
-        prefUtils.saveString(Constants.PREF_UTILS_TASK, id.toString())
+        generalInfoRepository.updateGeneralInfo(
+            GeneralInfo(
+                strictTaskRunningId = 0,
+                normalTaskRunningId = id,
+            ),
+        )
     }
 
     private fun getStrictTask() {
@@ -74,14 +87,13 @@ class TaskPreviewScreenViewModel @Inject constructor(
         }
     }
 
-    fun subTaskDone(index: Int) = viewModelScope.launch {
+    fun subTaskDone(index: Int, last: Boolean = false) = viewModelScope.launch {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()
 
         val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
         currentSubTasks[index] = updatedSubTask
-        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
-        updateStrictTask()
-        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
+        if (last) updateComplete()
+        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks, isCompleted = last)
         updateStrictTask()
     }
 

@@ -6,14 +6,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.niyam.domain.model.GeneralInfo
 import com.project.niyam.domain.model.StrictTasks
 import com.project.niyam.domain.model.Tasks
+import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.utils.Constants
 import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
-import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +33,7 @@ data class TasksHomeScreenUIState(
 class TasksHomeScreenViewModel @Inject constructor(
     private val strictTaskRepository: StrictTaskRepository,
     private val taskRepository: TaskRepository,
-    private val prefUtils: PrefUtils,
+    private val generalInfoRepository: GeneralInfoRepository,
 ) :
     ViewModel() {
 
@@ -53,14 +53,21 @@ class TasksHomeScreenViewModel @Inject constructor(
         println(DateDetail.FULL_DATE.getDetail(endDate))
     }
 
-    suspend fun getTaskRunning(): String {
-        return prefUtils.getString(Constants.PREF_UTILS_TASK)?.first()?.toString() ?: "0"
+    suspend fun getStrictTaskRunning(): Int {
+        return generalInfoRepository.strictTaskRunningId()
     }
 
-    fun setRunningTask(id: Int) {
-        viewModelScope.launch {
-            prefUtils.saveString(Constants.PREF_UTILS_TASK, id.toString())
-        }
+    suspend fun getNormalTaskRunning(): Int {
+        return generalInfoRepository.normalTaskRunningId()
+    }
+
+    fun setRunningTask(id: Int) = viewModelScope.launch {
+        generalInfoRepository.updateGeneralInfo(
+            GeneralInfo(
+                strictTaskRunningId = id,
+                normalTaskRunningId = 0,
+            ),
+        )
     }
 
     fun changeDate(date: String) {

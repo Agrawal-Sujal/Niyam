@@ -2,14 +2,17 @@ package com.project.niyam.di
 
 import android.content.Context
 import androidx.room.Room
+import com.project.niyam.data.datasources.local.DatabaseCallback
+import com.project.niyam.data.datasources.local.GeneralDAO
 import com.project.niyam.data.datasources.local.StrictTasksDAO
 import com.project.niyam.data.datasources.local.TasksDAO
 import com.project.niyam.data.datasources.local.TasksDataBase
+import com.project.niyam.data.repositoryImpl.GeneralInfoRepositoryImpl
 import com.project.niyam.data.repositoryImpl.StrictTaskRepositoryImpl
 import com.project.niyam.data.repositoryImpl.TaskRepositoryImpl
+import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
-import com.project.niyam.utils.PrefUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +29,7 @@ class TopModule {
     fun provideDataBase(@ApplicationContext context: Context): TasksDataBase {
         return Room.databaseBuilder(context, TasksDataBase::class.java, "alarm_db")
             .fallbackToDestructiveMigration()
+            .addCallback(DatabaseCallback(context))
             .build()
     }
 
@@ -40,6 +44,11 @@ class TopModule {
     }
 
     @Provides
+    fun provideGeneralInfoDAO(tasksDataBase: TasksDataBase): GeneralDAO {
+        return tasksDataBase.getGeneralDAO()
+    }
+
+    @Provides
     fun provideStrictTaskRepoImpl(strictTaskRepositoryImpl: StrictTaskRepositoryImpl): StrictTaskRepository {
         return strictTaskRepositoryImpl
     }
@@ -50,8 +59,7 @@ class TopModule {
     }
 
     @Provides
-    @Singleton
-    fun providePrefUtil(@ApplicationContext context: Context): PrefUtils {
-        return PrefUtils(context)
+    fun provideGeneralInfoRepoImpl(generalInfoRepositoryImpl: GeneralInfoRepositoryImpl): GeneralInfoRepository {
+        return generalInfoRepositoryImpl
     }
 }

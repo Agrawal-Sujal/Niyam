@@ -13,14 +13,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.project.niyam.data.StrictTaskNotification
+import com.project.niyam.domain.model.GeneralInfo
 import com.project.niyam.domain.model.StrictTasks
+import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.project.niyam.utils.Constants.NOTIFICATION_CHANNEL_NAME
 import com.project.niyam.utils.Constants.NOTIFICATION_ID
-import com.project.niyam.utils.Constants.PREF_UTILS_TASK
 import com.project.niyam.utils.Constants.STRICT_TASK_STATE
-import com.project.niyam.utils.PrefUtils
 import com.project.niyam.utils.pad
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +46,7 @@ class StrictTaskService : Service() {
     lateinit var strictTaskRepository: StrictTaskRepository
 
     @Inject
-    lateinit var prefUtils: PrefUtils
+    lateinit var generalInfoRepository: GeneralInfoRepository
 
     @Inject
     @StrictTaskNotification
@@ -65,6 +65,11 @@ class StrictTaskService : Service() {
     var currentState = mutableStateOf(StrictTaskState.IDLE)
 
     override fun onBind(intent: Intent?): Binder = binder
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
+    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -117,7 +122,12 @@ class StrictTaskService : Service() {
 
             if (duration.isNegative()) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    prefUtils.saveString(PREF_UTILS_TASK, "0")
+                    generalInfoRepository.updateGeneralInfo(
+                        GeneralInfo(
+                            normalTaskRunningId = 0,
+                            strictTaskRunningId = id?.toInt() ?: 0,
+                        ),
+                    )
                     strictTaskRepository.updateStrictTasks(task.copy(isCompleted = true))
                 }
                 stopStrictTask()

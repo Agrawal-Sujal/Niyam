@@ -41,22 +41,16 @@ import com.project.niyam.presentation.navigation.TasksScreenNavigation
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskViewModel
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
 import com.project.niyam.ui.theme.NiyamTheme
-import com.project.niyam.utils.PrefUtils
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var prefUtils: PrefUtils
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-//        prefUtils.saveString()
         val navigationList: List<BottomNavigationItem> = listOf(
             BottomNavigationItem(
                 title = "Task",

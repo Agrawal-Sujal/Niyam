@@ -18,21 +18,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.colorResource
 import androidx.core.app.ActivityCompat
 import com.project.niyam.R
-import com.project.niyam.domain.services.StopWatchService
-import com.project.niyam.domain.services.StopwatchState
+import com.project.niyam.domain.services.StrictTaskService
 import com.project.niyam.ui.theme.NiyamTheme
-import com.project.niyam.utils.Constants.STOPWATCH_STATE
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TaskPreview : ComponentActivity() {
+class StrictTaskPreview : ComponentActivity() {
     private var isBound by mutableStateOf(false)
-    private lateinit var stopWatchService: StopWatchService
+    private lateinit var strictTaskService: StrictTaskService
     private lateinit var intent1: Intent
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder = service as StopWatchService.StopwatchBinder
-            stopWatchService = binder.getService()
+            val binder = service as StrictTaskService.StrictTaskBinder
+            strictTaskService = binder.getService()
             isBound = true
         }
 
@@ -43,7 +41,7 @@ class TaskPreview : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        Intent(this, StopWatchService::class.java).also { intent ->
+        Intent(this, StrictTaskService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
     }
@@ -67,14 +65,13 @@ class TaskPreview : ComponentActivity() {
                         val id: String? = intent1.getStringExtra("id")
 
                         if (isBound) {
-                            Intent(this, StopWatchService::class.java).also { intent ->
+                            Intent(this, StrictTaskService::class.java).also { intent ->
                                 intent.action = "subTaskPreview"
                                 intent.putExtra("id", id)
-                                intent.putExtra(STOPWATCH_STATE, StopwatchState.Entered.name)
                                 this.startService(intent)
                             }
-                            TaskPreviewScreen(
-                                stopWatchService = stopWatchService,
+                            PreviewScreen(
+                                stopWatchService = strictTaskService,
                                 id = id.toString().toInt(),
                             )
                         }

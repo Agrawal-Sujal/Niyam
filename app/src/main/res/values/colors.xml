@@ -14,5 +14,6 @@
     <color name="SecondaryColor">#27aa96</color>
     <color name="PrimaryColorHarsh">#785B62</color>
     <color name="NormalText">#CAC2C7</color>
-
+    <color name="GreenBackGround">#192a31</color>
+    <color name="RedBackGround">#b73f35</color>
 </resources>

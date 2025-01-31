@@ -17,5 +17,4 @@ object Constants {
     const val STOP_REQUEST_CODE = 102
     const val RESUME_REQUEST_CODE = 103
 
-    const val PREF_UTILS_TASK = "PREF_UTILS_TASK"
 }
