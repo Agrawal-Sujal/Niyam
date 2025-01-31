@@ -53,12 +53,20 @@ class TasksHomeScreenViewModel @Inject constructor(
         println(DateDetail.FULL_DATE.getDetail(endDate))
     }
 
-    suspend fun getStrictTaskRunning(): Int {
-        return generalInfoRepository.strictTaskRunningId()
+    fun getStrictTaskRunning(): StateFlow<Int> {
+        return generalInfoRepository.strictTaskRunningId().stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = 0,
+        )
     }
 
-    suspend fun getNormalTaskRunning(): Int {
-        return generalInfoRepository.normalTaskRunningId()
+    fun getNormalTaskRunning(): StateFlow<Int> {
+        return generalInfoRepository.normalTaskRunningId().stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = 0,
+        )
     }
 
     fun setRunningTask(id: Int) = viewModelScope.launch {

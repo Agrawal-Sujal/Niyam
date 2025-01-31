@@ -125,7 +125,7 @@ class StrictTaskService : Service() {
                     generalInfoRepository.updateGeneralInfo(
                         GeneralInfo(
                             normalTaskRunningId = 0,
-                            strictTaskRunningId = id?.toInt() ?: 0,
+                            strictTaskRunningId = 0,
                         ),
                     )
                     strictTaskRepository.updateStrictTasks(task.copy(isCompleted = true))

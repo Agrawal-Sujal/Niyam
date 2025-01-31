@@ -1,12 +1,13 @@
 package com.project.niyam.domain.repository
 
 import com.project.niyam.domain.model.GeneralInfo
+import kotlinx.coroutines.flow.Flow
 
 interface GeneralInfoRepository {
 
-    suspend fun strictTaskRunningId(): Int
+    fun strictTaskRunningId(): Flow<Int>
 
-    suspend fun normalTaskRunningId(): Int
+    fun normalTaskRunningId(): Flow<Int>
 
     suspend fun updateGeneralInfo(generalInfo: GeneralInfo)
 }

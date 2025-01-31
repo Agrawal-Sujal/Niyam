@@ -16,5 +16,4 @@ object Constants {
     const val CANCEL_REQUEST_CODE = 101
     const val STOP_REQUEST_CODE = 102
     const val RESUME_REQUEST_CODE = 103
-
 }

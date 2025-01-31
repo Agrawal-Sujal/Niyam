@@ -54,7 +54,6 @@ import com.project.niyam.presentation.screens.viewmodels.tasks.TasksHomeScreenVi
 import com.project.niyam.utils.DateDetail
 import com.project.niyam.utils.DateTimeDetail
 import com.project.niyam.utils.daysRemaining
-import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -198,6 +197,12 @@ fun RoutinePartUI(
         viewModel.getAllStrictTask(date)
     }.collectAsState().value
     Log.d("Testing", "Normal Tasks$task on date : $date")
+    val strictTaskRunningId = remember(key1 = date) {
+        viewModel.getStrictTaskRunning()
+    }.collectAsState().value
+    val normalTaskRunningId = remember(key1 = date) {
+        viewModel.getNormalTaskRunning()
+    }.collectAsState().value
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,7 +217,9 @@ fun RoutinePartUI(
                         -1
                     }
                 } else {
-                    if (isCurrentTimeInRange(item.startTime, item.endTime)) {
+                    if (strictTaskRunningId == item.id) {
+                        2
+                    } else if (isCurrentTimeInRange(item.startTime, item.endTime)) {
                         0
                     } else if (isCurrentTimeGreater(item.endTime)) {
                         -1
@@ -238,6 +245,8 @@ fun RoutinePartUI(
                     },
                     enable = isToday(date) && isCurrentTimeInRange(item.startTime, item.endTime),
                     status = status,
+                    strictTaskRunningId,
+                    normalTaskRunningId,
                 )
             }
             Divider(
@@ -253,7 +262,9 @@ fun RoutinePartUI(
                         -1
                     }
                 } else {
-                    if (isDateGreater(item.startDate) && !isDateGreater(item.endDate)) {
+                    if (normalTaskRunningId == item.id) {
+                        2
+                    } else if (isTodayOrAfter(item.startDate) && isTodayOrBefore(item.endDate)) {
                         0
                     } else {
                         -1
@@ -275,6 +286,8 @@ fun RoutinePartUI(
                         onEdit = { onCreateTask(date, item.id.toString()) },
                         enable = isToday(date = date),
                         status = status,
+                        strictTaskRunningId,
+                        normalTaskRunningId,
                     )
                 }
             }
@@ -288,7 +301,9 @@ fun RoutinePartUI(
                         -1
                     }
                 } else {
-                    if (isDateGreater(item.startDate) && !isDateGreater(item.endDate)) {
+                    if (normalTaskRunningId == item.id) {
+                        2
+                    } else if (isTodayOrAfter(item.startDate) && isTodayOrBefore(item.endDate)) {
                         0
                     } else {
                         -1
@@ -310,6 +325,8 @@ fun RoutinePartUI(
                         onEdit = { onCreateTask(date, item.id.toString()) },
                         enable = isToday(date = date),
                         status = status,
+                        strictTaskRunningId,
+                        normalTaskRunningId,
                     )
                 }
             }
@@ -333,6 +350,8 @@ fun StrictTaskUI(
     onEdit: () -> Unit,
     enable: Boolean,
     status: Int,
+    strictTaskRunning: Int,
+    normalTaskRunning: Int,
 ) {
     Row(
         modifier = Modifier
@@ -354,6 +373,8 @@ fun StrictTaskUI(
             onEdit,
             enable = enable,
             status = status,
+            strictTaskRunning,
+            normalTaskRunning,
         )
     }
 }
@@ -374,39 +395,37 @@ fun TaskUI(
     onEdit: () -> Unit,
     enable: Boolean,
     status: Int,
+    strictTaskRunning: Int,
+    normalTaskRunning: Int,
 ) {
     Card(
         modifier = Modifier
             .clickable {
                 if (enable) {
-                    runBlocking {
-                        val strictTaskRunning = viewModel.getStrictTaskRunning()
-                        val normalTaskRunning = viewModel.getNormalTaskRunning()
-                        Log.d(
-                            "Testing",
-                            "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
+                    Log.d(
+                        "Testing",
+                        "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
+                    )
+                    if (isStrict && normalTaskRunning == 0 && (strictTaskRunning == 0 || strictTaskRunning == id)) {
+                        onTaskSelected(id)
+                        val intent = Intent(context, StrictTaskPreview::class.java)
+                        intent.action = "subTask"
+                        intent.putExtra("id", id.toString())
+                        intent.putExtra("Strict", "true")
+                        context.startActivity(intent)
+                    } else if (!isStrict && strictTaskRunning == 0 && (normalTaskRunning == 0 || normalTaskRunning == id)) {
+                        val intent = Intent(context, TaskPreview::class.java)
+                        intent.action = "subTask"
+                        intent.putExtra("id", id.toString())
+                        intent.putExtra("Strict", "false")
+                        context.startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Task is already running",
+                            Toast.LENGTH_SHORT,
                         )
-                        if (isStrict && normalTaskRunning == 0 && (strictTaskRunning == 0 || strictTaskRunning == id)) {
-                            onTaskSelected(id)
-                            val intent = Intent(context, StrictTaskPreview::class.java)
-                            intent.action = "subTask"
-                            intent.putExtra("id", id.toString())
-                            intent.putExtra("Strict", "true")
-                            context.startActivity(intent)
-                        } else if (!isStrict && strictTaskRunning == 0 && (normalTaskRunning == 0 || normalTaskRunning == id)) {
-                            val intent = Intent(context, TaskPreview::class.java)
-                            intent.action = "subTask"
-                            intent.putExtra("id", id.toString())
-                            intent.putExtra("Strict", "false")
-                            context.startActivity(intent)
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Task is already running",
-                                Toast.LENGTH_SHORT,
-                            )
-                                .show()
-                        }
+                            .show()
                     }
                 }
             }
@@ -434,24 +453,20 @@ fun TaskUI(
                     modifier = Modifier
                         .size(25.dp)
                         .clickable {
-                            runBlocking {
-                                val strictTaskRunning = viewModel.getStrictTaskRunning()
-                                val normalTaskRunning = viewModel.getNormalTaskRunning()
-                                Log.d(
-                                    "Testing",
-                                    "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
-                                )
-                                if (isStrict && (strictTaskRunning == 0 || strictTaskRunning != id)) {
-                                    onDelete()
-                                } else if (!isStrict && (normalTaskRunning == 0 || normalTaskRunning != id)) {
-                                    onDelete()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Finish the Task or stop the task",
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                }
+                            Log.d(
+                                "Testing",
+                                "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
+                            )
+                            if (isStrict && (strictTaskRunning == 0 || strictTaskRunning != id)) {
+                                onDelete()
+                            } else if (!isStrict && (normalTaskRunning == 0 || normalTaskRunning != id)) {
+                                onDelete()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Finish the Task or stop the task",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                             }
                         }
                         .padding(4.dp),
@@ -462,24 +477,20 @@ fun TaskUI(
                     modifier = Modifier
                         .size(25.dp)
                         .clickable {
-                            runBlocking {
-                                val strictTaskRunning = viewModel.getStrictTaskRunning()
-                                val normalTaskRunning = viewModel.getNormalTaskRunning()
-                                Log.d(
-                                    "Testing",
-                                    "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
-                                )
-                                if (isStrict && (strictTaskRunning == 0 || strictTaskRunning != id)) {
-                                    onEdit()
-                                } else if (!isStrict && (normalTaskRunning == 0 || normalTaskRunning != id)) {
-                                    onEdit()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Finish the Task or stop the task",
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                }
+                            Log.d(
+                                "Testing",
+                                "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
+                            )
+                            if (isStrict && (strictTaskRunning == 0 || strictTaskRunning != id)) {
+                                onEdit()
+                            } else if (!isStrict && (normalTaskRunning == 0 || normalTaskRunning != id)) {
+                                onEdit()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Finish the Task or stop the task",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                             }
                         }
                         .padding(4.dp),
@@ -493,6 +504,7 @@ fun TaskUI(
                     if (status == -1) Text("Not Completed")
                     if (status == 0) Text("Pending")
                     if (status == 1) Text("Completed")
+                    if (status == 2) Text("In Progress")
                 }
                 Text(
                     text = task,
@@ -561,10 +573,6 @@ fun isToday(date: String): Boolean {
     return DateTimeDetail.FULL_DATE.getDetail() == date
 }
 
-fun isDateGreater(date: String): Boolean {
-    return DateTimeDetail.FULL_DATE.getDetail() <= date
-}
-
 fun isCurrentTimeInRange(startTime: String, endTime: String): Boolean {
     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     val currentTime = sdf.format(Date())
@@ -584,4 +592,10 @@ fun allSubTaskCompleted(subTask: List<SubTasks>): Boolean {
         if (!it.isCompleted) return false
     }
     return true
+}
+fun isTodayOrAfter(date: String): Boolean {
+    return DateTimeDetail.FULL_DATE.getDetail() >= date
+}
+fun isTodayOrBefore(date: String): Boolean {
+    return DateTimeDetail.FULL_DATE.getDetail() <= date
 }

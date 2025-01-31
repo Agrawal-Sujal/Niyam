@@ -161,12 +161,12 @@ class StopWatchService : Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startStopwatch(onTick: (h: String, m: String, s: String) -> Unit) {
         timer = fixedRateTimer(initialDelay = 1000L, period = 1000L) {
-            duration = duration.minus(10.seconds)
+            duration = duration.minus(1.seconds)
             if (duration.isNegative()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     generalInfoRepository.updateGeneralInfo(
                         GeneralInfo(
-                            normalTaskRunningId = id.toInt(),
+                            normalTaskRunningId = 0,
                             strictTaskRunningId = 0,
                         ),
                     )

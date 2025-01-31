@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.project.niyam.domain.model.GeneralInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GeneralDAO {
@@ -12,10 +13,10 @@ interface GeneralDAO {
     suspend fun updateGeneralInfo(generalInfo: GeneralInfo)
 
     @Query("SELECT strictTaskRunningId FROM generalinfo WHERE id=0")
-    suspend fun getStrictTaskRunningId(): Int
+    fun getStrictTaskRunningId(): Flow<Int>
 
     @Query("SELECT normalTaskRunningId FROM generalinfo WHERE id=0")
-    suspend fun getNormalTaskRunningId(): Int
+    fun getNormalTaskRunningId(): Flow<Int>
 
     @Insert
     suspend fun insertGeneralInfo(generalInfo: GeneralInfo)
