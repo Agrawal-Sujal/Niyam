@@ -99,6 +99,7 @@ fun CreateSubTaskUiState.toSubTasks(): SubTasks {
     return SubTasks(
         subTaskName = this.subTaskName,
         subTaskDescription = this.subTaskDescription,
+        isCompleted = this.isCompleted,
     )
 }
 
@@ -107,6 +108,7 @@ fun SubTasks.toCreateSubTaskUiState(): CreateSubTaskUiState {
     return CreateSubTaskUiState(
         subTaskName = this.subTaskName,
         subTaskDescription = this.subTaskDescription,
+        isCompleted = this.isCompleted,
     )
 }
 

@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+
 enum class DateTimeDetail {
     FULL_DAY_NAME,
     SHORT_DAY_NAME,
@@ -111,15 +112,17 @@ fun daysRemaining(targetDate: String): Long {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun getDateAfterDays(days: Long): String {
-    // Get the current date
-    val today = LocalDate.now()
-
-    // Calculate the date after 'days'
-    val futureDate = today.plusDays(days)
-
-    // Format the date in "dd-MM-yyyy" format
+fun getDateAfterDays(days: Long, startDate: String): String {
+    // Define the date format
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD")
+
+    // Parse the provided startDate
+    val date = LocalDate.parse(startDate, formatter)
+
+    // Calculate the future date
+    val futureDate = date.plusDays(days)
+
+    // Return formatted date
     return futureDate.format(formatter)
 }
 

@@ -67,17 +67,18 @@ class StrictTaskService : Service() {
     override fun onBind(intent: Intent?): Binder = binder
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        startForeground(NOTIFICATION_ID, notificationBuilder.build())
+
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
         Log.d("OnStartCommand", "Hii")
         CoroutineScope(Dispatchers.IO).launch {
             if (intent != null && intent.action == "subTaskPreview") {
                 if (intent.getStringExtra(STRICT_TASK_STATE) == StrictTaskState.COMPLETED.name) {
-                    duration = Duration.ZERO
+//                    duration = Duration.ZERO
 //                    strictTaskRepository.updateStrictTasks(task.copy(isCompleted = true))
                     stopStrictTask()
                 } else {
@@ -121,6 +122,7 @@ class StrictTaskService : Service() {
             duration = duration.minus(1.seconds)
 
             if (duration.isNegative()) {
+                currentState.value = StrictTaskState.COMPLETED
                 CoroutineScope(Dispatchers.IO).launch {
                     generalInfoRepository.updateGeneralInfo(
                         GeneralInfo(
@@ -128,15 +130,16 @@ class StrictTaskService : Service() {
                             strictTaskRunningId = 0,
                         ),
                     )
-                    strictTaskRepository.updateStrictTasks(task.copy(isCompleted = true))
+                    task = strictTaskRepository.getStrictTaskById(id = id!!.toInt()).first()
+                    strictTaskRepository.updateStrictTasks(task.copy(isCompleted = -1))
                 }
                 stopStrictTask()
             } else {
+                currentState.value = StrictTaskState.STARTED
                 updateTimeUnits()
                 onTick(hours.value, minutes.value, seconds.value)
             }
         }
-        currentState.value = StrictTaskState.STARTED
     }
 
     private fun stopStrictTask() {
@@ -147,7 +150,7 @@ class StrictTaskService : Service() {
         notificationManager.cancel(NOTIFICATION_ID)
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        duration = Duration.ZERO
+//        duration = Duration.ZERO
         updateTimeUnits()
     }
 

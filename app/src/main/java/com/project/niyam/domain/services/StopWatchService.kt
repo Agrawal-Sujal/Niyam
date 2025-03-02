@@ -56,7 +56,7 @@ class StopWatchService : Service() {
     private var task: Tasks = Tasks()
     private var endTime: String? = ""
     private lateinit var id: String
-    private var duration: Duration = Duration.ZERO
+    var duration: Duration = Duration.ZERO
 
     var seconds = mutableStateOf("00")
         private set
@@ -66,19 +66,19 @@ class StopWatchService : Service() {
         private set
     var currentState = mutableStateOf(StopwatchState.Idle)
         private set
-
     override fun onBind(intent: Intent?): Binder {
         return binder
     }
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        startForeground(NOTIFICATION_ID, notificationBuilder.build())
+
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
         CoroutineScope(Dispatchers.IO).launch {
             if (intent != null && intent.action == "subTaskPreview") {
                 when (intent.getStringExtra(STOPWATCH_STATE)) {
@@ -110,7 +110,8 @@ class StopWatchService : Service() {
                     }
 
                     StopwatchState.Completed.name -> {
-                        duration = Duration.ZERO
+//                        duration = Duration.ZERO
+                        stopStopwatch()
                     }
                 }
             }
@@ -120,11 +121,10 @@ class StopWatchService : Service() {
 
     private suspend fun updateEndTime() {
         task = taskRepository.getTaskById(id.toInt()).first()
-        val isCompleted: Boolean = duration == Duration.ZERO
+//        val isCompleted: Boolean = duration == Duration.ZERO
         taskRepository.updateTasks(
             task.copy(
                 secondsRemaining = duration.inWholeSeconds.toString(),
-                isCompleted = isCompleted,
             ),
         )
     }
@@ -163,6 +163,7 @@ class StopWatchService : Service() {
         timer = fixedRateTimer(initialDelay = 1000L, period = 1000L) {
             duration = duration.minus(1.seconds)
             if (duration.isNegative()) {
+                currentState.value = StopwatchState.Completed
                 CoroutineScope(Dispatchers.IO).launch {
                     generalInfoRepository.updateGeneralInfo(
                         GeneralInfo(
@@ -170,20 +171,22 @@ class StopWatchService : Service() {
                             strictTaskRunningId = 0,
                         ),
                     )
-                    taskRepository.updateTasks(task.copy(isCompleted = true))
+                    task = taskRepository.getTaskById(id.toInt()).first()
+                    taskRepository.updateTasks(task.copy(isCompleted = -1))
                 }
                 duration = Duration.ZERO
                 stopStopwatch()
 //                cancelStopwatch()
-                ServiceHelper.triggerForegroundService(
-                    this@StopWatchService,
-                    StopwatchState.Canceled.name,
-                )
+//                ServiceHelper.triggerForegroundService(
+//                    this@StopWatchService,
+//                    StopwatchState.Canceled.name,
+//                )
+            } else {
+                currentState.value = StopwatchState.Started
+                updateTimeUnits()
+                onTick(hours.value, minutes.value, seconds.value)
             }
-            updateTimeUnits()
-            onTick(hours.value, minutes.value, seconds.value)
         }
-        currentState.value = StopwatchState.Started
     }
 
     private fun stopStopwatch() {
@@ -193,7 +196,7 @@ class StopWatchService : Service() {
         notificationManager.cancel(NOTIFICATION_ID)
 //        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        currentState.value = StopwatchState.Stopped
+        currentState.value = StopwatchState.Completed
     }
 
     private fun cancelStopwatch() {

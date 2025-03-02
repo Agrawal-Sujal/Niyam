@@ -31,6 +31,8 @@ data class CreateStrictTaskUiState(
 data class CreateSubTaskUiState(
     val subTaskName: String = "",
     val subTaskDescription: String = "",
+    val isCompleted: Boolean = false,
+
 )
 
 @HiltViewModel
@@ -88,6 +90,7 @@ class CreateStrictTaskViewModel @Inject constructor(
         subTasks[idx] = CreateSubTaskUiState(
             subTaskName = _uiStateSubTask.value.subTaskName,
             subTaskDescription = _uiStateSubTask.value.subTaskDescription,
+            isCompleted = _uiStateSubTask.value.isCompleted,
         )
         _uiState.value = _uiState.value.copy(subTasks = subTasks)
         _uiStateSubTask.value = CreateSubTaskUiState()
@@ -139,6 +142,10 @@ class CreateStrictTaskViewModel @Inject constructor(
     suspend fun saveTask(date: String) {
         updateStartAndEndTime()
         repository.insertStrictTasks(_uiState.value.toStrictTasks(date = date))
+        _uiState.value = CreateStrictTaskUiState()
+    }
+
+    fun cancel() {
         _uiState.value = CreateStrictTaskUiState()
     }
 

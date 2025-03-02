@@ -38,6 +38,7 @@ import com.project.niyam.domain.services.ServiceHelper
 import com.project.niyam.domain.services.StopWatchService
 import com.project.niyam.domain.services.StopwatchState
 import com.project.niyam.presentation.screens.viewmodels.preview.TaskPreviewScreenViewModel
+import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -52,6 +53,7 @@ fun TaskPreviewScreen(
     val seconds by stopWatchService.seconds
     val currentState by stopWatchService.currentState
     val uiState by viewModel.uiState
+    val totalSeconds = stopWatchService.duration.inWholeSeconds.toString()
     if (hours == "00" && minutes == "00" && seconds == "00") {
         LaunchedEffect(key1 = id) {
             viewModel.offPrefUtil()
@@ -143,22 +145,25 @@ fun TaskPreviewScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = {
-                            viewModel.subTaskDone(page)
-                            var check = true
-                            uiState.subTasks.forEach {
-                                if (!it.isCompleted) {
-                                    check = false
+                            runBlocking {
+                                viewModel.subTaskDone(page)
+                                var check = true
+                                uiState.subTasks.forEach {
+                                    if (!it.isCompleted) {
+                                        check = false
+                                    }
                                 }
-                            }
-                            if (check) {
-                                viewModel.subTaskDone(
-                                    page,
-                                    last = true,
-                                )
-                                ServiceHelper.triggerForegroundService(
-                                    context = context,
-                                    StopwatchState.Completed.name,
-                                )
+                                if (check) {
+                                    viewModel.subTaskDone(
+                                        page,
+                                        last = true,
+                                        secondsRemaining = totalSeconds,
+                                    )
+                                    ServiceHelper.triggerForegroundService(
+                                        context = context,
+                                        StopwatchState.Completed.name,
+                                    )
+                                }
                             }
                         },
                         enabled = currentState == StopwatchState.Started,
@@ -173,7 +178,7 @@ fun TaskPreviewScreen(
             }
         }
         Spacer(modifier = Modifier.height(40.dp))
-        if (hours != "00" || minutes != "00" || seconds != "00") {
+        if ((hours != "00" || minutes != "00" || seconds != "00") && currentState != StopwatchState.Completed) {
             Row(modifier = Modifier.weight(0.15f)) {
                 Button(
                     enabled = currentState != StopwatchState.Started,

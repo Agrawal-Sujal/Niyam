@@ -14,7 +14,7 @@ data class Tasks(
     var taskDescription: String = "",
     val secondsRemaining: String = "",
     val startDate: String = "",
-    val isCompleted: Boolean = false,
+    val isCompleted: Int = 0,
     val subTasks: List<SubTasks> = listOf(),
     val endDate: String = "",
 )

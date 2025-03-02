@@ -21,7 +21,7 @@ data class PreviewScreenUIState(
     var taskDescription: String = "",
     val startDate: String = "",
     val endDate: String = "",
-    val isCompleted: Boolean = false,
+    val isCompleted: Int = 0,
     val subTasks: List<SubTasks> = listOf(SubTasks(), SubTasks()),
     val minutesRemaining: String = "",
     val currentIndex: Int = 0,
@@ -87,13 +87,21 @@ class TaskPreviewScreenViewModel @Inject constructor(
         }
     }
 
-    fun subTaskDone(index: Int, last: Boolean = false) = viewModelScope.launch {
+    suspend fun subTaskDone(index: Int, last: Boolean = false, secondsRemaining: String = "") {
         val currentSubTasks = _uiState.value.subTasks.toMutableList()
 
         val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
         currentSubTasks[index] = updatedSubTask
-        if (last) updateComplete()
-        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks, isCompleted = last)
+        if (last) {
+            updateComplete()
+            _uiState.value = _uiState.value.copy(
+                subTasks = currentSubTasks,
+                isCompleted = 1,
+                minutesRemaining = secondsRemaining,
+            )
+        } else {
+            _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
+        }
         updateStrictTask()
     }
 

@@ -170,7 +170,26 @@ fun CreateStrictTask(
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Button(
+                    modifier = Modifier
+                        .padding(12.dp),
+                    onClick = {
+                        viewModel.cancel()
+                        onClick()
+                    },
+                    colors = ButtonColors(
+                        containerColor = colorResource(R.color.PrimaryColorText),
+                        contentColor = colorResource(R.color.NormalText),
+                        disabledContainerColor = colorResource(R.color.PrimaryColorText),
+                        disabledContentColor = colorResource(R.color.PrimaryColorText),
+                    ),
+                ) {
+                    Text("Cancel", color = Color.Black, fontSize = 20.sp)
+                }
                 Button(
                     modifier = Modifier
                         .padding(12.dp),

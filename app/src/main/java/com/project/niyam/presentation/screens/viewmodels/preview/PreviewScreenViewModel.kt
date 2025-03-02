@@ -25,7 +25,7 @@ data class StrictPreviewScreenUIState(
     var taskDescription: String = "",
     val startTime: String = "",
     val endTime: String = "",
-    val isCompleted: Boolean = false,
+    val isCompleted: Int = 0,
     val subTasks: List<SubTasks> = listOf(SubTasks(), SubTasks()),
     val date: String = "",
     val currentIndex: Int = 0,
@@ -57,8 +57,6 @@ class PreviewScreenViewModel @Inject constructor(
                 normalTaskRunningId = 0,
             ),
         )
-        _uiState.value = _uiState.value.copy(isCompleted = true, endTime = _uiState.value.startTime)
-        updateStrictTask()
     }
 
     private fun getStrictTask() {
@@ -82,8 +80,12 @@ class PreviewScreenViewModel @Inject constructor(
 
         val updatedSubTask = currentSubTasks[index].copy(isCompleted = true)
         currentSubTasks[index] = updatedSubTask
-        if (last) updateComplete()
-        _uiState.value = _uiState.value.copy(subTasks = currentSubTasks, isCompleted = last)
+        if (last) {
+            updateComplete()
+            _uiState.value = _uiState.value.copy(subTasks = currentSubTasks, isCompleted = 1)
+        } else {
+            _uiState.value = _uiState.value.copy(subTasks = currentSubTasks)
+        }
         updateStrictTask()
     }
 

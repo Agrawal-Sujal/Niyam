@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.project.niyam.domain.repository.TaskRepository
 import com.project.niyam.presentation.toCreateTaskUiState
 import com.project.niyam.presentation.toTasks
-import com.project.niyam.utils.DateTimeDetail
 import com.project.niyam.utils.getDateAfterDays
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -78,6 +77,7 @@ class CreateTaskViewModel @Inject constructor(
         subTasks[idx] = CreateSubTaskUiState(
             subTaskName = _uiStateSubTask.value.subTaskName,
             subTaskDescription = _uiStateSubTask.value.subTaskDescription,
+            isCompleted = _uiStateSubTask.value.isCompleted,
         )
         _uiState.value = _uiState.value.copy(subTasks = subTasks)
         _uiStateSubTask.value = CreateSubTaskUiState()
@@ -101,9 +101,9 @@ class CreateTaskViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun updateDay() {
-        val startDate = DateTimeDetail.FULL_DATE.getDetail()
-        val endDate = getDateAfterDays(_uiState.value.days.toLong() - 1L)
+    private fun updateDay(startDate: String) {
+//        val startDate = DateTimeDetail.FULL_DATE.getDetail()
+        val endDate = getDateAfterDays(_uiState.value.days.toLong() - 1L, startDate = startDate)
         _uiState.value = _uiState.value.copy(startDate = startDate, endDate = endDate)
     }
 
@@ -112,15 +112,19 @@ class CreateTaskViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun saveTask() {
-        updateDay()
+    suspend fun saveTask(startDate: String) {
+        updateDay(startDate)
         repository.insertTasks(_uiState.value.toTasks())
         _uiState.value = CreateTaskUiState()
     }
 
+    fun cancel() {
+        _uiState.value = CreateTaskUiState()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun updateTask(id: Int) {
-        updateDay()
+    suspend fun updateTask(id: Int, startDate: String) {
+        updateDay(startDate)
         repository.updateTasks(_uiState.value.toTasks(id = id))
         _uiState.value = CreateTaskUiState()
     }

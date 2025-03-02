@@ -48,6 +48,7 @@ fun PreviewScreen(
     val minutes = stopWatchService.minutes.value
     val seconds = stopWatchService.seconds.value
     val uiState by viewModel.uiState
+    val currentState = stopWatchService.currentState
 
     viewModel.updateID(id, context)
 
@@ -157,7 +158,7 @@ fun PreviewScreen(
                                 }
                             }
                         },
-                        enabled = !uiState.subTasks[page].isCompleted,
+                        enabled = !uiState.subTasks[page].isCompleted && currentState.value == StrictTaskState.STARTED,
                         modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     ) {
                         Text(

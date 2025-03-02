@@ -14,7 +14,7 @@ data class StrictTasks(
     var taskDescription: String = "",
     val startTime: String = "",
     val endTime: String = "",
-    val isCompleted: Boolean = false,
+    val isCompleted: Int = 0,
     val subTasks: List<SubTasks> = listOf(),
     val date: String = "",
 )

@@ -92,11 +92,13 @@ fun TasksHomeScreen(
                 onCreateTask,
             )
         }
-        ExpandableFABExample(onCreateTask = {
-            onCreateTask(uiState.date, "-1")
-        }, onCreateStrictTask = {
-            onCreateStrictTask(uiState.date, "-1")
-        })
+        if (DateTimeDetail.FULL_DATE.getDetail() <= uiState.date) {
+            ExpandableFABExample(onCreateTask = {
+                onCreateTask(uiState.date, "-1")
+            }, onCreateStrictTask = {
+                onCreateStrictTask(uiState.date, "-1")
+            })
+        }
     }
 }
 
@@ -210,22 +212,29 @@ fun RoutinePartUI(
     ) {
         item {
             routineList.forEach { item ->
-                val status: Int = if (item.isCompleted) {
-                    if (allSubTaskCompleted(item.subTasks)) {
-                        1
-                    } else {
-                        -1
-                    }
+//                val status: Int = if (item.isCompleted == 0) {
+//                    if (allSubTaskCompleted(item.subTasks)) {
+//                        1
+//                    } else {
+//                        -1
+//                    }
+//                } else {
+//                    if (strictTaskRunningId == item.id) {
+//                        2
+//                    } else if (isCurrentTimeInRange(item.startTime, item.endTime)) {
+//                        0
+//                    } else if (isCurrentTimeGreater(item.endTime)) {
+//                        -1
+//                    } else {
+//                        0
+//                    }
+//                }
+                val status: Int = if (strictTaskRunningId == item.id) {
+                    2
+                } else if (isCurrentTimeGreater(item.endTime)) {
+                    -1
                 } else {
-                    if (strictTaskRunningId == item.id) {
-                        2
-                    } else if (isCurrentTimeInRange(item.startTime, item.endTime)) {
-                        0
-                    } else if (isCurrentTimeGreater(item.endTime)) {
-                        -1
-                    } else {
-                        0
-                    }
+                    item.isCompleted
                 }
                 StrictTaskUI(
                     id = item.id,
@@ -243,7 +252,10 @@ fun RoutinePartUI(
                     onEdit = {
                         onCreateStrictTask(date, item.id.toString())
                     },
-                    enable = isToday(date) && isCurrentTimeInRange(item.startTime, item.endTime),
+                    enable = isToday(date) && isCurrentTimeInRange(
+                        item.startTime,
+                        item.endTime,
+                    ),
                     status = status,
                     strictTaskRunningId,
                     normalTaskRunningId,
@@ -255,20 +267,25 @@ fun RoutinePartUI(
                     .height(2.dp),
             )
             task.forEach { item ->
-                val status: Int = if (item.isCompleted) {
-                    if (allSubTaskCompleted(item.subTasks)) {
-                        1
-                    } else {
-                        -1
-                    }
+//                val status: Int = if (item.isCompleted) {
+//                    if (allSubTaskCompleted(item.subTasks)) {
+//                        1
+//                    } else {
+//                        -1
+//                    }
+//                } else {
+//                    if (normalTaskRunningId == item.id) {
+//                        2
+//                    } else if (isTodayOrAfter(item.startDate) && isTodayOrBefore(item.endDate)) {
+//                        0
+//                    } else {
+//                        -1
+//                    }
+//                }
+                val status: Int = if (normalTaskRunningId == item.id) {
+                    2
                 } else {
-                    if (normalTaskRunningId == item.id) {
-                        2
-                    } else if (isTodayOrAfter(item.startDate) && isTodayOrBefore(item.endDate)) {
-                        0
-                    } else {
-                        -1
-                    }
+                    item.isCompleted
                 }
                 val daysRemaining: String = daysRemaining(item.endDate).toString()
                 if (daysRemaining == "1") {
@@ -294,20 +311,25 @@ fun RoutinePartUI(
 
             Text("Weekly Tasks", color = colorResource(R.color.PrimaryColorText))
             task.forEach { item ->
-                val status: Int = if (item.isCompleted) {
-                    if (allSubTaskCompleted(item.subTasks)) {
-                        1
-                    } else {
-                        -1
-                    }
+//                val status: Int = if (item.isCompleted) {
+//                    if (allSubTaskCompleted(item.subTasks)) {
+//                        1
+//                    } else {
+//                        -1
+//                    }
+//                } else {
+//                    if (normalTaskRunningId == item.id) {
+//                        2
+//                    } else if (isTodayOrAfter(item.startDate) && isTodayOrBefore(item.endDate)) {
+//                        0
+//                    } else {
+//                        -1
+//                    }
+//                }
+                val status: Int = if (normalTaskRunningId == item.id) {
+                    2
                 } else {
-                    if (normalTaskRunningId == item.id) {
-                        2
-                    } else if (isTodayOrAfter(item.startDate) && isTodayOrBefore(item.endDate)) {
-                        0
-                    } else {
-                        -1
-                    }
+                    item.isCompleted
                 }
                 val daysRemaining: String = daysRemaining(item.endDate).toString()
                 if (daysRemaining != "1") {
@@ -401,7 +423,7 @@ fun TaskUI(
     Card(
         modifier = Modifier
             .clickable {
-                if (enable) {
+                if (enable && (status == 0 || status == 2)) {
                     Log.d(
                         "Testing",
                         "Strict Task Running Id : $strictTaskRunning , Normal Task Running Id: $normalTaskRunning , selected Item Id : $id",
@@ -593,9 +615,11 @@ fun allSubTaskCompleted(subTask: List<SubTasks>): Boolean {
     }
     return true
 }
+
 fun isTodayOrAfter(date: String): Boolean {
     return DateTimeDetail.FULL_DATE.getDetail() >= date
 }
+
 fun isTodayOrBefore(date: String): Boolean {
     return DateTimeDetail.FULL_DATE.getDetail() <= date
 }
