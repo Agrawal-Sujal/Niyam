@@ -31,4 +31,8 @@ class StrictTaskRepositoryImpl @Inject constructor(private val strictTasksDAO: S
     override suspend fun deleteStrictTask(strictTask: StrictTasks) {
         return strictTasksDAO.deleteStrictTask(strictTask)
     }
+
+    override fun getStrictTaskFromStarting(): Flow<List<StrictTasks>> {
+        return strictTasksDAO.getStrictTaskFromStarting()
+    }
 }

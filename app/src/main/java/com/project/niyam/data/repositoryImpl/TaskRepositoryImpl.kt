@@ -30,4 +30,10 @@ class TaskRepositoryImpl @Inject constructor(private val tasksDAO: TasksDAO) : T
     override suspend fun deleteTask(tasks: Tasks) {
         return tasksDAO.deleteTask(tasks)
     }
+
+    override fun getTasksFromStarting(): Flow<List<Tasks>> {
+        return tasksDAO.getTasksFromStarting()
+    }
+
+
 }

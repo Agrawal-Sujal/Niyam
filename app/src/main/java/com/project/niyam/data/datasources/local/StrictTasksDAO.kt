@@ -28,4 +28,7 @@ interface StrictTasksDAO {
 
     @Delete
     suspend fun deleteStrictTask(strictTask: StrictTasks)
+
+    @Query("SELECT * FROM StrictTasks")
+     fun getStrictTaskFromStarting():Flow<List<StrictTasks>>
 }

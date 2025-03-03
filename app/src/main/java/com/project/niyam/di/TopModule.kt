@@ -10,6 +10,8 @@ import com.project.niyam.data.datasources.local.TasksDataBase
 import com.project.niyam.data.repositoryImpl.GeneralInfoRepositoryImpl
 import com.project.niyam.data.repositoryImpl.StrictTaskRepositoryImpl
 import com.project.niyam.data.repositoryImpl.TaskRepositoryImpl
+import com.project.niyam.domain.export.Export
+import com.project.niyam.domain.import.Import2
 import com.project.niyam.domain.repository.GeneralInfoRepository
 import com.project.niyam.domain.repository.StrictTaskRepository
 import com.project.niyam.domain.repository.TaskRepository
@@ -61,5 +63,26 @@ class TopModule {
     @Provides
     fun provideGeneralInfoRepoImpl(generalInfoRepositoryImpl: GeneralInfoRepositoryImpl): GeneralInfoRepository {
         return generalInfoRepositoryImpl
+    }
+
+    @Provides
+    @Singleton
+    fun provideExportClass(
+        taskRepositoryImpl: TaskRepositoryImpl,
+        strictTaskRepositoryImpl: StrictTaskRepositoryImpl,
+        @ApplicationContext context: Context
+    ): Export {
+        return Export(strictTaskRepositoryImpl, taskRepositoryImpl, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImportClass(
+        taskRepositoryImpl: TaskRepositoryImpl,
+        strictTaskRepositoryImpl: StrictTaskRepositoryImpl,
+        @ApplicationContext context: Context,
+        tasksDAO: TasksDAO
+    ): Import2 {
+        return Import2(strictTaskRepositoryImpl, taskRepositoryImpl, context, tasksDAO)
     }
 }

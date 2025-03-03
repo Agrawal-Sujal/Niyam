@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.project.niyam.presentation.navigation.HomePageNavigation
 import com.project.niyam.presentation.navigation.TasksScreenNavigation
+import com.project.niyam.presentation.screens.view.setting.Setting
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateStrictTaskViewModel
 import com.project.niyam.presentation.screens.viewmodels.tasks.CreateTaskViewModel
 import com.project.niyam.ui.theme.NiyamTheme
@@ -139,6 +140,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable<HomePageNavigation.Setting> {
+                                Setting()
                             }
                         }
                     }

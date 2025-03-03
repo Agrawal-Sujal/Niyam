@@ -16,4 +16,6 @@ interface StrictTaskRepository {
     suspend fun updateStrictTasks(strictTasks: StrictTasks)
 
     suspend fun deleteStrictTask(strictTask: StrictTasks)
+
+    fun getStrictTaskFromStarting():Flow<List<StrictTasks>>
 }

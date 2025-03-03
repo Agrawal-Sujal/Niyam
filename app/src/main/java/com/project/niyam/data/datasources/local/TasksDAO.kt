@@ -27,4 +27,7 @@ interface TasksDAO {
 
     @Delete
     suspend fun deleteTask(task: Tasks)
+
+    @Query("SELECT * FROM Tasks")
+    fun getTasksFromStarting(): Flow<List<Tasks>>
 }
