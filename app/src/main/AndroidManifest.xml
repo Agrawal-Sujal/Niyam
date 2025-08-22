@@ -17,15 +17,11 @@
         android:theme="@style/Theme.Niyam"
         tools:targetApi="31">
         <service
-            android:name=".domain.services.StopWatchService"
-            android:foregroundServiceType="shortService"
+            android:name=".services.local.CountdownService"
+            android:foregroundServiceType="dataSync"
             android:enabled="true"
-            android:exported="false" />
-        <service
-            android:name=".domain.services.StrictTaskService"
-            android:foregroundServiceType="shortService"
-            android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            tools:ignore="ForegroundServicePermission" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,11 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.screens.view.preview.TaskPreview" >
-        </activity>
-        <activity android:name=".presentation.screens.view.preview.StrictTaskPreview">
 
-        </activity>
     </application>
 
 </manifest>

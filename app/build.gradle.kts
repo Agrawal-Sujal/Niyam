@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.documentfile)
+    implementation(libs.androidx.ui.text.google.fonts)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -87,11 +88,14 @@ dependencies {
     // Extra
 //    implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
 
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.13.1")
 
     // Preferences DataStore
-    implementation("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
 
     // Proto DataStore (if using Proto)
-    implementation("androidx.datastore:datastore:1.1.2")
+    implementation("androidx.datastore:datastore:1.1.7")
+
+    implementation("androidx.compose.material:material-icons-extended: 1.6.6")
+
 }
