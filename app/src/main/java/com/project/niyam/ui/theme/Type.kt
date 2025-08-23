@@ -4,19 +4,15 @@ import android.graphics.fonts.Font
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import com.project.niyam.R
 
 val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
+    certificates = R.array.com_google_android_gms_fonts_certs,
 )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -24,7 +20,7 @@ val bodyFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Poppins"),
         fontProvider = provider,
-    )
+    ),
 )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -32,7 +28,7 @@ val displayFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Poppins"),
         fontProvider = provider,
-    )
+    ),
 )
 
 // Default Material 3 typography values
@@ -56,4 +52,3 @@ val AppTypography = Typography(
     labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
     labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
 )
-

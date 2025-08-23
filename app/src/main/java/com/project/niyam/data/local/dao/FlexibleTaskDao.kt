@@ -1,7 +1,11 @@
 package com.project.niyam.data.local.dao
 
-
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.project.niyam.data.local.entity.FlexibleTaskEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -14,6 +18,7 @@ interface FlexibleTaskDao {
 
     @Query("SELECT * FROM flexible_task WHERE id = :id")
     fun observeById(id: Long): Flow<FlexibleTaskEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(task: FlexibleTaskEntity): Long
 

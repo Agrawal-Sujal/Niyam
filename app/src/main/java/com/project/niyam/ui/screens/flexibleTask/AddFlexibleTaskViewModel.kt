@@ -1,6 +1,5 @@
 package com.project.niyam.ui.screens.flexibleTask
 
-
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -24,7 +23,7 @@ import javax.inject.Inject
 class AddFlexibleTaskViewModel @Inject constructor(
     private val flexibleTaskRepository: FlexibleTaskRepository,
     private val subTaskRepository: SubTaskRepository,
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FlexibleUiState())
@@ -61,10 +60,10 @@ class AddFlexibleTaskViewModel @Inject constructor(
                 it.copy(
                     subTasks = it.subTasks + SubTaskUi(
                         current.tempSubTaskTitle,
-                        current.tempSubTaskDescription
+                        current.tempSubTaskDescription,
                     ),
                     tempSubTaskTitle = "",
-                    tempSubTaskDescription = ""
+                    tempSubTaskDescription = "",
                 )
             }
         }
@@ -75,27 +74,26 @@ class AddFlexibleTaskViewModel @Inject constructor(
         val state = _uiState.value
         if (state.windowStartTime == null || state.windowEndTime == null ||
             state.windowStartDate == null || state.windowEndDate == null
-        ) return
+        ) {
+            return
+        }
 
         viewModelScope.launch {
-
             // 1. Insert main flexible task
             val taskId = flexibleTaskRepository.insertTask(
-                _uiState.value.toEntity()
+                _uiState.value.toEntity(),
             )
 
             // 2. Insert all subtasks referencing this taskId
             state.subTasks.forEach { sub ->
                 subTaskRepository.insertSubTask(
-                    sub.toEntity(taskId.toInt(), true)
+                    sub.toEntity(taskId.toInt(), true),
                 )
             }
 
             alarmRepository.save(
-                _uiState.value.toAlarmEntity(taskId.toInt())
+                _uiState.value.toAlarmEntity(taskId.toInt()),
             )
-
-
 
             onDone()
         }

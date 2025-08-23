@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TimeBoundTaskRepositoryImpl @Inject constructor(
-    private val dao: TimeBoundTaskDao
+    private val dao: TimeBoundTaskDao,
 ) : TimeBoundTaskRepository {
 
     override fun getAllTask(date: LocalDate): Flow<List<TimeBoundTaskEntity>> =

@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.niyam.data.local.entity.TimeBoundTaskEntity
 import com.project.niyam.domain.repository.AlarmRepository
 import com.project.niyam.domain.repository.SubTaskRepository
 import com.project.niyam.domain.repository.TimeBoundTaskRepository
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -23,7 +21,7 @@ import javax.inject.Inject
 class AddTimeBoundedTaskViewModel @Inject constructor(
     private val timeBoundTaskRepository: TimeBoundTaskRepository,
     private val subTaskRepository: SubTaskRepository,
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
@@ -53,10 +51,10 @@ class AddTimeBoundedTaskViewModel @Inject constructor(
                 it.copy(
                     subTasks = it.subTasks + SubTaskUi(
                         current.tempSubTaskTitle,
-                        current.tempSubTaskDescription
+                        current.tempSubTaskDescription,
                     ),
                     tempSubTaskTitle = "",
-                    tempSubTaskDescription = ""
+                    tempSubTaskDescription = "",
                 )
             }
         }
@@ -67,17 +65,15 @@ class AddTimeBoundedTaskViewModel @Inject constructor(
         val state = _uiState.value
         if (state.startTime == null || state.endTime == null) return
         viewModelScope.launch {
-
-
             // 1. Insert main task
             val taskId = timeBoundTaskRepository.insertTask(
-                state.toEntity()
+                state.toEntity(),
             )
 
             // 2. Insert all subtasks referencing this taskId
             state.subTasks.forEach { sub ->
                 subTaskRepository.insertSubTask(
-                    sub.toEntity(taskId.toInt(), false)
+                    sub.toEntity(taskId.toInt(), false),
                 )
             }
 

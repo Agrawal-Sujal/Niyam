@@ -1,10 +1,12 @@
 package com.project.niyam.di
 
 import com.project.niyam.data.repository.AlarmRepositoryImpl
+import com.project.niyam.data.repository.AuthRepositoryImpl
 import com.project.niyam.data.repository.FlexibleTaskRepositoryImpl
 import com.project.niyam.data.repository.SubTaskRepositoryImpl
 import com.project.niyam.data.repository.TimeBoundTaskRepositoryImpl
 import com.project.niyam.domain.repository.AlarmRepository
+import com.project.niyam.domain.repository.AuthRepository
 import com.project.niyam.domain.repository.FlexibleTaskRepository
 import com.project.niyam.domain.repository.SubTaskRepository
 import com.project.niyam.domain.repository.TimeBoundTaskRepository
@@ -21,19 +23,23 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTimeBoundTaskRepository(
-        impl: TimeBoundTaskRepositoryImpl
+        impl: TimeBoundTaskRepositoryImpl,
     ): TimeBoundTaskRepository
 
     @Binds
     @Singleton
     abstract fun bindFlexibleTaskRepository(
-        impl: FlexibleTaskRepositoryImpl
+        impl: FlexibleTaskRepositoryImpl,
     ): FlexibleTaskRepository
 
     @Binds
     @Singleton
-    abstract fun bindSubTaskRepository(impl : SubTaskRepositoryImpl) : SubTaskRepository
+    abstract fun bindSubTaskRepository(impl: SubTaskRepositoryImpl): SubTaskRepository
 
     @Binds @Singleton
     abstract fun bindAlarmRepo(impl: AlarmRepositoryImpl): AlarmRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 }

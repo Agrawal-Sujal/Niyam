@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AlarmDao {
     @Query("SELECT * FROM alarms WHERE taskId = :id AND isFlexible=:isFlexible")
-    fun observeById(id: Long,isFlexible: Boolean): Flow<AlarmEntity?>
+    fun observeById(id: Long, isFlexible: Boolean): Flow<AlarmEntity?>
 
     @Query("SELECT * FROM alarms WHERE id = :id")
     suspend fun getByIdOnce(id: Long): AlarmEntity?

@@ -1,6 +1,5 @@
 package com.project.niyam.ui.screens.flexibleTask
 
-
 import com.project.niyam.ui.screens.addTimeBoundTask.SubTaskUi
 import java.time.LocalDate
 import java.time.LocalTime
@@ -17,5 +16,5 @@ data class FlexibleUiState(
     val showCancelDialog: Boolean = false,
     val showSubTaskSheet: Boolean = false,
     val tempSubTaskTitle: String = "",
-    val tempSubTaskDescription: String = ""
+    val tempSubTaskDescription: String = "",
 )

@@ -8,11 +8,11 @@ import java.time.LocalTime
 
 @Entity(tableName = "alarms")
 data class AlarmEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long=0,
-    val taskId : Int,
-    val isFlexible : Boolean,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val taskId: Int,
+    val isFlexible: Boolean,
     val secondsRemaining: Int,
     val state: TimerState = TimerState.IDLE,
-    val endDate : LocalDate,
-    val endTime : LocalTime
+    val endDate: LocalDate,
+    val endTime: LocalTime,
 )

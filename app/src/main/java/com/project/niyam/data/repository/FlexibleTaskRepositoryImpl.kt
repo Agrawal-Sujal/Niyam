@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class FlexibleTaskRepositoryImpl @Inject constructor(
-    private val dao: FlexibleTaskDao
+    private val dao: FlexibleTaskDao,
 ) : FlexibleTaskRepository {
 
     override fun getAllTask(date: LocalDate): Flow<List<FlexibleTaskEntity>> =
@@ -19,7 +19,7 @@ class FlexibleTaskRepositoryImpl @Inject constructor(
     override suspend fun insertTask(task: FlexibleTaskEntity): Long =
         dao.insertTask(task)
 
-    override suspend fun deleteTask(id: Int){
+    override suspend fun deleteTask(id: Int) {
         val task = dao.getTask(id)
         task?.let { dao.deleteTask(it) }
     }

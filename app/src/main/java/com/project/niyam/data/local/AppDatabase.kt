@@ -18,10 +18,10 @@ import com.project.niyam.data.local.util.Converters
         TimeBoundTaskEntity::class,
         FlexibleTaskEntity::class,
         SubTaskEntity::class,
-        AlarmEntity::class
+        AlarmEntity::class,
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

@@ -9,13 +9,12 @@ import com.project.niyam.R
 import com.project.niyam.data.local.entity.AlarmEntity
 import com.project.niyam.services.local.CountdownService
 
-object AlarmNotif {
-
+object NotificationHelper {
 
     fun build(
         ctx: Context,
         alarm: AlarmEntity,
-        toService: (String) -> PendingIntent
+        toService: (String) -> PendingIntent,
     ): Notification {
         val (title, text) = when (alarm.state) {
             TimerState.RUNNING -> "Running" to format(alarm.secondsRemaining)
@@ -35,7 +34,7 @@ object AlarmNotif {
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
         // State-aware actions
-        if (isFlexible)
+        if (isFlexible) {
             when (alarm.state) {
                 TimerState.IDLE -> {
                     builder.addAction(0, "Start", toService(CountdownService.ACTION_START))
@@ -56,6 +55,7 @@ object AlarmNotif {
                     // No actions needed
                 }
             }
+        }
 
         return builder.build()
     }
@@ -65,7 +65,10 @@ object AlarmNotif {
         val h = totalSec / 3600
         val m = (totalSec % 3600) / 60
         val s = totalSec % 60
-        return if (h > 0) String.format("%d:%02d:%02d", h, m, s)
-        else String.format("%d:%02d", m, s)
+        return if (h > 0) {
+            String.format("%d:%02d:%02d", h, m, s)
+        } else {
+            String.format("%d:%02d", m, s)
+        }
     }
 }

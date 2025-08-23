@@ -37,7 +37,7 @@ fun UiState.toEntity(): TimeBoundTaskEntity {
         endTime = endTime!!,
         taskName = name,
         taskDescription = description,
-        date = date
+        date = date,
     )
 }
 
@@ -47,7 +47,7 @@ fun FlexibleUiState.toAlarmEntity(id: Int): AlarmEntity {
         isFlexible = true,
         secondsRemaining = hoursAlloted * 60,
         endDate = windowEndDate!!,
-        endTime = windowEndTime!!
+        endTime = windowEndTime!!,
     )
 }
 
@@ -58,17 +58,16 @@ fun UiState.toAlarmEntity(id: Int): AlarmEntity {
         isFlexible = false,
         secondsRemaining = 60,
         endTime = endTime!!,
-        endDate = LocalDate.now()
+        endDate = LocalDate.now(),
     )
 }
 
-
 fun SubTaskUi.toEntity(taskId: Int, isFlexible: Boolean): SubTaskEntity {
     return SubTaskEntity(
-        flexibleTaskId = if(isFlexible) taskId else null,
-        timeBoundTaskId = if(!isFlexible) taskId else null,
+        flexibleTaskId = if (isFlexible) taskId else null,
+        timeBoundTaskId = if (!isFlexible) taskId else null,
         subTaskName = title,
-        subTaskDescription = description
+        subTaskDescription = description,
     )
 }
 
@@ -80,7 +79,7 @@ fun TimeBoundTaskEntity.toUI(): TimeBoundTaskUI =
         endTime = endTime,
         taskName = taskName,
         taskDescription = taskDescription,
-        completed = completed
+        completed = completed,
     )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -100,10 +99,9 @@ fun FlexibleTaskEntity.toUI(day: LocalDate): FlexibleTaskUI {
         hoursAlloted = hoursAlloted,
         taskName = taskName,
         taskDescription = taskDescription,
-        completed = completed
+        completed = completed,
     )
 }
-
 
 fun AlarmEntity.toUiState(subTasks: List<SubTaskEntity>): TaskUiState {
     return TaskUiState(
@@ -114,7 +112,7 @@ fun AlarmEntity.toUiState(subTasks: List<SubTaskEntity>): TaskUiState {
         timerState = state,
         id = id,
         endTime = endTime,
-        endDate = endDate
+        endDate = endDate,
     )
 }
 
@@ -126,15 +124,14 @@ fun SubTaskEntity.toUi(): com.project.niyam.ui.screens.runningTask.SubTaskUi {
         name = subTaskName,
         description = subTaskDescription,
         isCompleted = isCompleted,
-        taskId =  taskId,
-        isFlexible = isFlexible
+        taskId = taskId,
+        isFlexible = isFlexible,
     )
-
 }
-fun com.project.niyam.ui.screens.runningTask.SubTaskUi.toEntity(): SubTaskEntity{
+fun com.project.niyam.ui.screens.runningTask.SubTaskUi.toEntity(): SubTaskEntity {
     return SubTaskEntity(
-        flexibleTaskId = if(isFlexible) taskId else null,
-        timeBoundTaskId = if(!isFlexible) taskId else null,
+        flexibleTaskId = if (isFlexible) taskId else null,
+        timeBoundTaskId = if (!isFlexible) taskId else null,
         subTaskName = name,
         subTaskDescription = description,
         isCompleted = isCompleted,
@@ -149,6 +146,6 @@ fun TaskUiState.toAlarmEntity(): AlarmEntity {
         secondsRemaining = remainingTime.toSeconds(),
         state = timerState,
         endDate = endDate,
-        endTime = endTime
+        endTime = endTime,
     )
 }

@@ -1,6 +1,5 @@
 package com.project.niyam.services.local
 
-
 import android.Manifest
 import android.app.PendingIntent
 import android.app.Service
@@ -14,12 +13,19 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationManagerCompat
 import com.project.niyam.data.local.entity.AlarmEntity
 import com.project.niyam.domain.repository.AlarmRepository
-import com.project.niyam.utils.AlarmNotif
+import com.project.niyam.utils.NotificationHelper
 import com.project.niyam.utils.TimerState
 import com.project.niyam.utils.secondsUntil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.*
 import kotlin.math.min
 
 @AndroidEntryPoint
@@ -34,7 +40,6 @@ class CountdownService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val id = intent?.getLongExtra(EXTRA_ALARM_ID, -1L) ?: -1L
         if (id == -1L) return START_NOT_STICKY
@@ -60,7 +65,6 @@ class CountdownService : Service() {
 
     // region Actions
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     private fun initIdleIfMissing(id: Long) = scope.launch {
         val a = repo.get(id) ?: return@launch
         // ensure we show a notification even if user started service “cold”
@@ -69,16 +73,17 @@ class CountdownService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     private fun startCountdown(id: Long) = scope.launch {
         val a = repo.get(id) ?: return@launch
         val start = when (a.state) {
             TimerState.IDLE, TimerState.PAUSED, TimerState.RUNNING -> a
             TimerState.DONE -> a.copy(state = TimerState.DONE, secondsRemaining = 0)
         }
-        val normalized = if (start.secondsRemaining <= 0)
+        val normalized = if (start.secondsRemaining <= 0) {
             start.copy(state = TimerState.DONE, secondsRemaining = 0)
-        else start.copy(state = TimerState.RUNNING)
+        } else {
+            start.copy(state = TimerState.RUNNING)
+        }
 
         repo.save(normalized)
         postOrUpdate(normalized)
@@ -87,11 +92,9 @@ class CountdownService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     private fun resumeCountdown(id: Long) = startCountdown(id)
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     private fun pauseCountdown(id: Long) = scope.launch {
         tickJob?.cancel()
         val a = repo.get(id) ?: return@launch
@@ -101,7 +104,6 @@ class CountdownService : Service() {
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     private fun doneCountdown(id: Long) = scope.launch {
         tickJob?.cancel()
         val a = repo.get(id) ?: return@launch
@@ -126,14 +128,16 @@ class CountdownService : Service() {
                 val endTime = a.endTime
                 val isFlexible = a.isFlexible
                 var next: Long = (a.secondsRemaining - 1).coerceAtLeast(0).toLong()
-                next = if (isFlexible)
+                next = if (isFlexible) {
                     min(next, secondsUntil(endDate, endTime))
-                else secondsUntil(endDate, endTime)
+                } else {
+                    secondsUntil(endDate, endTime)
+                }
                 if (next < 0) next = 0
                 Log.d("CountdownService", "next: $next")
                 val updated = a.copy(
                     secondsRemaining = next.toInt(),
-                    state = if (next.toInt() == 0) TimerState.DONE else TimerState.RUNNING
+                    state = if (next.toInt() == 0) TimerState.DONE else TimerState.RUNNING,
                 )
                 repo.save(updated)
                 postOrUpdate(updated)
@@ -150,9 +154,9 @@ class CountdownService : Service() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun postOrUpdate(alarm: AlarmEntity) {
         val notifId = alarm.id.toInt()
-        val notification = AlarmNotif.build(
+        val notification = NotificationHelper.build(
             this,
-            alarm
+            alarm,
         ) { action -> pendingToService(this, alarm.id, action) }
 
         if (alarm.state == TimerState.RUNNING && currentForegroundId != notifId) {
@@ -164,7 +168,6 @@ class CountdownService : Service() {
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-
     private fun updateNotification(id: Long) = scope.launch {
         repo.get(id)?.let { postOrUpdate(it) }
     }
@@ -188,13 +191,13 @@ class CountdownService : Service() {
         fun pendingToService(
             ctx: Context,
             id: Long,
-            action: String
+            action: String,
         ): PendingIntent =
             PendingIntent.getService(
                 ctx,
                 (id.toInt() shl 8) + action.hashCode(),
                 intent(ctx, id, action),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
     }
 }

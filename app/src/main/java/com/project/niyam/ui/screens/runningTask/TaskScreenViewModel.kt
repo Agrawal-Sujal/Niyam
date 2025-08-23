@@ -25,13 +25,12 @@ import java.time.LocalTime
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
-
 @HiltViewModel
-class TaskViewModel @Inject constructor(
+class TaskScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val alarmRepo: AlarmRepository,
     private val subTaskRepo: SubTaskRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val taskId: Int = checkNotNull(savedStateHandle["taskId"])
@@ -44,18 +43,18 @@ class TaskViewModel @Inject constructor(
     init {
 
         viewModelScope.launch {
-            if(!isFlexible) {
+            if (!isFlexible) {
                 val alarm = alarmRepo.observe(taskId.toLong(), isFlexible).first()
                 _uiState.value = _uiState.value.copy(id = alarm?.id)
                 start()
             }
             combine(
                 alarmRepo.observe(taskId.toLong(), isFlexible),
-                subTaskRepo.getAllSubTask(taskId)
+                subTaskRepo.getAllSubTask(taskId),
             ) { alarm, subTasks ->
                 alarm?.toUiState(subTasks) ?: TaskUiState(
                     taskId = taskId, isFlexible = isFlexible,
-                    endTime = LocalTime.now(), endDate = LocalDate.now()
+                    endTime = LocalTime.now(), endDate = LocalDate.now(),
                 )
             }.collect { state ->
                 _uiState.value = state
@@ -64,43 +63,43 @@ class TaskViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-
     fun pause() {
-        if (_uiState.value.id != null)
+        if (_uiState.value.id != null) {
             context.startService(
-                CountdownService.intent(context, _uiState.value.id!!, CountdownService.ACTION_PAUSE)
+                CountdownService.intent(context, _uiState.value.id!!, CountdownService.ACTION_PAUSE),
             )
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-
     fun resume() {
-        if (_uiState.value.id != null)
+        if (_uiState.value.id != null) {
             context.startForegroundService(
                 CountdownService.intent(
                     context,
                     _uiState.value.id!!,
-                    CountdownService.ACTION_RESUME
-                )
+                    CountdownService.ACTION_RESUME,
+                ),
             )
-
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-
     fun done() {
-        if (_uiState.value.id != null)
+        if (_uiState.value.id != null) {
             context.startService(
-                CountdownService.intent(context, _uiState.value.id!!, CountdownService.ACTION_DONE)
+                CountdownService.intent(context, _uiState.value.id!!, CountdownService.ACTION_DONE),
             )
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun start() {
-        if (_uiState.value.id != null)
+        if (_uiState.value.id != null) {
             context.startForegroundService(
-                CountdownService.intent(context, _uiState.value.id!!, CountdownService.ACTION_START)
+                CountdownService.intent(context, _uiState.value.id!!, CountdownService.ACTION_START),
             )
+        }
     }
 
     fun markSubTaskDone(subTaskId: Int) {

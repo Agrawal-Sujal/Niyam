@@ -46,7 +46,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddFlexibleTaskScreen(
     onBack: () -> Unit,
-    viewModel: AddFlexibleTaskViewModel = hiltViewModel()
+    viewModel: AddFlexibleTaskViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -64,14 +64,14 @@ fun AddFlexibleTaskScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         // Top AppBar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -85,13 +85,13 @@ fun AddFlexibleTaskScreen(
             value = uiState.name,
             onValueChange = { viewModel.onNameChanged(it) },
             label = { Text("Task Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = uiState.description,
             onValueChange = { viewModel.onDescriptionChanged(it) },
             label = { Text("Task Description") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         // Window Start Date
@@ -135,7 +135,7 @@ fun AddFlexibleTaskScreen(
             onValueChange = { viewModel.onHoursAllotedChanged(it.toIntOrNull() ?: 1) },
             label = { Text("Hours Alloted") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
         )
 
         // Subtasks
@@ -144,7 +144,7 @@ fun AddFlexibleTaskScreen(
 
         OutlinedButton(
             onClick = { viewModel.openSubTaskSheet() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Add Subtask")
         }
@@ -154,7 +154,7 @@ fun AddFlexibleTaskScreen(
         // Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             OutlinedButton(onClick = { viewModel.onCancelClick() }) { Text("Cancel") }
             Button(onClick = { viewModel.onSaveTask { onBack() } }) { Text("Add") }
@@ -171,7 +171,7 @@ fun AddFlexibleTaskScreen(
             },
             today.year,
             today.monthValue - 1,
-            today.dayOfMonth
+            today.dayOfMonth,
         )
         datePickerDialog.show()
     }
@@ -186,7 +186,7 @@ fun AddFlexibleTaskScreen(
             },
             today.year,
             today.monthValue - 1,
-            today.dayOfMonth
+            today.dayOfMonth,
         )
         datePickerDialog.show()
     }
@@ -198,7 +198,7 @@ fun AddFlexibleTaskScreen(
             onTimeChange = { hour, minute ->
                 viewModel.onWindowStartTimeSelected(LocalTime.of(hour, minute))
                 showStartTimePicker = false
-            }
+            },
         )
     }
 
@@ -209,7 +209,7 @@ fun AddFlexibleTaskScreen(
             onTimeChange = { hour, minute ->
                 viewModel.onWindowEndTimeSelected(LocalTime.of(hour, minute))
                 showEndTimePicker = false
-            }
+            },
         )
     }
 
@@ -224,14 +224,14 @@ fun AddFlexibleTaskScreen(
                 TextButton(onClick = { viewModel.dismissCancelDialog() }) { Text("No") }
             },
             title = { Text("Discard Task?") },
-            text = { Text("Are you sure you want to discard this task?") }
+            text = { Text("Are you sure you want to discard this task?") },
         )
     }
 
     // Subtask bottom sheet
     if (uiState.showSubTaskSheet) {
         ModalBottomSheet(
-            onDismissRequest = { viewModel.dismissSubTaskSheet() }
+            onDismissRequest = { viewModel.dismissSubTaskSheet() },
         ) {
             SubTaskInputSheet(
                 onDone = { title, desc ->
@@ -240,9 +240,8 @@ fun AddFlexibleTaskScreen(
                 },
                 onAddMore = { title, desc ->
                     viewModel.addSubTask(title, desc)
-                }
+                },
             )
         }
     }
-
 }

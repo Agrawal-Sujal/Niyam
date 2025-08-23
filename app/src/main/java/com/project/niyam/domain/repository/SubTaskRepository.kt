@@ -9,5 +9,4 @@ interface SubTaskRepository {
     suspend fun deleteSubTask(id: Int)
     suspend fun updateSubTask(subTask: SubTaskEntity)
     suspend fun getSubTask(id: Int): SubTaskEntity?
-
 }

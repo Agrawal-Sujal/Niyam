@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.niyam.data.local.appPref.AppPref
 import com.project.niyam.domain.repository.FlexibleTaskRepository
 import com.project.niyam.domain.repository.TimeBoundTaskRepository
 import com.project.niyam.utils.toUI
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -24,14 +24,15 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeScreenViewModel @Inject constructor(
     private val timeBoundRepo: TimeBoundTaskRepository,
-    private val flexibleRepo: FlexibleTaskRepository
+    private val flexibleRepo: FlexibleTaskRepository,
+    val appPref: AppPref,
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(
         HomeScreenUIState(
             selectedDate = LocalDate.now(),
-            weekDates = weekFor(LocalDate.now())
-        )
+            weekDates = weekFor(LocalDate.now()),
+        ),
     )
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -43,7 +44,11 @@ class HomeScreenViewModel @Inject constructor(
         loadFor(_ui.value.selectedDate)
     }
 
-
+    fun logout() {
+        viewModelScope.launch {
+            appPref.clearUser()
+        }
+    }
     fun selectDate(date: LocalDate) {
         val newWeek = weekFor(date)
         _ui.update { it.copy(selectedDate = date, weekDates = newWeek) }
@@ -57,7 +62,7 @@ class HomeScreenViewModel @Inject constructor(
             try {
                 combine(
                     timeBoundRepo.getAllTask(date),
-                    flexibleRepo.getAllTask(date)
+                    flexibleRepo.getAllTask(date),
                 ) { strictList, flexList ->
                     val strict = strictList.map { it.toUI() }
                     val flex = flexList.map { it.toUI(date) }
@@ -67,14 +72,14 @@ class HomeScreenViewModel @Inject constructor(
                         it.copy(
                             timeBoundTasks = strict,
                             flexibleTasks = flex,
-                            isLoading = false
+                            isLoading = false,
                         )
                     }
                 }
             } catch (e: Exception) {
                 _ui.update {
                     it.copy(
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             }
@@ -82,8 +87,11 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun deleteTask(taskId: Int, isFlexible: Boolean) {
-        if (isFlexible) deleteFlexibleTask(taskId)
-        else deleteTimeBoundTask(taskId)
+        if (isFlexible) {
+            deleteFlexibleTask(taskId)
+        } else {
+            deleteTimeBoundTask(taskId)
+        }
     }
 
     fun deleteTimeBoundTask(taskId: Int) {
@@ -94,7 +102,7 @@ class HomeScreenViewModel @Inject constructor(
                 _ui.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Failed to delete task"
+                        errorMessage = e.message ?: "Failed to delete task",
                     )
                 }
             }
@@ -109,7 +117,7 @@ class HomeScreenViewModel @Inject constructor(
                 _ui.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Failed to delete task"
+                        errorMessage = e.message ?: "Failed to delete task",
                     )
                 }
             }

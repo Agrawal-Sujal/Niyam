@@ -11,6 +11,6 @@ data class UiState(
     val showCancelDialog: Boolean = false,
     val showSubTaskSheet: Boolean = false,
     val tempSubTaskTitle: String = "",
-    val tempSubTaskDescription: String = ""
+    val tempSubTaskDescription: String = "",
 )
 data class SubTaskUi(val title: String, val description: String)

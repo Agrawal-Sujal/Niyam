@@ -1,7 +1,11 @@
 package com.project.niyam.data.local.dao
 
-
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.project.niyam.data.local.entity.SubTaskEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -22,5 +26,4 @@ interface SubTaskDao {
 
     @Query("SELECT * FROM sub_task WHERE id = :id LIMIT 1")
     suspend fun getSubTask(id: Int): SubTaskEntity?
-
 }

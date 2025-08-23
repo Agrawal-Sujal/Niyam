@@ -12,8 +12,8 @@ data class TaskUiState(
     val subTasks: List<SubTaskUi> = emptyList(),
     val currentSubTaskIndex: Int = 0,
     val timerState: TimerState = TimerState.IDLE,
-    val endDate : LocalDate,
-    val endTime : LocalTime
+    val endDate: LocalDate,
+    val endTime: LocalTime,
 )
 
 data class SubTaskUi(
@@ -21,6 +21,6 @@ data class SubTaskUi(
     val name: String,
     val description: String?,
     val isCompleted: Boolean,
-    val taskId : Int,
-    val isFlexible: Boolean
+    val taskId: Int,
+    val isFlexible: Boolean,
 )

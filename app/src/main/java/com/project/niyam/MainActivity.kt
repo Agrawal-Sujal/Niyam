@@ -13,9 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.project.niyam.data.local.appPref.AppPref
 import com.project.niyam.ui.navigation.MainScreen
 import com.project.niyam.ui.theme.NiyamTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,18 +30,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val appPref = AppPref(this)
 
         setContent {
             NiyamTheme {
                 NotificationPermissionRequester()
+                val token by appPref.token.collectAsState(initial = null)
 
-                MainScreen()
+                if (token.isNullOrEmpty()) {
+                    MainScreen(false)
+                } else {
+                    MainScreen(true)
+                }
             }
         }
     }
 }
-
-
 
 @Composable
 fun NotificationPermissionRequester() {
@@ -47,7 +54,7 @@ fun NotificationPermissionRequester() {
 
     // Permission launcher
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
+        contract = ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
         if (isGranted) {
             Toast.makeText(context, "Notifications enabled", Toast.LENGTH_SHORT).show()
@@ -61,7 +68,7 @@ fun NotificationPermissionRequester() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     context,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)

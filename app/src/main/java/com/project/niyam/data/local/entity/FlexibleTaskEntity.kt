@@ -2,7 +2,6 @@ package com.project.niyam.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.project.niyam.utils.TaskStatus
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -16,6 +15,7 @@ data class FlexibleTaskEntity(
     val hoursAlloted: Int,
     val taskName: String,
     val taskDescription: String? = null,
-    val completed: Boolean = false
-
+    val completed: Boolean = false,
+    val remoteId: Int? = null,
+    val isSynced: Boolean = false,
 )

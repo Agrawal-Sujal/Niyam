@@ -1,16 +1,22 @@
 package com.project.niyam.ui.screens.home
 
-import android.R.attr.padding
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.runtime.Composable
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,18 +26,34 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.project.niyam.utils.TaskStatus
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -42,7 +64,7 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
     onUpdateTask: (taskId: Int, isTimeBound: Boolean) -> Unit,
     onTimeBoundClicked: (taskId: Int) -> Unit,
-    onFlexibleClicked: (taskId: Int) -> Unit
+    onFlexibleClicked: (taskId: Int) -> Unit,
 ) {
     val state by viewModel.ui.collectAsState()
     val today = LocalDate.now()
@@ -61,10 +83,9 @@ fun HomeScreen(
         }
     }
 
-
     Column(
         Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         // Header date row (e.g., "August 21, 2025")
@@ -73,14 +94,16 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
                 text = state.selectedDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f) // pushes Today chip to the end if needed
+                modifier = Modifier.weight(1f), // pushes Today chip to the end if needed
             )
-
+            Button(onClick = { viewModel.logout() }) {
+                Text("Log Out")
+            }
 
             if (state.selectedDate != today) {
                 AssistChip(
@@ -90,7 +113,7 @@ fun HomeScreen(
                                 val centerOffset = listState.layoutInfo.viewportEndOffset / 2
                                 listState.animateScrollToItem(
                                     todayIndex,
-                                    scrollOffset = -centerOffset
+                                    scrollOffset = -centerOffset,
                                 )
                                 viewModel.selectDate(today)
                             }
@@ -99,30 +122,29 @@ fun HomeScreen(
                     label = {
                         Text(
                             "Today",
-                            style = MaterialTheme.typography.bodySmall // smaller text
+                            style = MaterialTheme.typography.bodySmall, // smaller text
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Filled.Call,
                             contentDescription = "Today",
-                            modifier = Modifier.size(16.dp) // smaller icon
+                            modifier = Modifier.size(16.dp), // smaller icon
                         )
                     },
                     modifier = Modifier.height(28.dp), // reduce chip height
-                    shape = MaterialTheme.shapes.small // less rounded
+                    shape = MaterialTheme.shapes.small, // less rounded
                 )
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-
 
         // Week strip with arrows
         DatePickerRow(
             selectedDate = state.selectedDate,
             onDateSelected = { viewModel.selectDate(it) },
             listState,
-            days
+            days,
         )
 
         if (state.isLoading) {
@@ -136,14 +158,14 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp),
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
-                    labelColor = MaterialTheme.colorScheme.onErrorContainer
-                )
+                    labelColor = MaterialTheme.colorScheme.onErrorContainer,
+                ),
             )
         }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 96.dp)
+            contentPadding = PaddingValues(bottom = 96.dp),
         ) {
             // Time Bound Section
             if (state.timeBoundTasks.isNotEmpty()) {
@@ -158,7 +180,7 @@ fun HomeScreen(
                         trailingTop = "${t.startTime} - ${t.endTime}",
                         onClick = { onTimeBoundClicked(t.id) },
                         onEdit = { onUpdateTask(t.id, true) },
-                        onDelete = { viewModel.deleteTask(t.id, false) }
+                        onDelete = { viewModel.deleteTask(t.id, false) },
                     )
                 }
             }
@@ -181,13 +203,12 @@ fun HomeScreen(
                         trailingTop = trailing,
                         onClick = { onFlexibleClicked(t.id) },
                         onEdit = { onUpdateTask(t.id, false) },
-                        onDelete = { viewModel.deleteTask(t.id, true) }
+                        onDelete = { viewModel.deleteTask(t.id, true) },
                     )
                 }
             }
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -196,16 +217,14 @@ fun DatePickerRow(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     listState: LazyListState,
-    days: List<LocalDate>
+    days: List<LocalDate>,
 ) {
-
     Column {
-
         LazyRow(
             state = listState,
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
             itemsIndexed(days) { index, date ->
                 val isSelected = date == selectedDate
@@ -214,7 +233,7 @@ fun DatePickerRow(
                     isSelected = isSelected,
                     onClick = {
                         onDateSelected(date)
-                    }
+                    },
                 )
             }
         }
@@ -226,14 +245,20 @@ fun DatePickerRow(
 fun DateChip(
     date: LocalDate,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val backgroundColor =
-        if (isSelected) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.surfaceVariant
+        if (isSelected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        }
     val contentColor =
-        if (isSelected) MaterialTheme.colorScheme.onPrimary
-        else MaterialTheme.colorScheme.onSurfaceVariant
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimary
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,24 +267,23 @@ fun DateChip(
             .background(backgroundColor)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = LocalIndication.current
+                indication = LocalIndication.current,
             ) { onClick() }
-            .padding(vertical = 8.dp, horizontal = 12.dp)
+            .padding(vertical = 8.dp, horizontal = 12.dp),
     ) {
         Text(
             text = date.dayOfWeek.name.take(3), // MON, TUE
             style = MaterialTheme.typography.labelMedium,
-            color = contentColor
+            color = contentColor,
         )
         Text(
             text = date.dayOfMonth.toString(),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            color = contentColor
+            color = contentColor,
         )
     }
 }
-
 
 @Composable
 private fun SectionHeader(text: String) {
@@ -267,7 +291,7 @@ private fun SectionHeader(text: String) {
         text = text,
         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
     )
 }
 
@@ -279,7 +303,7 @@ private fun TaskCard(
     trailingTop: String,
     onClick: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     var menu by remember { mutableStateOf(false) }
     Card(
@@ -288,15 +312,15 @@ private fun TaskCard(
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = LocalIndication.current
+                indication = LocalIndication.current,
             ) { onClick() },
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
 //                Text(leadingTop, style = MaterialTheme.typography.labelMedium)
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -308,13 +332,19 @@ private fun TaskCard(
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                             DropdownMenuItem(
                                 text = { Text("Edit") },
-                                onClick = { menu = false; onEdit() },
-                                leadingIcon = { Icon(Icons.Default.Edit, null) }
+                                onClick = {
+                                    menu = false
+                                    onEdit()
+                                },
+                                leadingIcon = { Icon(Icons.Default.Edit, null) },
                             )
                             DropdownMenuItem(
                                 text = { Text("Delete") },
-                                onClick = { menu = false; onDelete() },
-                                leadingIcon = { Icon(Icons.Default.Delete, null) }
+                                onClick = {
+                                    menu = false
+                                    onDelete()
+                                },
+                                leadingIcon = { Icon(Icons.Default.Delete, null) },
                             )
                         }
                     }
@@ -327,8 +357,3 @@ private fun TaskCard(
         }
     }
 }
-
-
-
-
-

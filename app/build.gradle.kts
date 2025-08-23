@@ -98,4 +98,13 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended: 1.6.6")
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    // Retrofit with Gson (JSON converter)
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp:5.1.0")
+    // OkHttp Logging Interceptor (for debugging API calls)
+    implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
+    implementation("com.google.guava:guava:33.4.8-android")
 }

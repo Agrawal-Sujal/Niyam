@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
-    id("com.google.dagger.hilt.android") version "2.51.1" apply false
-    id("com.diffplug.spotless") version "6.25.0"
+    id("com.google.dagger.hilt.android") version "2.57" apply false
+    id("com.diffplug.spotless") version "7.2.1"
 }
 subprojects {
     apply(plugin = "com.diffplug.spotless")

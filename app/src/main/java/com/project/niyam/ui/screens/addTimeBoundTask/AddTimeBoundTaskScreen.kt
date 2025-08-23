@@ -47,7 +47,7 @@ import java.time.format.DateTimeFormatter
 fun AddTimeBoundTaskScreen(
     onBack: () -> Unit,
     onTaskAdded: () -> Unit,
-    viewModel: AddTimeBoundedTaskViewModel = hiltViewModel()
+    viewModel: AddTimeBoundedTaskViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -55,18 +55,17 @@ fun AddTimeBoundTaskScreen(
     var showStartPicker by remember { mutableStateOf(false) }
     var showEndPicker by remember { mutableStateOf(false) }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp), // same as default TopAppBar height
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
                 Icon(
@@ -84,14 +83,14 @@ fun AddTimeBoundTaskScreen(
             value = uiState.name,
             onValueChange = { viewModel.onNameChanged(it) },
             label = { Text("Task Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         OutlinedTextField(
             value = uiState.description,
             onValueChange = { viewModel.onDescriptionChanged(it) },
             label = { Text("Task Description") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         // Start Time
@@ -103,7 +102,7 @@ fun AddTimeBoundTaskScreen(
             ) {
                 Text(
                     uiState.startTime?.format(DateTimeFormatter.ofPattern("hh:mm a"))
-                        ?: "Select"
+                        ?: "Select",
                 )
             }
         }
@@ -117,7 +116,7 @@ fun AddTimeBoundTaskScreen(
             ) {
                 Text(
                     uiState.endTime?.format(DateTimeFormatter.ofPattern("hh:mm a"))
-                        ?: "Select"
+                        ?: "Select",
                 )
             }
         }
@@ -129,7 +128,7 @@ fun AddTimeBoundTaskScreen(
         }
         OutlinedButton(
             onClick = { viewModel.openSubTaskSheet() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Add Subtask")
         }
@@ -138,7 +137,7 @@ fun AddTimeBoundTaskScreen(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             OutlinedButton(onClick = { viewModel.onCancelClick() }) {
                 Text("Cancel")
@@ -153,7 +152,6 @@ fun AddTimeBoundTaskScreen(
         }
     }
 
-
     // Start time picker
     if (showStartPicker) {
         TimePickerDialog(
@@ -161,7 +159,7 @@ fun AddTimeBoundTaskScreen(
             onTimeChange = { hour, minute ->
                 viewModel.onStartTimeSelected(LocalTime.of(hour, minute))
                 showStartPicker = false
-            }
+            },
         )
     }
 
@@ -172,7 +170,7 @@ fun AddTimeBoundTaskScreen(
             onTimeChange = { hour, minute ->
                 viewModel.onEndTimeSelected(LocalTime.of(hour, minute))
                 showEndPicker = false
-            }
+            },
         )
     }
 
@@ -187,14 +185,14 @@ fun AddTimeBoundTaskScreen(
                 TextButton(onClick = { viewModel.dismissCancelDialog() }) { Text("No") }
             },
             title = { Text("Discard Task?") },
-            text = { Text("Are you sure you want to discard this task?") }
+            text = { Text("Are you sure you want to discard this task?") },
         )
     }
 
     // Subtask bottom sheet
     if (uiState.showSubTaskSheet) {
         ModalBottomSheet(
-            onDismissRequest = { viewModel.dismissSubTaskSheet() }
+            onDismissRequest = { viewModel.dismissSubTaskSheet() },
         ) {
             SubTaskInputSheet(
                 onDone = { title, desc ->
@@ -203,7 +201,7 @@ fun AddTimeBoundTaskScreen(
                 },
                 onAddMore = { title, desc ->
                     viewModel.addSubTask(title, desc)
-                }
+                },
             )
         }
     }
@@ -213,7 +211,7 @@ fun AddTimeBoundTaskScreen(
 @Composable
 fun TimePickerDialog(
     onDismissRequest: () -> Unit,
-    onTimeChange: (hour: Int, minute: Int) -> Unit
+    onTimeChange: (hour: Int, minute: Int) -> Unit,
 ) {
     val state = rememberTimePickerState()
     AlertDialog(
@@ -230,14 +228,14 @@ fun TimePickerDialog(
         },
         text = {
             TimePicker(state = state)
-        }
+        },
     )
 }
 
 @Composable
 fun SubTaskInputSheet(
     onDone: (String, String) -> Unit,
-    onAddMore: (String, String) -> Unit
+    onAddMore: (String, String) -> Unit,
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -246,31 +244,31 @@ fun SubTaskInputSheet(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             "Add Subtask",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
             label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
             label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             OutlinedButton(
                 onClick = {
@@ -279,7 +277,7 @@ fun SubTaskInputSheet(
                         title = ""
                         description = ""
                     }
-                }
+                },
             ) {
                 Text("Done")
             }
@@ -291,7 +289,7 @@ fun SubTaskInputSheet(
                         title = ""
                         description = ""
                     }
-                }
+                },
             ) {
                 Text("Add More")
             }

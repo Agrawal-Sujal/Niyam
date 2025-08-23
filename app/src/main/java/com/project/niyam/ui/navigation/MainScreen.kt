@@ -27,46 +27,49 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.project.niyam.ui.screens.addTimeBoundTask.AddTimeBoundTaskScreen
+import com.project.niyam.ui.screens.auth.LoginScreen
+import com.project.niyam.ui.screens.auth.RegisterScreen
 import com.project.niyam.ui.screens.flexibleTask.AddFlexibleTaskScreen
 import com.project.niyam.ui.screens.home.HomeScreen
 import com.project.niyam.ui.screens.runningTask.TaskScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MainScreen() {
+fun MainScreen(isLoggedIn: Boolean) {
     val navController = rememberNavController()
     val currentBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry.value?.destination?.route
+    val startDestination = if (isLoggedIn) NavRoutes.HomeScreen.route else NavRoutes.LoginScreen.route
     val showBottomBar =
         (currentRoute == NavRoutes.HomeScreen.route)
     Scaffold(floatingActionButton = {
-        if (showBottomBar)
+        if (showBottomBar) {
             ExpandableFab(onAddStrict = {
                 navController.navigate(NavRoutes.AddTimeBoundedTask.route)
             }, onAddFlexible = {
                 navController.navigate(NavRoutes.AddFlexibleTask.route)
             })
+        }
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.HomeScreen.route,
-            modifier = Modifier.padding(innerPadding)
+            startDestination = startDestination,
+            modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = NavRoutes.HomeScreen.route) {
                 HomeScreen(
                     onUpdateTask = { t1, t2 ->
-
                     },
                     onTimeBoundClicked = { taskId ->
                         navController.navigate(
-                            NavRoutes.TaskScreen.createRoute(taskId = taskId, isFlexible = false)
+                            NavRoutes.TaskScreen.createRoute(taskId = taskId, isFlexible = false),
                         )
                     },
                     onFlexibleClicked = { taskId ->
                         navController.navigate(
-                            NavRoutes.TaskScreen.createRoute(taskId = taskId, isFlexible = true)
+                            NavRoutes.TaskScreen.createRoute(taskId = taskId, isFlexible = true),
                         )
-                    }
+                    },
                 )
             }
             composable(route = NavRoutes.AddTimeBoundedTask.route) {
@@ -83,42 +86,67 @@ fun MainScreen() {
                 route = NavRoutes.TaskScreen.route,
                 arguments = listOf(
                     navArgument("taskId") { type = NavType.IntType },
-                    navArgument("isFlexible") { type = NavType.BoolType }
-                )
+                    navArgument("isFlexible") { type = NavType.BoolType },
+                ),
             ) {
                 TaskScreen()
             }
-        }
 
+            composable(NavRoutes.LoginScreen.route) {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate(NavRoutes.HomeScreen.route) {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                    onNavigateToRegister = { navController.navigate(NavRoutes.RegisterScreen.route) },
+                )
+            }
+            composable(NavRoutes.RegisterScreen.route) {
+                RegisterScreen(
+                    onRegisterSuccess = {
+                        navController.navigate(NavRoutes.HomeScreen.route) {
+                            popUpTo("register") { inclusive = true }
+                        }
+                    },
+                    onNavigateToLogin = { navController.navigate(NavRoutes.LoginScreen.route) },
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun ExpandableFab(
     onAddStrict: () -> Unit,
-    onAddFlexible: () -> Unit
+    onAddFlexible: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.End
+        horizontalAlignment = Alignment.End,
     ) {
         if (expanded) {
             ExtendedFloatingActionButton(
-                onClick = { expanded = false; onAddStrict() },
+                onClick = {
+                    expanded = false
+                    onAddStrict()
+                },
                 text = { Text("Strict Task") },
                 modifier = Modifier.padding(bottom = 8.dp),
-                icon = {}
+                icon = {},
 
             )
             ExtendedFloatingActionButton(
-                onClick = { expanded = false; onAddFlexible() },
+                onClick = {
+                    expanded = false
+                    onAddFlexible()
+                },
                 text = { Text("Regular Task") },
                 modifier = Modifier.padding(bottom = 8.dp),
                 icon = {
-
-                }
+                },
             )
         }
         FloatingActionButton(onClick = { expanded = !expanded }) {

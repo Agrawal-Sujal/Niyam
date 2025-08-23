@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SubTaskRepositoryImpl @Inject constructor(
-    private val dao: SubTaskDao
+    private val dao: SubTaskDao,
 ) : SubTaskRepository {
 
     override fun getAllSubTask(mainTaskId: Int): Flow<List<SubTaskEntity>> =
@@ -18,7 +18,7 @@ class SubTaskRepositoryImpl @Inject constructor(
     override suspend fun insertSubTask(subTask: SubTaskEntity): Long =
         dao.insertSubTask(subTask)
 
-    override suspend fun deleteSubTask(id: Int){
+    override suspend fun deleteSubTask(id: Int) {
         val task = dao.getSubTask(id)
         task?.let { dao.deleteSubTask(it) }
     }
@@ -28,5 +28,4 @@ class SubTaskRepositoryImpl @Inject constructor(
 
     override suspend fun getSubTask(id: Int): SubTaskEntity? =
         dao.getSubTask(id)
-
 }

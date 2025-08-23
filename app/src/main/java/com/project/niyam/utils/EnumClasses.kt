@@ -5,7 +5,7 @@ enum class TaskStatus {
     NOT_STARTED,
     PAUSED,
     COMPLETED,
-    NOT_COMPLETED
+    NOT_COMPLETED,
 }
 
 enum class TimerState { IDLE, RUNNING, PAUSED, DONE }
