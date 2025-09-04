@@ -3,8 +3,8 @@ package com.project.niyam.ui.screens.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.niyam.data.local.appPref.AppPref
-import com.project.niyam.domain.models.LoginRequest
-import com.project.niyam.domain.models.RegisterRequest
+import com.project.niyam.domain.models.auth.LoginRequest
+import com.project.niyam.domain.models.auth.RegisterRequest
 import com.project.niyam.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -22,6 +22,8 @@ import com.project.niyam.data.local.appPref.AppPref
 import com.project.niyam.ui.navigation.MainScreen
 import com.project.niyam.ui.theme.NiyamTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -31,12 +33,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val appPref = AppPref(this)
-
         setContent {
             NiyamTheme {
                 NotificationPermissionRequester()
-                val token by appPref.token.collectAsState(initial = null)
-
+                var token: String? = null
+                runBlocking {
+                    token = appPref.token.first()
+                }
+                token = "abc"
                 if (token.isNullOrEmpty()) {
                     MainScreen(false)
                 } else {

@@ -1,7 +1,9 @@
 package com.project.niyam.di
 
 import com.project.niyam.data.local.appPref.AppPref
-import com.project.niyam.services.local.AuthServices
+import com.project.niyam.services.remote.AuthServices
+import com.project.niyam.services.remote.FriendServices
+import com.project.niyam.services.remote.TasksServices
 import com.project.niyam.utils.Constants
 import com.project.niyam.utils.HeaderInterceptor
 import dagger.Module
@@ -42,4 +44,16 @@ class ServiceModule {
     fun provideAuthServices(appPreferences: AppPref): AuthServices =
         constructRetrofit(appPreferences)
             .create(AuthServices::class.java)
+
+    @Singleton
+    @Provides
+    fun provideTasksServices(appPreferences: AppPref): TasksServices =
+        constructRetrofit(appPreferences)
+            .create(TasksServices::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFriendServices(appPreferences: AppPref): FriendServices =
+        constructRetrofit(appPreferences)
+            .create(FriendServices::class.java)
 }

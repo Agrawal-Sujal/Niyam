@@ -85,9 +85,6 @@ dependencies {
     // serializable
     implementation(libs.kotlinx.serialization.json)
 
-    // Extra
-//    implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
-
     implementation("com.google.code.gson:gson:2.13.1")
 
     // Preferences DataStore
@@ -107,4 +104,12 @@ dependencies {
     // OkHttp Logging Interceptor (for debugging API calls)
     implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
     implementation("com.google.guava:guava:33.4.8-android")
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.10.3")
+    // Hilt + WorkManager
+    implementation("androidx.hilt:hilt-work:1.2.0")
+
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
 }

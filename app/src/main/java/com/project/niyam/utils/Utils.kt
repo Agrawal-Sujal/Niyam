@@ -28,9 +28,14 @@ object Utils {
         if (error == null) {
             return Resource.failure(error = ApiError(error = ResponseError.getError(response).genericToast))
         }
-        val gson = Gson()
-        val errorResponse = gson.fromJson(error, ApiError::class.java)
-        return Resource.failure(error = errorResponse)
+        try {
+            val gson = Gson()
+            val errorResponse = gson.fromJson(error, ApiError::class.java)
+            return Resource.failure(error = errorResponse)
+        }catch (e: Exception){
+            return Resource.failure(error = ApiError(error = ResponseError.getError(response).genericToast))
+        }
+
     }
 
     /** Get human readable error.

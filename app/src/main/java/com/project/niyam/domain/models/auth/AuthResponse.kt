@@ -1,4 +1,4 @@
-package com.project.niyam.domain.models
+package com.project.niyam.domain.models.auth
 
 import androidx.compose.runtime.Immutable
 import com.google.gson.annotations.SerializedName

@@ -1,10 +1,10 @@
 package com.project.niyam.data.repository
 
-import com.project.niyam.domain.models.AuthResponse
-import com.project.niyam.domain.models.LoginRequest
-import com.project.niyam.domain.models.RegisterRequest
+import com.project.niyam.domain.models.auth.AuthResponse
+import com.project.niyam.domain.models.auth.LoginRequest
+import com.project.niyam.domain.models.auth.RegisterRequest
 import com.project.niyam.domain.repository.AuthRepository
-import com.project.niyam.services.local.AuthServices
+import com.project.niyam.services.remote.AuthServices
 import com.project.niyam.utils.Resource
 import com.project.niyam.utils.Utils.parseResponse
 import javax.inject.Inject

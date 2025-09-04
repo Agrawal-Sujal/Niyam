@@ -30,7 +30,7 @@ data class SubTaskEntity(
     val isCompleted: Boolean = false,
     val subTaskName: String = "",
     val subTaskDescription: String? = null,
-    val remoteId: Int? = null,
-    val remoteTaskId: Int? = null,
-    val isSynced: Boolean = false,
+    var remoteId: Int? = null,
+    var remoteTaskId: Int? = null,
+    var isSynced: Boolean = false,
 )

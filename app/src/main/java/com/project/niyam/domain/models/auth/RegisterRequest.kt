@@ -1,4 +1,4 @@
-package com.project.niyam.domain.models
+package com.project.niyam.domain.models.auth
 
 data class RegisterRequest(
     val username: String,

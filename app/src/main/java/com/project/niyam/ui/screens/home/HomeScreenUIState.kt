@@ -2,6 +2,7 @@ package com.project.niyam.ui.screens.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.project.niyam.utils.TimerState
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -13,6 +14,9 @@ data class TimeBoundTaskUI(
     val taskName: String,
     val taskDescription: String?,
     val completed: Boolean,
+    val timeRemaining : Int,
+    val status : TimerState,
+    val totalTimeAllocated: Long
 )
 
 data class FlexibleTaskUI(
@@ -28,6 +32,8 @@ data class FlexibleTaskUI(
     val taskName: String,
     val taskDescription: String?,
     val completed: Boolean,
+    val timeRemaining: Int,
+    val state : TimerState
 )
 
 data class HomeScreenUIState

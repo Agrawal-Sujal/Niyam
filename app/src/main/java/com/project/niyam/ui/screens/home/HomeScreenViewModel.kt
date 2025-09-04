@@ -6,14 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.niyam.data.local.appPref.AppPref
 import com.project.niyam.domain.repository.FlexibleTaskRepository
+import com.project.niyam.domain.repository.SyncRepository
 import com.project.niyam.domain.repository.TimeBoundTaskRepository
 import com.project.niyam.utils.toUI
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -26,6 +30,7 @@ class HomeScreenViewModel @Inject constructor(
     private val timeBoundRepo: TimeBoundTaskRepository,
     private val flexibleRepo: FlexibleTaskRepository,
     val appPref: AppPref,
+    val syncRepository: SyncRepository
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(
@@ -49,10 +54,19 @@ class HomeScreenViewModel @Inject constructor(
             appPref.clearUser()
         }
     }
+
     fun selectDate(date: LocalDate) {
         val newWeek = weekFor(date)
         _ui.update { it.copy(selectedDate = date, weekDates = newWeek) }
         loadFor(date)
+    }
+
+    fun syncTasks() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val userId = appPref.userId.first()
+            if (userId != null)
+                syncRepository.syncTasks(userId.toInt())
+        }
     }
 
     private fun loadFor(date: LocalDate) {

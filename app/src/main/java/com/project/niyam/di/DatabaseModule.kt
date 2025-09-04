@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.project.niyam.data.local.AppDatabase
 import com.project.niyam.data.local.dao.AlarmDao
 import com.project.niyam.data.local.dao.FlexibleTaskDao
+import com.project.niyam.data.local.dao.FriendDao
 import com.project.niyam.data.local.dao.SubTaskDao
 import com.project.niyam.data.local.dao.TimeBoundTaskDao
 import dagger.Module
@@ -42,4 +43,6 @@ object DatabaseModule {
     fun provideSubTaskDao(db: AppDatabase): SubTaskDao = db.subTaskDao()
 
     @Provides fun provideAlarmDao(db: AppDatabase): AlarmDao = db.alarmDao()
+
+    @Provides fun provideFriendDao(db: AppDatabase): FriendDao = db.friendDao()
 }

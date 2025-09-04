@@ -1,8 +1,8 @@
 package com.project.niyam.domain.repository
 
-import com.project.niyam.domain.models.AuthResponse
-import com.project.niyam.domain.models.LoginRequest
-import com.project.niyam.domain.models.RegisterRequest
+import com.project.niyam.domain.models.auth.AuthResponse
+import com.project.niyam.domain.models.auth.LoginRequest
+import com.project.niyam.domain.models.auth.RegisterRequest
 import com.project.niyam.utils.Resource
 
 interface AuthRepository {

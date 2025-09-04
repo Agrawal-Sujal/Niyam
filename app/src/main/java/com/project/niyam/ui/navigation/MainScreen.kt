@@ -2,14 +2,22 @@ package com.project.niyam.ui.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,8 +39,11 @@ import com.project.niyam.ui.screens.addTimeBoundTask.AddTimeBoundTaskScreen
 import com.project.niyam.ui.screens.auth.LoginScreen
 import com.project.niyam.ui.screens.auth.RegisterScreen
 import com.project.niyam.ui.screens.flexibleTask.AddFlexibleTaskScreen
+import com.project.niyam.ui.screens.friends.FriendsScreen
 import com.project.niyam.ui.screens.home.HomeScreen
+import com.project.niyam.ui.screens.profile.ProfileScreen
 import com.project.niyam.ui.screens.runningTask.TaskScreen
+import com.project.niyam.ui.theme.NiyamColors
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -39,18 +51,37 @@ fun MainScreen(isLoggedIn: Boolean) {
     val navController = rememberNavController()
     val currentBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry.value?.destination?.route
-    val startDestination = if (isLoggedIn) NavRoutes.HomeScreen.route else NavRoutes.LoginScreen.route
-    val showBottomBar =
-        (currentRoute == NavRoutes.HomeScreen.route)
-    Scaffold(floatingActionButton = {
-        if (showBottomBar) {
-            ExpandableFab(onAddStrict = {
-                navController.navigate(NavRoutes.AddTimeBoundedTask.route)
-            }, onAddFlexible = {
-                navController.navigate(NavRoutes.AddFlexibleTask.route)
-            })
-        }
-    }, modifier = Modifier.fillMaxSize()) { innerPadding ->
+    val startDestination =
+        if (isLoggedIn) NavRoutes.HomeScreen.route else NavRoutes.LoginScreen.route
+    val bottomBarRoutes = listOf(
+        NavRoutes.HomeScreen.route,
+        NavRoutes.ProfileScreen.route
+    )
+
+    val showBottomBar = currentRoute in bottomBarRoutes
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                BottomNavigationBar(
+                    navController = navController,
+                    currentRoute = currentRoute
+                )
+            }
+        },
+        floatingActionButton = {
+            if (currentRoute == NavRoutes.HomeScreen.route) {
+                ExpandableFab(
+                    onAddStrict = {
+                        navController.navigate(NavRoutes.AddTimeBoundedTask.route)
+                    },
+                    onAddFlexible = {
+                        navController.navigate(NavRoutes.AddFlexibleTask.route)
+                    }
+                )
+            }
+        },
+        modifier = Modifier.fillMaxSize().background(color = NiyamColors.backgroundColor)
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = startDestination,
@@ -73,12 +104,12 @@ fun MainScreen(isLoggedIn: Boolean) {
                 )
             }
             composable(route = NavRoutes.AddTimeBoundedTask.route) {
-                AddTimeBoundTaskScreen(onBack = {
+                AddTimeBoundTaskScreen(onNavigateBack = {
                     navController.popBackStack()
-                }, onTaskAdded = { navController.popBackStack() })
+                })
             }
             composable(route = NavRoutes.AddFlexibleTask.route) {
-                AddFlexibleTaskScreen(onBack = {
+                AddFlexibleTaskScreen(onNavigateBack = {
                     navController.popBackStack()
                 })
             }
@@ -112,6 +143,17 @@ fun MainScreen(isLoggedIn: Boolean) {
                     onNavigateToLogin = { navController.navigate(NavRoutes.LoginScreen.route) },
                 )
             }
+            composable(NavRoutes.ProfileScreen.route) {
+                ProfileScreen(
+                    onNavigateToFriends = {
+                        navController.navigate(NavRoutes.FriendsScreen.route)
+                    }
+                )
+            }
+
+            composable(NavRoutes.FriendsScreen.route) {
+                FriendsScreen()
+            }
         }
     }
 }
@@ -137,7 +179,7 @@ private fun ExpandableFab(
                 modifier = Modifier.padding(bottom = 8.dp),
                 icon = {},
 
-            )
+                )
             ExtendedFloatingActionButton(
                 onClick = {
                     expanded = false
@@ -149,8 +191,40 @@ private fun ExpandableFab(
                 },
             )
         }
-        FloatingActionButton(onClick = { expanded = !expanded }) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
+        FloatingActionButton(onClick = { expanded = !expanded }, containerColor = NiyamColors.primaryColor) {
+            Icon(Icons.Default.Add, contentDescription = "Add", tint =  NiyamColors.whiteColor)
         }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
+    NavigationBar(containerColor = NiyamColors.surfaceBackgroundColor) {
+        NavigationBarItem(
+            selected = currentRoute == NavRoutes.HomeScreen.route,
+            onClick = {
+                navController.navigate(NavRoutes.HomeScreen.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+            label = { Text("Home") },
+            colors = NavigationBarItemDefaults.colors(selectedIconColor = NiyamColors.blueColor, selectedTextColor = NiyamColors.blueColor, unselectedIconColor = NiyamColors.greyColor, unselectedTextColor = NiyamColors.greyColor, indicatorColor = MaterialTheme.colorScheme.primary),
+        )
+
+        NavigationBarItem(
+            selected = currentRoute == NavRoutes.ProfileScreen.route,
+            onClick = {
+                navController.navigate(NavRoutes.ProfileScreen.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+            label = { Text("Profile") }
+        )
     }
 }

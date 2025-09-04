@@ -5,10 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.project.niyam.data.local.dao.AlarmDao
 import com.project.niyam.data.local.dao.FlexibleTaskDao
+import com.project.niyam.data.local.dao.FriendDao
 import com.project.niyam.data.local.dao.SubTaskDao
 import com.project.niyam.data.local.dao.TimeBoundTaskDao
 import com.project.niyam.data.local.entity.AlarmEntity
 import com.project.niyam.data.local.entity.FlexibleTaskEntity
+import com.project.niyam.data.local.entity.FriendEntity
 import com.project.niyam.data.local.entity.SubTaskEntity
 import com.project.niyam.data.local.entity.TimeBoundTaskEntity
 import com.project.niyam.data.local.util.Converters
@@ -19,6 +21,7 @@ import com.project.niyam.data.local.util.Converters
         FlexibleTaskEntity::class,
         SubTaskEntity::class,
         AlarmEntity::class,
+        FriendEntity::class,
     ],
     version = 1,
     exportSchema = false,
@@ -30,4 +33,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun flexibleTaskDao(): FlexibleTaskDao
     abstract fun subTaskDao(): SubTaskDao
     abstract fun alarmDao(): AlarmDao
+
+    abstract fun friendDao(): FriendDao
 }

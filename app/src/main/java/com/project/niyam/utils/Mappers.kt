@@ -14,7 +14,9 @@ import com.project.niyam.ui.screens.flexibleTask.FlexibleUiState
 import com.project.niyam.ui.screens.home.FlexibleTaskUI
 import com.project.niyam.ui.screens.home.TimeBoundTaskUI
 import com.project.niyam.ui.screens.runningTask.TaskUiState
+import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 fun FlexibleUiState.toEntity(): FlexibleTaskEntity {
@@ -26,18 +28,39 @@ fun FlexibleUiState.toEntity(): FlexibleTaskEntity {
         hoursAlloted = hoursAlloted,
         taskName = name,
         taskDescription = description,
+        secondsRemaining = hoursAlloted * 60,
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun UiState.toEntity(): TimeBoundTaskEntity {
     val date: LocalDate = LocalDate.now()
+    val startDateTime = LocalDateTime.of(date, startTime!!)
+    val endDateTime = LocalDateTime.of(date, endTime!!)
+
+    val now = LocalDateTime.now()
+
+    val secondsRemaining = when {
+        now.isBefore(startDateTime) -> {
+            // Task hasn’t started yet → full duration
+            Duration.between(startDateTime, endDateTime).seconds
+        }
+        now.isAfter(endDateTime) -> {
+            // Task already ended → 0 seconds left
+            0
+        }
+        else -> {
+            // Task in progress → remaining till end
+            Duration.between(now, endDateTime).seconds
+        }
+    }
     return TimeBoundTaskEntity(
-        startTime = startTime!!,
-        endTime = endTime!!,
+        startTime = startTime,
+        endTime = endTime,
         taskName = name,
         taskDescription = description,
         date = date,
+        secondsRemaining =secondsRemaining.toInt()
     )
 }
 
@@ -71,16 +94,31 @@ fun SubTaskUi.toEntity(taskId: Int, isFlexible: Boolean): SubTaskEntity {
     )
 }
 
-fun TimeBoundTaskEntity.toUI(): TimeBoundTaskUI =
-    TimeBoundTaskUI(
-        id = id,
-        date = date,
-        startTime = startTime,
-        endTime = endTime,
-        taskName = taskName,
-        taskDescription = taskDescription,
-        completed = completed,
-    )
+@RequiresApi(Build.VERSION_CODES.O)
+fun TimeBoundTaskEntity.toUI(): TimeBoundTaskUI
+    {
+        val date: LocalDate = LocalDate.now()
+        val startDateTime = LocalDateTime.of(date, startTime)
+        val endDateTime = LocalDateTime.of(date, endTime)
+
+        val now = LocalDateTime.now()
+
+        val totalTimeAllocated =
+                Duration.between(startDateTime, endDateTime).seconds
+
+        return TimeBoundTaskUI(
+            id = id,
+            date = date,
+            startTime = startTime,
+            endTime = endTime,
+            taskName = taskName,
+            taskDescription = taskDescription,
+            completed = isCompleted,
+            timeRemaining = secondsRemaining,
+            status = status,
+            totalTimeAllocated =totalTimeAllocated
+        )
+    }
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun FlexibleTaskEntity.toUI(day: LocalDate): FlexibleTaskUI {
@@ -99,7 +137,9 @@ fun FlexibleTaskEntity.toUI(day: LocalDate): FlexibleTaskUI {
         hoursAlloted = hoursAlloted,
         taskName = taskName,
         taskDescription = taskDescription,
-        completed = completed,
+        completed = isCompleted,
+        state = status,
+        timeRemaining = secondsRemaining
     )
 }
 

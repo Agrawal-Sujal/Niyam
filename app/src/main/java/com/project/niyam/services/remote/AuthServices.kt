@@ -1,8 +1,8 @@
-package com.project.niyam.services.local
+package com.project.niyam.services.remote
 
-import com.project.niyam.domain.models.AuthResponse
-import com.project.niyam.domain.models.LoginRequest
-import com.project.niyam.domain.models.RegisterRequest
+import com.project.niyam.domain.models.auth.AuthResponse
+import com.project.niyam.domain.models.auth.LoginRequest
+import com.project.niyam.domain.models.auth.RegisterRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
