@@ -18,5 +18,5 @@ data class TimeBoundTaskRequest(
     val taskName: String,
 
     @SerializedName("task_description")
-    val taskDescription: String?
+    val taskDescription: String?,
 )

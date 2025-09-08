@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.project.niyam"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -112,4 +113,6 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    // Foundation - Required for AnchoredDraggable (the new swipe API)
+    implementation("androidx.compose.foundation:foundation")
 }

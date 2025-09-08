@@ -78,15 +78,15 @@ fun AddTimeBoundTaskScreen(
                 .fillMaxSize()
                 .background(NiyamColors.backgroundColor)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             // Header
             Text(
                 text = "Create New Task",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color =  NiyamColors.whiteColor,
-                modifier = Modifier.padding(bottom = 32.dp)
+                color = NiyamColors.whiteColor,
+                modifier = Modifier.padding(bottom = 32.dp),
             )
 
             // Title Field
@@ -94,7 +94,7 @@ fun AddTimeBoundTaskScreen(
                 text = "Title",
                 color = NiyamColors.whiteColor,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -103,28 +103,28 @@ fun AddTimeBoundTaskScreen(
                 placeholder = {
                     Text(
                         text = "Enter task title",
-                        color = NiyamColors.greyColor
+                        color = NiyamColors.greyColor,
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor =  NiyamColors.blueColor,
-                    unfocusedBorderColor =  NiyamColors.greyColor,
-                    focusedTextColor =  NiyamColors.whiteColor,
-                    unfocusedTextColor =  NiyamColors.whiteColor,
-                    cursorColor =  NiyamColors.blueColor
+                    focusedBorderColor = NiyamColors.blueColor,
+                    unfocusedBorderColor = NiyamColors.greyColor,
+                    focusedTextColor = NiyamColors.whiteColor,
+                    unfocusedTextColor = NiyamColors.whiteColor,
+                    cursorColor = NiyamColors.blueColor,
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             )
 
             // Description Field
             Text(
                 text = "Description",
-                color =  NiyamColors.whiteColor,
+                color = NiyamColors.whiteColor,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -133,7 +133,7 @@ fun AddTimeBoundTaskScreen(
                 placeholder = {
                     Text(
                         text = "Enter task description",
-                        color =  NiyamColors.greyColor
+                        color = NiyamColors.greyColor,
                     )
                 },
                 modifier = Modifier
@@ -141,14 +141,14 @@ fun AddTimeBoundTaskScreen(
                     .height(120.dp)
                     .padding(bottom = 24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor =  NiyamColors.blueColor,
-                    unfocusedBorderColor =  NiyamColors.greyColor,
-                    focusedTextColor =  NiyamColors.whiteColor,
-                    unfocusedTextColor =  NiyamColors.whiteColor,
-                    cursorColor =  NiyamColors.blueColor
+                    focusedBorderColor = NiyamColors.blueColor,
+                    unfocusedBorderColor = NiyamColors.greyColor,
+                    focusedTextColor = NiyamColors.whiteColor,
+                    unfocusedTextColor = NiyamColors.whiteColor,
+                    cursorColor = NiyamColors.blueColor,
                 ),
                 shape = RoundedCornerShape(8.dp),
-                maxLines = 4
+                maxLines = 4,
             )
 
             // Start Time
@@ -156,28 +156,27 @@ fun AddTimeBoundTaskScreen(
                 text = "Start Time",
                 color = NiyamColors.whiteColor,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
                 value = uiState.startTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "",
-                onValueChange = { } ,
+                onValueChange = { },
                 placeholder = {
                     Text(
                         text = "Select start time",
-                        color = NiyamColors.greyColor
+                        color = NiyamColors.greyColor,
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    ,
+                    .padding(bottom = 16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor =  NiyamColors.blueColor,
-                    unfocusedBorderColor =  NiyamColors.greyColor,
-                    focusedTextColor =  NiyamColors.whiteColor,
-                    unfocusedTextColor =  NiyamColors.whiteColor,
-                    cursorColor =  NiyamColors.blueColor
+                    focusedBorderColor = NiyamColors.blueColor,
+                    unfocusedBorderColor = NiyamColors.greyColor,
+                    focusedTextColor = NiyamColors.whiteColor,
+                    unfocusedTextColor = NiyamColors.whiteColor,
+                    cursorColor = NiyamColors.blueColor,
                 ),
                 shape = RoundedCornerShape(8.dp),
 
@@ -189,9 +188,9 @@ fun AddTimeBoundTaskScreen(
                         modifier = Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = LocalIndication.current,
-                        ) { showStartTimePicker = true }
+                        ) { showStartTimePicker = true },
                     )
-                }
+                },
             )
 
             // End Time
@@ -199,7 +198,7 @@ fun AddTimeBoundTaskScreen(
                 text = "End Time",
                 color = NiyamColors.whiteColor,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -208,19 +207,18 @@ fun AddTimeBoundTaskScreen(
                 placeholder = {
                     Text(
                         text = "Select end time",
-                        color = NiyamColors.greyColor
+                        color = NiyamColors.greyColor,
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp)
-                    ,
+                    .padding(bottom = 32.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor =  NiyamColors.blueColor,
-                    unfocusedBorderColor =  NiyamColors.greyColor,
-                    focusedTextColor =  NiyamColors.whiteColor,
-                    unfocusedTextColor =  NiyamColors.whiteColor,
-                    cursorColor =  NiyamColors.blueColor
+                    focusedBorderColor = NiyamColors.blueColor,
+                    unfocusedBorderColor = NiyamColors.greyColor,
+                    focusedTextColor = NiyamColors.whiteColor,
+                    unfocusedTextColor = NiyamColors.whiteColor,
+                    cursorColor = NiyamColors.blueColor,
                 ),
                 shape = RoundedCornerShape(8.dp),
 
@@ -232,9 +230,9 @@ fun AddTimeBoundTaskScreen(
                         modifier = Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = LocalIndication.current,
-                        ) { showEndTimePicker = true }
+                        ) { showEndTimePicker = true },
                     )
-                }
+                },
             )
 
             // Subtasks Section
@@ -243,14 +241,14 @@ fun AddTimeBoundTaskScreen(
                 color = NiyamColors.whiteColor,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp),
             )
 
             // Display existing subtasks
-            uiState.subTasks.forEach { subtask ->
+            uiState.subTasks.forEachIndexed { idx, subtask ->
                 SubTaskItem(
                     subtask = subtask,
-                    onRemove = { /* TODO: Implement remove functionality */ }
+                    onRemove = { viewModel.removeSubTask(idx) },
                 )
             }
 
@@ -261,15 +259,15 @@ fun AddTimeBoundTaskScreen(
                     .fillMaxWidth()
                     .padding(bottom = 32.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = NiyamColors.blueColor
+                    contentColor = NiyamColors.blueColor,
                 ),
                 border = BorderStroke(1.dp, NiyamColors.blueColor),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add subtask",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Add another subtask")
@@ -284,14 +282,14 @@ fun AddTimeBoundTaskScreen(
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = NiyamColors.blueColor
+                    containerColor = NiyamColors.blueColor,
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
                 Text(
                     text = "Create Task",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
@@ -304,7 +302,7 @@ fun AddTimeBoundTaskScreen(
             onTimeSelected = { time ->
                 viewModel.onStartTimeSelected(time)
                 showStartTimePicker = false
-            }
+            },
         )
     }
 
@@ -314,7 +312,7 @@ fun AddTimeBoundTaskScreen(
             onTimeSelected = { time ->
                 viewModel.onEndTimeSelected(time)
                 showEndTimePicker = false
-            }
+            },
         )
     }
 
@@ -329,7 +327,7 @@ fun AddTimeBoundTaskScreen(
                 viewModel.addSubTask(title, description)
                 viewModel.dismissSubTaskSheet()
             },
-            onDismiss = { viewModel.dismissSubTaskSheet() }
+            onDismiss = { viewModel.dismissSubTaskSheet() },
         )
     }
 
@@ -340,13 +338,13 @@ fun AddTimeBoundTaskScreen(
             title = {
                 Text(
                     text = "Cancel Task Creation",
-                    color = NiyamColors.whiteColor
+                    color = NiyamColors.whiteColor,
                 )
             },
             text = {
                 Text(
                     text = "Are you sure you want to cancel? All unsaved changes will be lost.",
-                    color = NiyamColors.greyColor
+                    color = NiyamColors.greyColor,
                 )
             },
             confirmButton = {
@@ -354,25 +352,25 @@ fun AddTimeBoundTaskScreen(
                     onClick = {
                         viewModel.dismissCancelDialog()
                         onNavigateBack()
-                    }
+                    },
                 ) {
                     Text(
                         text = "Yes, Cancel",
-                        color = NiyamColors.blueColor
+                        color = NiyamColors.blueColor,
                     )
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { viewModel.dismissCancelDialog() }
+                    onClick = { viewModel.dismissCancelDialog() },
                 ) {
                     Text(
                         text = "Continue Editing",
-                        color = NiyamColors.greyColor
+                        color = NiyamColors.greyColor,
                     )
                 }
             },
-            containerColor = Color(0xFF2A2A2A)
+            containerColor = Color(0xFF2A2A2A),
         )
     }
 }
@@ -380,52 +378,52 @@ fun AddTimeBoundTaskScreen(
 @Composable
 fun SubTaskItem(
     subtask: SubTaskUi,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = NiyamColors.surfaceBackgroundColor
+            containerColor = NiyamColors.surfaceBackgroundColor,
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Top,
         ) {
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 Text(
                     text = subtask.title,
                     color = NiyamColors.whiteColor,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
                 if (subtask.description.isNotBlank()) {
                     Text(
                         text = subtask.description,
                         color = NiyamColors.greyColor,
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp),
                     )
                 }
             }
 
             IconButton(
                 onClick = onRemove,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Remove subtask",
                     tint = Color(0xFFFF4444),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
@@ -440,23 +438,23 @@ fun SubTaskBottomSheet(
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onAddSubTask: (String, String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = NiyamColors.surfaceBackgroundColor
+        containerColor = NiyamColors.surfaceBackgroundColor,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp)
+                .padding(24.dp),
         ) {
             Text(
                 text = "Add Subtask",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = NiyamColors.whiteColor,
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(bottom = 24.dp),
             )
 
             OutlinedTextField(
@@ -465,20 +463,20 @@ fun SubTaskBottomSheet(
                 placeholder = {
                     Text(
                         text = "Subtask title",
-                        color = NiyamColors.greyColor
+                        color = NiyamColors.greyColor,
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor =  NiyamColors.blueColor,
-                    unfocusedBorderColor =  NiyamColors.greyColor,
-                    focusedTextColor =  NiyamColors.whiteColor,
-                    unfocusedTextColor =  NiyamColors.whiteColor,
-                    cursorColor =  NiyamColors.blueColor
+                    focusedBorderColor = NiyamColors.blueColor,
+                    unfocusedBorderColor = NiyamColors.greyColor,
+                    focusedTextColor = NiyamColors.whiteColor,
+                    unfocusedTextColor = NiyamColors.whiteColor,
+                    cursorColor = NiyamColors.blueColor,
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             )
 
             OutlinedTextField(
@@ -487,7 +485,7 @@ fun SubTaskBottomSheet(
                 placeholder = {
                     Text(
                         text = "Subtask description",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -495,27 +493,27 @@ fun SubTaskBottomSheet(
                     .height(100.dp)
                     .padding(bottom = 24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor =  NiyamColors.blueColor,
-                    unfocusedBorderColor =  NiyamColors.greyColor,
-                    focusedTextColor =  NiyamColors.whiteColor,
-                    unfocusedTextColor =  NiyamColors.whiteColor,
-                    cursorColor =  NiyamColors.blueColor
+                    focusedBorderColor = NiyamColors.blueColor,
+                    unfocusedBorderColor = NiyamColors.greyColor,
+                    focusedTextColor = NiyamColors.whiteColor,
+                    unfocusedTextColor = NiyamColors.whiteColor,
+                    cursorColor = NiyamColors.blueColor,
                 ),
                 shape = RoundedCornerShape(8.dp),
-                maxLines = 3
+                maxLines = 3,
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedButton(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.Gray
+                        contentColor = Color.Gray,
                     ),
-                    border = BorderStroke(1.dp, Color.Gray)
+                    border = BorderStroke(1.dp, Color.Gray),
                 ) {
                     Text("Cancel")
                 }
@@ -524,9 +522,9 @@ fun SubTaskBottomSheet(
                     onClick = { onAddSubTask(tempTitle, tempDescription) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF8A2BE2)
+                        containerColor = Color(0xFF8A2BE2),
                     ),
-                    enabled = tempTitle.isNotBlank()
+                    enabled = tempTitle.isNotBlank(),
                 ) {
                     Text("Add Subtask")
                 }
@@ -542,7 +540,7 @@ fun SubTaskBottomSheet(
 @Composable
 fun TimePickerDialog(
     onDismiss: () -> Unit,
-    onTimeSelected: (LocalTime) -> Unit
+    onTimeSelected: (LocalTime) -> Unit,
 ) {
     val timePickerState = rememberTimePickerState()
 
@@ -553,14 +551,14 @@ fun TimePickerDialog(
                 onClick = {
                     val selectedTime = LocalTime.of(
                         timePickerState.hour,
-                        timePickerState.minute
+                        timePickerState.minute,
                     )
                     onTimeSelected(selectedTime)
-                }
+                },
             ) {
                 Text(
                     text = "OK",
-                    color = Color(0xFF8A2BE2)
+                    color = Color(0xFF8A2BE2),
                 )
             }
         },
@@ -568,7 +566,7 @@ fun TimePickerDialog(
             TextButton(onClick = onDismiss) {
                 Text(
                     text = "Cancel",
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
         },
@@ -589,10 +587,10 @@ fun TimePickerDialog(
                     timeSelectorSelectedContainerColor = Color(0xFF8A2BE2),
                     timeSelectorUnselectedContainerColor = Color(0xFF2A2A2A),
                     timeSelectorSelectedContentColor = Color.White,
-                    timeSelectorUnselectedContentColor = Color.Gray
-                )
+                    timeSelectorUnselectedContentColor = Color.Gray,
+                ),
             )
         },
-        containerColor = Color(0xFF2A2A2A)
+        containerColor = Color(0xFF2A2A2A),
     )
 }

@@ -28,7 +28,7 @@ fun FlexibleUiState.toEntity(): FlexibleTaskEntity {
         hoursAlloted = hoursAlloted,
         taskName = name,
         taskDescription = description,
-        secondsRemaining = hoursAlloted * 60,
+        secondsRemaining = hoursAlloted * 60 * 60,
     )
 }
 
@@ -60,7 +60,7 @@ fun UiState.toEntity(): TimeBoundTaskEntity {
         taskName = name,
         taskDescription = description,
         date = date,
-        secondsRemaining =secondsRemaining.toInt()
+        secondsRemaining = secondsRemaining.toInt(),
     )
 }
 
@@ -68,7 +68,7 @@ fun FlexibleUiState.toAlarmEntity(id: Int): AlarmEntity {
     return AlarmEntity(
         taskId = id,
         isFlexible = true,
-        secondsRemaining = hoursAlloted * 60,
+        secondsRemaining = hoursAlloted * 60 * 60,
         endDate = windowEndDate!!,
         endTime = windowEndTime!!,
     )
@@ -76,11 +76,31 @@ fun FlexibleUiState.toAlarmEntity(id: Int): AlarmEntity {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun UiState.toAlarmEntity(id: Int): AlarmEntity {
+    val date: LocalDate = LocalDate.now()
+    val startDateTime = LocalDateTime.of(date, startTime!!)
+    val endDateTime = LocalDateTime.of(date, endTime!!)
+
+    val now = LocalDateTime.now()
+
+    val secondsRemaining = when {
+        now.isBefore(startDateTime) -> {
+            // Task hasn’t started yet → full duration
+            Duration.between(startDateTime, endDateTime).seconds
+        }
+        now.isAfter(endDateTime) -> {
+            // Task already ended → 0 seconds left
+            0
+        }
+        else -> {
+            // Task in progress → remaining till end
+            Duration.between(now, endDateTime).seconds
+        }
+    }
     return AlarmEntity(
         taskId = id,
         isFlexible = false,
-        secondsRemaining = 60,
-        endTime = endTime!!,
+        secondsRemaining = secondsRemaining.toInt(),
+        endTime = endTime,
         endDate = LocalDate.now(),
     )
 }
@@ -95,30 +115,29 @@ fun SubTaskUi.toEntity(taskId: Int, isFlexible: Boolean): SubTaskEntity {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun TimeBoundTaskEntity.toUI(): TimeBoundTaskUI
-    {
-        val date: LocalDate = LocalDate.now()
-        val startDateTime = LocalDateTime.of(date, startTime)
-        val endDateTime = LocalDateTime.of(date, endTime)
+fun TimeBoundTaskEntity.toUI(): TimeBoundTaskUI {
+    val date: LocalDate = LocalDate.now()
+    val startDateTime = LocalDateTime.of(date, startTime)
+    val endDateTime = LocalDateTime.of(date, endTime)
 
-        val now = LocalDateTime.now()
+    val now = LocalDateTime.now()
 
-        val totalTimeAllocated =
-                Duration.between(startDateTime, endDateTime).seconds
+    val totalTimeAllocated =
+        Duration.between(startDateTime, endDateTime).seconds
 
-        return TimeBoundTaskUI(
-            id = id,
-            date = date,
-            startTime = startTime,
-            endTime = endTime,
-            taskName = taskName,
-            taskDescription = taskDescription,
-            completed = isCompleted,
-            timeRemaining = secondsRemaining,
-            status = status,
-            totalTimeAllocated =totalTimeAllocated
-        )
-    }
+    return TimeBoundTaskUI(
+        id = id,
+        date = date,
+        startTime = startTime,
+        endTime = endTime,
+        taskName = taskName,
+        taskDescription = taskDescription,
+        completed = isCompleted,
+        timeRemaining = secondsRemaining,
+        status = status,
+        totalTimeAllocated = totalTimeAllocated,
+    )
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun FlexibleTaskEntity.toUI(day: LocalDate): FlexibleTaskUI {
@@ -139,7 +158,7 @@ fun FlexibleTaskEntity.toUI(day: LocalDate): FlexibleTaskUI {
         taskDescription = taskDescription,
         completed = isCompleted,
         state = status,
-        timeRemaining = secondsRemaining
+        timeRemaining = secondsRemaining,
     )
 }
 
@@ -170,6 +189,7 @@ fun SubTaskEntity.toUi(): com.project.niyam.ui.screens.runningTask.SubTaskUi {
 }
 fun com.project.niyam.ui.screens.runningTask.SubTaskUi.toEntity(): SubTaskEntity {
     return SubTaskEntity(
+        id = id,
         flexibleTaskId = if (isFlexible) taskId else null,
         timeBoundTaskId = if (!isFlexible) taskId else null,
         subTaskName = name,

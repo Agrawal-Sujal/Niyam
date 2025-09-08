@@ -10,7 +10,8 @@ import java.time.format.DateTimeFormatter
 object TaskMapper {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE       // yyyy-MM-dd
+    private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE // yyyy-MM-dd
+
     @RequiresApi(Build.VERSION_CODES.O)
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss") // 24h format
 
@@ -23,7 +24,7 @@ object TaskMapper {
             endTime = endTime.format(timeFormatter),
             status = if (isCompleted) "DONE" else "IN_PROGRESS", // you can map differently
             taskName = taskName,
-            taskDescription = taskDescription
+            taskDescription = taskDescription,
         )
     }
 
@@ -43,14 +44,14 @@ object TaskMapper {
     }
 
     fun SubTaskEntity.toRequest(): SubTaskRequest {
-        val isFlexible = flexibleTaskId!=null
+        val isFlexible = flexibleTaskId != null
         return SubTaskRequest(
-            mainTimeBoundTask = if(!isFlexible) remoteTaskId else null,
-            mainFlexibleTask = if(isFlexible) remoteTaskId else null,
+            mainTimeBoundTask = if (!isFlexible) remoteTaskId else null,
+            mainFlexibleTask = if (isFlexible) remoteTaskId else null,
             isFlexibleTask = isFlexible,
             isCompleted = isCompleted,
             subTaskName = subTaskName,
-            subTaskDescription = subTaskDescription
+            subTaskDescription = subTaskDescription,
         )
     }
 }

@@ -6,6 +6,8 @@ import java.time.LocalTime
 
 data class TaskUiState(
     val id: Long? = null,
+    val title: String = "",
+    val description: String = "",
     val taskId: Int = 0,
     val isFlexible: Boolean = false,
     val remainingTime: String = "00:00:00",
@@ -20,7 +22,7 @@ data class SubTaskUi(
     val id: Int,
     val name: String,
     val description: String?,
-    val isCompleted: Boolean,
+    var isCompleted: Boolean,
     val taskId: Int,
     val isFlexible: Boolean,
 )

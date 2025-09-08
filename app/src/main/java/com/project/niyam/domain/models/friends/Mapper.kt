@@ -15,7 +15,6 @@ fun FriendResponse.toEntity(): FriendEntity {
             "ACCEPTED" -> FriendStatus.ACCEPTED
             "REJECTED" -> FriendStatus.REJECTED
             else -> FriendStatus.PENDING
-        }
+        },
     )
-
 }

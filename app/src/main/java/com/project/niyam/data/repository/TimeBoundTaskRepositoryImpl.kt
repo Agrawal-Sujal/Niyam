@@ -29,4 +29,6 @@ class TimeBoundTaskRepositoryImpl @Inject constructor(
 
     override suspend fun getTask(id: Int): TimeBoundTaskEntity? =
         dao.getTask(id)
+
+    override suspend fun observeTask(id: Int): Flow<TimeBoundTaskEntity?> = dao.observeTask(id)
 }

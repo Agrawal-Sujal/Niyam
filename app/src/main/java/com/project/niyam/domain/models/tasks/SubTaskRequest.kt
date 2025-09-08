@@ -19,5 +19,5 @@ data class SubTaskRequest(
     val subTaskName: String,
 
     @SerializedName("subtask_description")
-    val subTaskDescription: String?
+    val subTaskDescription: String?,
 )

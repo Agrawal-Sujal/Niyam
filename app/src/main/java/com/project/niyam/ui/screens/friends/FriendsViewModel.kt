@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.niyam.data.local.appPref.AppPref
-import com.project.niyam.data.local.entity.FriendEntity
 import com.project.niyam.data.local.entity.FriendStatus
 import com.project.niyam.domain.repository.FriendRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     private val repository: FriendRepository,
-    private val appPref: AppPref
+    private val appPref: AppPref,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FriendUiState())
@@ -50,19 +49,17 @@ class FriendsViewModel @Inject constructor(
                     val acceptedFriends =
                         friends.filter { it.senderId == userId && it.status == FriendStatus.ACCEPTED }
 
-
                     val followBack =
                         friends.filter { relation ->
                             // condition 1: I'm the receiver
                             relation.receiverId == userId &&
-                                    // condition 2: already accepted
-                                    relation.status == FriendStatus.ACCEPTED &&
-                                    // condition 3: I haven't followed them back
-                                    friends.none { reverse ->
-                                        reverse.senderId == userId &&
-                                                reverse.receiverId == relation.senderId
-                                    }
-
+                                // condition 2: already accepted
+                                relation.status == FriendStatus.ACCEPTED &&
+                                // condition 3: I haven't followed them back
+                                friends.none { reverse ->
+                                    reverse.senderId == userId &&
+                                        reverse.receiverId == relation.senderId
+                                }
                         }
 
                     Log.d("Follow Back", followBack.toString())
@@ -72,7 +69,7 @@ class FriendsViewModel @Inject constructor(
                             incomingRequests = incomingRequests.map { it.toUi() },
                             pendingRequests = pendingRequests.map { it.toUi() },
                             friends = acceptedFriends.map { it.toUi() },
-                            followBack = followBack.map { it.toUi() }, isLoading = false
+                            followBack = followBack.map { it.toUi() }, isLoading = false,
                         )
                 }
             } catch (e: Exception) {
@@ -139,11 +136,9 @@ class FriendsViewModel @Inject constructor(
     }
 
     fun withdrawRequest(friendItemUi: FriendItemUi) {
-
     }
 
     fun onUnfollow(friendId: Int) {
-
     }
 
     fun onFollowBack(friendItemUi: FriendItemUi) {
@@ -159,7 +154,7 @@ class FriendsViewModel @Inject constructor(
             if (result.isFailure) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = result.exceptionOrNull()?.message
+                    error = result.exceptionOrNull()?.message,
                 )
             }
             if (result.isSuccess) {

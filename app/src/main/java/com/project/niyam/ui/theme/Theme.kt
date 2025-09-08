@@ -101,25 +101,23 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified,
 )
 
-
-class NiyamColors{
-    companion object{
-        var isDarkTheme : Boolean = false
-        fun changeTheme(isDarkTheme: Boolean){
+class NiyamColors {
+    companion object {
+        var isDarkTheme: Boolean = false
+        fun changeTheme(isDarkTheme: Boolean) {
             this.isDarkTheme = isDarkTheme
         }
-        val greyColor = if(isDarkTheme) Color(0xFF797979) else Color(0xFF797979)
+        val greyColor = if (isDarkTheme) Color(0xFF797979) else Color(0xFF797979)
 
-        val whiteColor = if(isDarkTheme) Color(0xFFF2F2F2) else Color(0xFFF2F2F2)
+        val whiteColor = if (isDarkTheme) Color(0xFFF2F2F2) else Color(0xFFF2F2F2)
 
-        val blueColor = if(isDarkTheme) Color(0xFF7F56D9) else Color(0xFF7F56D9)
+        val blueColor = if (isDarkTheme) Color(0xFF7F56D9) else Color(0xFF7F56D9)
 
-        val backgroundColor = if(isDarkTheme) Color(0xFF0D0D12) else Color(0xFF0D0D12)
+        val backgroundColor = if (isDarkTheme) Color(0xFF0D0D12) else Color(0xFF0D0D12)
 
-        val surfaceBackgroundColor = if(isDarkTheme) Color(0xFF14141C) else Color(0xFF14141C)
+        val surfaceBackgroundColor = if (isDarkTheme) Color(0xFF14141C) else Color(0xFF14141C)
 
-        val primaryColor = if(isDarkTheme) Color(0xFF303044) else Color(0xFF303044)
-
+        val primaryColor = if (isDarkTheme) Color(0xFF303044) else Color(0xFF303044)
     }
 }
 
@@ -143,6 +141,6 @@ fun NiyamTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
-        content = content
+        content = content,
     )
 }

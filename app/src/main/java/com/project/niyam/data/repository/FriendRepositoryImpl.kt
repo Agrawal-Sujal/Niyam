@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class FriendRepositoryImpl @Inject constructor(
     val friendServices: FriendServices,
-    val friendDao: FriendDao
+    val friendDao: FriendDao,
 ) : FriendRepository {
     override suspend fun getAllFriends() {
         val response = friendServices.getAllFriends()
@@ -33,7 +33,7 @@ class FriendRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addFriend(
-        friendEntity: FriendEntity
+        friendEntity: FriendEntity,
     ): Result<Unit> {
         val response = friendServices.addFriend(RequestSend(friendId = friendEntity.receiverId))
         val parseResponse = parseResponse(response)

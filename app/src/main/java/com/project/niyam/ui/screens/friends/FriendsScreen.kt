@@ -35,7 +35,7 @@ fun FriendsScreen(viewModel: FriendsViewModel = hiltViewModel()) {
         onReject = viewModel::rejectRequest,
 //        onWithdraw = viewModel::withdrawRequest,
         onUnfollow = viewModel::onUnfollow,
-        onFollowBack = viewModel::onFollowBack
+        onFollowBack = viewModel::onFollowBack,
     )
 }
 
@@ -48,29 +48,29 @@ fun FriendsPage(
     onReject: (Int) -> Unit,
 //    onWithdraw: (Int) -> Unit,
     onUnfollow: (Int) -> Unit,
-    onFollowBack: (FriendItemUi) -> Unit
+    onFollowBack: (FriendItemUi) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         // 🔍 Add Friend
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = onSearchChange,
             label = { Text("Add Friend by Username") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         DropdownMenu(
             expanded = state.suggestions.isNotEmpty(),
-            onDismissRequest = { }
+            onDismissRequest = { },
         ) {
             state.suggestions.forEach { suggestion ->
                 DropdownMenuItem(
                     text = { Text(suggestion) },
-                    onClick = { onAddFriend(suggestion) }
+                    onClick = { onAddFriend(suggestion) },
                 )
             }
         }
@@ -84,7 +84,7 @@ fun FriendsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(req.senderUsername)
                 Row {
@@ -103,7 +103,7 @@ fun FriendsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(req.receiverUsername)
                 TextButton(onClick = { }) { Text("Withdraw") }
@@ -119,13 +119,13 @@ fun FriendsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
-                elevation = CardDefaults.cardElevation()
+                elevation = CardDefaults.cardElevation(),
             ) {
                 Row(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(friend.receiverUsername)
                     TextButton(onClick = { onUnfollow(friend.id) }) { Text("Unfollow") }
@@ -142,7 +142,7 @@ fun FriendsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(user.senderUsername)
                 TextButton(onClick = { onFollowBack(user) }) { Text("Follow Back") }
@@ -150,4 +150,3 @@ fun FriendsPage(
         }
     }
 }
-

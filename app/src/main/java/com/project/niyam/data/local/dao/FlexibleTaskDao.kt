@@ -17,7 +17,7 @@ interface FlexibleTaskDao {
     fun getAllTask(date: LocalDate): Flow<List<FlexibleTaskEntity>>
 
     @Query("SELECT * FROM flexible_task WHERE isSynced = 0")
-    fun getAllUnSyncedTasks():List<FlexibleTaskEntity>
+    fun getAllUnSyncedTasks(): List<FlexibleTaskEntity>
 
     @Query("SELECT * FROM flexible_task WHERE id = :id")
     fun observeById(id: Long): Flow<FlexibleTaskEntity?>

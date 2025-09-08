@@ -59,6 +59,18 @@ class AddTimeBoundedTaskViewModel @Inject constructor(
             }
         }
     }
+    fun removeSubTask(index: Int) {
+        val current = _uiState.value
+        if (index in current.subTasks.indices) {
+            _uiState.update {
+                it.copy(
+                    subTasks = it.subTasks.toMutableList().apply {
+                        removeAt(index)
+                    },
+                )
+            }
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onSaveTask(onDone: () -> Unit) {

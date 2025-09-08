@@ -60,6 +60,17 @@ object NotificationHelper {
         return builder.build()
     }
 
+    fun buildLoadingNotification(ctx: Context): Notification {
+        return NotificationCompat.Builder(ctx, Constants.NOTIFICATION_CHANNEL_ID)
+            .setContentTitle("Starting alarm service…")
+            .setContentText("Loading, please wait")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .build()
+    }
+
     @SuppressLint("DefaultLocale")
     private fun format(totalSec: Int): String {
         val h = totalSec / 3600

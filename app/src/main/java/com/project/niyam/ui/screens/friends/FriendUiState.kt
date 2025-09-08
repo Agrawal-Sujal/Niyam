@@ -11,7 +11,7 @@ data class FriendUiState(
     val suggestions: List<String> = emptyList(),
     val searchQuery: String = "",
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )
 
 data class FriendItemUi(
@@ -20,7 +20,7 @@ data class FriendItemUi(
     var senderUsername: String,
     var receiverId: Int,
     var receiverUsername: String,
-    val status: FriendStatus
+    val status: FriendStatus,
 )
 
 // Mapper
@@ -31,15 +31,15 @@ fun FriendEntity.toUi(): FriendItemUi {
         senderUsername = senderUsername,
         receiverId = receiverId,
         receiverUsername = receiverUsername,
-        status = status
+        status = status,
     )
 }
-fun FriendItemUi.toEntity(): FriendEntity{
+fun FriendItemUi.toEntity(): FriendEntity {
     return FriendEntity(
         senderId = senderId,
         senderUsername = senderUsername,
         receiverId = receiverId,
         receiverUsername = receiverUsername,
-        status = status
+        status = status,
     )
 }

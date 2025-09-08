@@ -15,6 +15,4 @@ interface FriendServices {
 
     @POST("friends/")
     suspend fun addFriend(@Body request: RequestSend): Response<RequestResponse>
-
-
 }

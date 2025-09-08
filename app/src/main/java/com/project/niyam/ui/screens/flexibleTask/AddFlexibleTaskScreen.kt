@@ -71,7 +71,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFlexibleTaskScreen(
-    viewModel: AddFlexibleTaskViewModel=hiltViewModel(),
+    viewModel: AddFlexibleTaskViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -110,7 +110,7 @@ fun AddFlexibleTaskScreen(
                 .fillMaxSize()
                 .background(NiyamColors.backgroundColor)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             // Header
             Text(
@@ -118,7 +118,7 @@ fun AddFlexibleTaskScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = 32.dp),
             )
 
             // Title Field
@@ -126,7 +126,7 @@ fun AddFlexibleTaskScreen(
                 text = "Title",
                 color = Color.White,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -135,7 +135,7 @@ fun AddFlexibleTaskScreen(
                 placeholder = {
                     Text(
                         text = "Enter task title",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -146,9 +146,9 @@ fun AddFlexibleTaskScreen(
                     unfocusedBorderColor = Color.Gray,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF8A2BE2)
+                    cursorColor = Color(0xFF8A2BE2),
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             )
 
             // Description Field
@@ -156,7 +156,7 @@ fun AddFlexibleTaskScreen(
                 text = "Description",
                 color = Color.White,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -165,7 +165,7 @@ fun AddFlexibleTaskScreen(
                 placeholder = {
                     Text(
                         text = "Enter task description",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -177,10 +177,10 @@ fun AddFlexibleTaskScreen(
                     unfocusedBorderColor = Color.Gray,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF8A2BE2)
+                    cursorColor = Color(0xFF8A2BE2),
                 ),
                 shape = RoundedCornerShape(8.dp),
-                maxLines = 4
+                maxLines = 4,
             )
 
             // End Date
@@ -188,7 +188,7 @@ fun AddFlexibleTaskScreen(
                 text = "Due Date",
                 color = Color.White,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -208,7 +208,7 @@ fun AddFlexibleTaskScreen(
                 placeholder = {
                     Text(
                         text = "dd/MM/yyyy",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -219,7 +219,7 @@ fun AddFlexibleTaskScreen(
                     unfocusedBorderColor = Color.Gray,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF8A2BE2)
+                    cursorColor = Color(0xFF8A2BE2),
                 ),
                 shape = RoundedCornerShape(8.dp),
                 trailingIcon = {
@@ -230,9 +230,9 @@ fun AddFlexibleTaskScreen(
                         modifier = Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = LocalIndication.current,
-                        ) { showEndDatePicker = true }
+                        ) { showEndDatePicker = true },
                     )
-                }
+                },
             )
 
             // Hours Allocated
@@ -240,7 +240,7 @@ fun AddFlexibleTaskScreen(
                 text = "Time Estimate (hours)",
                 color = Color.White,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
 
             OutlinedTextField(
@@ -257,7 +257,7 @@ fun AddFlexibleTaskScreen(
                 placeholder = {
                     Text(
                         text = "e.g. 3",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -268,10 +268,10 @@ fun AddFlexibleTaskScreen(
                     unfocusedBorderColor = Color.Gray,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF8A2BE2)
+                    cursorColor = Color(0xFF8A2BE2),
                 ),
                 shape = RoundedCornerShape(8.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
 
             // Subtasks Section
@@ -280,14 +280,14 @@ fun AddFlexibleTaskScreen(
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp),
             )
 
             // Display existing subtasks
-            uiState.subTasks.forEach { subtask ->
+            uiState.subTasks.forEachIndexed { idx, subtask ->
                 SubTaskItem(
                     subtask = subtask,
-                    onRemove = { /* TODO: Implement remove functionality */ }
+                    onRemove = { viewModel.removeSubTask(idx) },
                 )
             }
 
@@ -298,15 +298,15 @@ fun AddFlexibleTaskScreen(
                     .fillMaxWidth()
                     .padding(bottom = 32.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color(0xFF8A2BE2)
+                    contentColor = Color(0xFF8A2BE2),
                 ),
                 border = BorderStroke(1.dp, Color(0xFF8A2BE2)),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add subtask",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Add another subtask")
@@ -321,14 +321,14 @@ fun AddFlexibleTaskScreen(
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8A2BE2)
+                    containerColor = Color(0xFF8A2BE2),
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
                 Text(
                     text = "Create Task",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
@@ -341,7 +341,7 @@ fun AddFlexibleTaskScreen(
             onDateSelected = { date ->
                 viewModel.onWindowEndDateSelected(date)
                 showEndDatePicker = false
-            }
+            },
         )
     }
 
@@ -356,7 +356,7 @@ fun AddFlexibleTaskScreen(
                 viewModel.addSubTask(title, description)
                 viewModel.dismissSubTaskSheet()
             },
-            onDismiss = { viewModel.dismissSubTaskSheet() }
+            onDismiss = { viewModel.dismissSubTaskSheet() },
         )
     }
 
@@ -367,13 +367,13 @@ fun AddFlexibleTaskScreen(
             title = {
                 Text(
                     text = "Cancel Task Creation",
-                    color = Color.White
+                    color = Color.White,
                 )
             },
             text = {
                 Text(
                     text = "Are you sure you want to cancel? All unsaved changes will be lost.",
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             },
             confirmButton = {
@@ -381,25 +381,25 @@ fun AddFlexibleTaskScreen(
                     onClick = {
                         viewModel.dismissCancelDialog()
                         onNavigateBack()
-                    }
+                    },
                 ) {
                     Text(
                         text = "Yes, Cancel",
-                        color = Color(0xFF8A2BE2)
+                        color = Color(0xFF8A2BE2),
                     )
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { viewModel.dismissCancelDialog() }
+                    onClick = { viewModel.dismissCancelDialog() },
                 ) {
                     Text(
                         text = "Continue Editing",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 }
             },
-            containerColor = NiyamColors.surfaceBackgroundColor
+            containerColor = NiyamColors.surfaceBackgroundColor,
         )
     }
 }
@@ -407,52 +407,52 @@ fun AddFlexibleTaskScreen(
 @Composable
 fun SubTaskItem(
     subtask: SubTaskUi,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = NiyamColors.surfaceBackgroundColor
+            containerColor = NiyamColors.surfaceBackgroundColor,
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Top,
         ) {
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 Text(
                     text = subtask.title,
                     color = Color.White,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
                 if (subtask.description.isNotBlank()) {
                     Text(
                         text = subtask.description,
                         color = Color.Gray,
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp),
                     )
                 }
             }
 
             IconButton(
                 onClick = onRemove,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Remove subtask",
                     tint = Color(0xFFFF4444),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
@@ -467,23 +467,23 @@ fun SubTaskBottomSheet(
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onAddSubTask: (String, String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = NiyamColors.surfaceBackgroundColor
+        containerColor = NiyamColors.surfaceBackgroundColor,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp)
+                .padding(24.dp),
         ) {
             Text(
                 text = "Add Subtask",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(bottom = 24.dp),
             )
 
             OutlinedTextField(
@@ -492,7 +492,7 @@ fun SubTaskBottomSheet(
                 placeholder = {
                     Text(
                         text = "Subtask title",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -503,9 +503,9 @@ fun SubTaskBottomSheet(
                     unfocusedBorderColor = Color.Gray,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF8A2BE2)
+                    cursorColor = Color(0xFF8A2BE2),
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             )
 
             OutlinedTextField(
@@ -514,7 +514,7 @@ fun SubTaskBottomSheet(
                 placeholder = {
                     Text(
                         text = "Subtask description",
-                        color = Color.Gray
+                        color = Color.Gray,
                     )
                 },
                 modifier = Modifier
@@ -526,23 +526,23 @@ fun SubTaskBottomSheet(
                     unfocusedBorderColor = Color.Gray,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    cursorColor = Color(0xFF8A2BE2)
+                    cursorColor = Color(0xFF8A2BE2),
                 ),
                 shape = RoundedCornerShape(8.dp),
-                maxLines = 3
+                maxLines = 3,
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedButton(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.Gray
+                        contentColor = Color.Gray,
                     ),
-                    border = BorderStroke(1.dp, Color.Gray)
+                    border = BorderStroke(1.dp, Color.Gray),
                 ) {
                     Text("Cancel")
                 }
@@ -551,9 +551,9 @@ fun SubTaskBottomSheet(
                     onClick = { onAddSubTask(tempTitle, tempDescription) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF8A2BE2)
+                        containerColor = Color(0xFF8A2BE2),
                     ),
-                    enabled = tempTitle.isNotBlank()
+                    enabled = tempTitle.isNotBlank(),
                 ) {
                     Text("Add Subtask")
                 }
@@ -569,7 +569,7 @@ fun SubTaskBottomSheet(
 @Composable
 fun DatePickerDialog(
     onDismiss: () -> Unit,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
 ) {
     val datePickerState = rememberDatePickerState()
 
@@ -584,11 +584,11 @@ fun DatePickerDialog(
                             .toLocalDate()
                         onDateSelected(selectedDate)
                     }
-                }
+                },
             ) {
                 Text(
                     text = "OK",
-                    color = Color(0xFF8A2BE2)
+                    color = Color(0xFF8A2BE2),
                 )
             }
         },
@@ -596,7 +596,7 @@ fun DatePickerDialog(
             TextButton(onClick = onDismiss) {
                 Text(
                     text = "Cancel",
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
         },
@@ -617,13 +617,13 @@ fun DatePickerDialog(
                     selectedDayContentColor = Color.White,
                     selectedDayContainerColor = Color(0xFF8A2BE2),
                     todayContentColor = Color(0xFF8A2BE2),
-                    todayDateBorderColor = Color(0xFF8A2BE2)
+                    todayDateBorderColor = Color(0xFF8A2BE2),
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         },
         containerColor = NiyamColors.surfaceBackgroundColor,
         modifier = Modifier.fillMaxWidth(),
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(usePlatformDefaultWidth = false),
     )
 }

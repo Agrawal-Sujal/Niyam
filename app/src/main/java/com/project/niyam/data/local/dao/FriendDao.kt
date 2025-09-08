@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.project.niyam.data.local.entity.FriendEntity
-import com.project.niyam.data.local.entity.FriendStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao

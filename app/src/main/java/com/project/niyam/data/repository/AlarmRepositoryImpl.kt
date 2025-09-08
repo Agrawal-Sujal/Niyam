@@ -20,13 +20,12 @@ class AlarmRepositoryImpl @Inject constructor(
 
     override suspend fun get(id: Long): AlarmEntity? = dao.getByIdOnce(id)
     override suspend fun save(alarm: AlarmEntity) {
-        if(!alarm.isFlexible){
+        if (!alarm.isFlexible) {
             val task = timeBoundTaskRepository.getTask(id = alarm.taskId)
             task!!.status = alarm.state
             task.secondsRemaining = alarm.secondsRemaining
             timeBoundTaskRepository.updateTask(task)
-        }
-        else{
+        } else {
             val task = flexibleTaskRepository.getTask(id = alarm.taskId)
             task!!.status = alarm.state
             task.secondsRemaining = alarm.secondsRemaining
@@ -34,4 +33,9 @@ class AlarmRepositoryImpl @Inject constructor(
         }
         dao.upsert(alarm)
     }
+
+    override suspend fun getByTaskId(
+        taskId: Long,
+        isFlexible: Boolean,
+    ): AlarmEntity? = dao.getByTaskId(taskId, isFlexible)
 }

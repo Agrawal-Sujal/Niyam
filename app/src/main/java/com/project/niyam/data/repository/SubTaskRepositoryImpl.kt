@@ -12,8 +12,8 @@ class SubTaskRepositoryImpl @Inject constructor(
     private val dao: SubTaskDao,
 ) : SubTaskRepository {
 
-    override fun getAllSubTask(mainTaskId: Int): Flow<List<SubTaskEntity>> =
-        dao.getAllSubTask(mainTaskId)
+    override fun getAllSubTask(mainTaskId: Int, isFlexible: Boolean): Flow<List<SubTaskEntity>> =
+        dao.getAllSubTask(mainTaskId, isFlexible)
 
     override suspend fun insertSubTask(subTask: SubTaskEntity): Long =
         dao.insertSubTask(subTask)

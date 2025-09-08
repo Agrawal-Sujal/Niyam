@@ -1,13 +1,13 @@
 package com.project.niyam.ui.screens.home
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,12 +31,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,16 +55,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.wear.compose.material.ExperimentalWearMaterialApi
+import androidx.wear.compose.material.FractionalThreshold
+import androidx.wear.compose.material.rememberSwipeableState
+import androidx.wear.compose.material.swipeable
 import com.project.niyam.R
 import com.project.niyam.ui.theme.NiyamColors
 import com.project.niyam.utils.TimerState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -102,7 +116,7 @@ fun HomeScreen(
                 text = state.selectedDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f),
-                color = NiyamColors.whiteColor
+                color = NiyamColors.whiteColor,
             )
 //            Button(onClick = { viewModel.syncTasks() }) {
 //                Text("Sync Tasks")
@@ -137,7 +151,7 @@ fun HomeScreen(
                             imageVector = Icons.Filled.Today,
                             contentDescription = "Today",
                             modifier = Modifier.size(16.dp), // smaller icon
-                            tint = NiyamColors.blueColor
+                            tint = NiyamColors.blueColor,
                         )
                     },
                     modifier = Modifier.height(28.dp), // reduce chip height
@@ -156,7 +170,11 @@ fun HomeScreen(
         )
 
         if (state.isLoading) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth(),color = NiyamColors.blueColor, trackColor = NiyamColors.blueColor)
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = NiyamColors.blueColor,
+                trackColor = NiyamColors.blueColor,
+            )
         }
 
         state.errorMessage?.let { msg ->
@@ -177,12 +195,12 @@ fun HomeScreen(
         ) {
             // Time Bound Section
             if (state.timeBoundTasks.isNotEmpty()) {
-//                item {
-//                    SectionHeader("Time-bound Tasks")
-//                }
-                items(state.timeBoundTasks) { t ->
-                    val status = giveStatus(t.completed,t.status)
-                    TaskCard(
+                items(
+                    items = state.timeBoundTasks,
+                    key = { task -> task.id },
+                ) { t ->
+                    val status = giveStatus(t.completed, t.status)
+                    SwipeableTaskCard(
                         totalTime = t.totalTimeAllocated,
                         title = t.taskName,
                         progress = "",
@@ -194,20 +212,28 @@ fun HomeScreen(
                         statusColor = status.statusColor,
                         onClick = {
                             onTimeBoundClicked(t.id)
-                        }
+                        },
+                        onUpdate = {
+                            // Handle update action for time bound task
+                            // You can navigate to edit screen or show update dialog
+                        },
+                        onDelete = {
+                            // Handle delete action for time bound task
+                            // You can show confirmation dialog or directly delete
+                        },
                     )
                 }
             }
 
             // Flexible Section
             if (state.flexibleTasks.isNotEmpty()) {
-//                item {
-//                    SectionHeader("Weekly Tasks")
-//                }
-                items(state.flexibleTasks) { t ->
-                    val status = giveStatus(t.completed,t.state)
-                    TaskCard(
-                        totalTime = (t.hoursAlloted*60*60).toLong(),
+                items(
+                    items = state.flexibleTasks,
+                    key = { task -> task.id },
+                ) { t ->
+                    val status = giveStatus(t.completed, t.state)
+                    SwipeableTaskCard(
+                        totalTime = (t.hoursAlloted * 60 * 60).toLong(),
                         title = t.taskName,
                         progress = "",
                         dueDate = t.windowEndDate.toString(),
@@ -217,11 +243,224 @@ fun HomeScreen(
                         backgroundColor = status.bgColor,
                         statusColor = status.statusColor,
                         onClick = {
-                            onTimeBoundClicked(t.id)
-                        }
+                            onFlexibleClicked(t.id)
+                        },
+                        onUpdate = {
+                            // Handle update action for flexible task
+                            // You can navigate to edit screen or show update dialog
+                        },
+                        onDelete = {
+                            // Handle delete action for flexible task
+                            // You can show confirmation dialog or directly delete
+                        },
                     )
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalWearMaterialApi::class)
+@Composable
+fun SwipeableTaskCard(
+    totalTime: Long,
+    title: String,
+    progress: String,
+    dueDate: String,
+    timeRemaining: String,
+    status: String,
+    iconRes: Int,
+    backgroundColor: Color,
+    statusColor: Color,
+    onClick: () -> Unit,
+    onUpdate: () -> Unit = {},
+    onDelete: () -> Unit = {},
+) {
+    val swipeableState = rememberSwipeableState(initialValue = 0)
+    val actionWidth = 160.dp // total reveal width per side
+    val sizePx = with(LocalDensity.current) { actionWidth.toPx() }
+    val scope = rememberCoroutineScope()
+
+    val anchors = mapOf(
+        0f to 0, // resting
+        -sizePx to 1, // swipe left
+        sizePx to 2, // swipe right
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .swipeable(
+                state = swipeableState,
+                anchors = anchors,
+                thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                orientation = Orientation.Horizontal,
+            ),
+    ) {
+        // Background (both sides)
+        Row(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(vertical = 6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            // LEFT side actions (Update + Delete)
+            Row(
+                modifier = Modifier
+                    .width(
+                        max(0.dp, with(LocalDensity.current) { swipeableState.offset.value.toDp() }),
+                    )
+                    .fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                if (swipeableState.offset.value > 40) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF4CAF50))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = LocalIndication.current,
+                            ) {
+                                onUpdate()
+                                scope.launch { swipeableState.animateTo(0) }
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        IconButton(onClick = {
+                            onUpdate()
+                            scope.launch { swipeableState.animateTo(0) }
+                        }) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Update",
+                                tint = Color.White,
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFF44336))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = LocalIndication.current,
+                            ) {
+                                onDelete()
+                                scope.launch { swipeableState.animateTo(0) }
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        IconButton(onClick = {
+                            onDelete()
+                            scope.launch { swipeableState.animateTo(0) }
+                        }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.White,
+                            )
+                        }
+                    }
+                }
+            }
+
+            // RIGHT side actions (Update + Delete)
+            Row(
+                modifier = Modifier
+                    .width(
+                        max(
+                            0.dp,
+                            with(LocalDensity.current) { -swipeableState.offset.value.toDp() },
+                        ),
+                    )
+                    .fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                if (swipeableState.offset.value < -40) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF4CAF50))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = LocalIndication.current,
+                            ) {
+                                onUpdate()
+                                scope.launch { swipeableState.animateTo(0) }
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        IconButton(onClick = {
+                            onUpdate()
+                            scope.launch { swipeableState.animateTo(0) }
+                        }) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Update",
+                                tint = Color.White,
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFF44336))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = LocalIndication.current,
+                            ) {
+                                onDelete()
+                                scope.launch { swipeableState.animateTo(0) }
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        IconButton(onClick = {
+                            onDelete()
+                            scope.launch { swipeableState.animateTo(0) }
+                        }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.White,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Foreground card
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+                .clip(RoundedCornerShape(12.dp)),
+        ) {
+            TaskCard(
+                totalTime = totalTime,
+                title = title,
+                progress = progress,
+                dueDate = dueDate,
+                timeRemaining = timeRemaining,
+                status = status,
+                iconRes = iconRes,
+                backgroundColor = backgroundColor,
+                statusColor = statusColor,
+                onClick = onClick,
+            )
         }
     }
 }
@@ -254,6 +493,7 @@ fun DatePickerRow(
         }
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Header(today: LocalDate) {
@@ -261,18 +501,18 @@ fun Header(today: LocalDate) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "Today",
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            color = Color.White
+            color = Color.White,
         )
         Spacer(Modifier.width(8.dp))
         Text(
             text = today.format(DateTimeFormatter.ofPattern("d MMM")),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = Color.Gray,
         )
     }
 }
@@ -334,7 +574,7 @@ private fun SectionHeader(text: String) {
 
 @Composable
 fun TaskCard(
-    totalTime :Long,
+    totalTime: Long,
     title: String,
     progress: String,
     dueDate: String,
@@ -344,6 +584,8 @@ fun TaskCard(
     backgroundColor: Color,
     statusColor: Color,
     onClick: () -> Unit,
+    onUpdate: () -> Unit = {},
+    onDelete: () -> Unit = {},
 ) {
     Card(
         modifier = Modifier
@@ -352,7 +594,7 @@ fun TaskCard(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = LocalIndication.current,
-            ) {onClick() },
+            ) { onClick() },
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(12.dp),
     ) {
@@ -367,7 +609,7 @@ fun TaskCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(statusColor)
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
                     Text(status, color = Color.White, style = MaterialTheme.typography.labelSmall)
                 }
@@ -376,7 +618,7 @@ fun TaskCard(
                 Text(
                     text = "Due Date : $dueDate",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.White
+                    color = Color.White,
                 )
             }
 
@@ -392,32 +634,45 @@ fun TaskCard(
                     Image(
                         painter = painterResource(id = iconRes),
                         contentDescription = null,
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(36.dp),
                     )
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text(title, style = MaterialTheme.typography.titleMedium, color = Color.White)
-                        Text(progress, style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f))
+                        Text(
+                            title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                        )
+                        Text(
+                            progress,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.8f),
+                        )
                     }
                 }
 
-
-                TimerWithProgress(totalTimeSeconds = totalTime.toInt(), timeRemainingSeconds = timeRemaining.toInt(),color =statusColor)
+                TimerWithProgress(
+                    totalTimeSeconds = totalTime.toInt(),
+                    timeRemainingSeconds = timeRemaining.toInt(),
+                    color = statusColor,
+                )
             }
         }
     }
 }
 
-
 @Composable
 fun TimerWithProgress(
     totalTimeSeconds: Int,
     timeRemainingSeconds: Int,
-    color: Color
+    color: Color,
 ) {
     // Calculate progress (completed portion)
     val progress = if (totalTimeSeconds > 0) {
-        ((totalTimeSeconds - timeRemainingSeconds).toFloat() / totalTimeSeconds.toFloat()).coerceIn(0f, 1f)
+        ((totalTimeSeconds - timeRemainingSeconds).toFloat() / totalTimeSeconds.toFloat()).coerceIn(
+            0f,
+            1f,
+        )
     } else {
         0f
     }
@@ -427,7 +682,7 @@ fun TimerWithProgress(
 
     Box(
         modifier = Modifier.size(56.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
             // Draw background circle (white)
@@ -436,7 +691,7 @@ fun TimerWithProgress(
                 startAngle = -90f,
                 sweepAngle = 360f,
                 useCenter = false,
-                style = Stroke(width = 4.dp.toPx())
+                style = Stroke(width = 4.dp.toPx()),
             )
 
             // Draw progress arc (blue for completed portion)
@@ -446,14 +701,14 @@ fun TimerWithProgress(
                     startAngle = -90f,
                     sweepAngle = 360f * progress,
                     useCenter = false,
-                    style = Stroke(width = 4.dp.toPx())
+                    style = Stroke(width = 4.dp.toPx()),
                 )
             }
         }
         Text(
             text = formattedTime,
             color = Color.White,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }
@@ -464,29 +719,51 @@ fun formatTimeRemaining(seconds: Int): String {
             val hours = seconds / 3600.0
             "${String.format("%.1f", hours)} hr"
         }
+
         seconds >= 60 -> { // 1 minute or more
             val minutes = seconds / 60
-            "${minutes} min"
+            "$minutes min"
         }
+
         else -> { // Less than 1 minute
-            "${seconds} sec"
+            "$seconds sec"
         }
     }
 }
 
+data class UiStatus(val status: String, val bgColor: Color, val statusColor: Color)
 
-data class UiStatus(val status: String, val bgColor: Color,val statusColor : Color)
-fun giveStatus(isCompleted: Boolean,state : TimerState): UiStatus{
-    if(isCompleted ){
-        return UiStatus(status = "Completed", statusColor = Color(0xFFFF7426), bgColor = Color(0xFF304431))
+fun giveStatus(isCompleted: Boolean, state: TimerState): UiStatus {
+    if (isCompleted) {
+        return UiStatus(
+            status = "Completed",
+            statusColor = Color(0xFFFF7426),
+            bgColor = Color(0xFF304431),
+        )
     }
-    return when(state){
-        TimerState.IDLE -> UiStatus(status = "Pending", statusColor = Color(0xFFF43535), bgColor = Color(0xFF443030))
+    return when (state) {
+        TimerState.IDLE -> UiStatus(
+            status = "Pending",
+            statusColor = Color(0xFFF43535),
+            bgColor = Color(0xFF443030),
+        )
 
-        TimerState.RUNNING -> UiStatus(status = "In Progress", statusColor = Color(0xFF5869FF), bgColor = Color(0xFF303044))
+        TimerState.RUNNING -> UiStatus(
+            status = "In Progress",
+            statusColor = Color(0xFF5869FF),
+            bgColor = Color(0xFF303044),
+        )
 
-        TimerState.PAUSED -> UiStatus(status = "Paused", statusColor = Color(0xFFF2B720), bgColor = Color(0xFF443041))
+        TimerState.PAUSED -> UiStatus(
+            status = "Paused",
+            statusColor = Color(0xFFF2B720),
+            bgColor = Color(0xFF443041),
+        )
 
-        TimerState.DONE -> UiStatus(status = "Not Completed", statusColor = Color(0xFFF43535), bgColor = Color(0xFF443030))
+        TimerState.DONE -> UiStatus(
+            status = "Not Completed",
+            statusColor = Color(0xFFF43535),
+            bgColor = Color(0xFF443030),
+        )
     }
 }

@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SubTaskDao {
 
-    @Query("SELECT * FROM sub_task WHERE timeBoundTaskId = :mainTaskId OR flexibleTaskId = :mainTaskId")
-    fun getAllSubTask(mainTaskId: Int): Flow<List<SubTaskEntity>>
+    @Query("SELECT * FROM sub_task WHERE (timeBoundTaskId = :mainTaskId AND :isFlexible=0) OR (flexibleTaskId = :mainTaskId AND :isFlexible=1)")
+    fun getAllSubTask(mainTaskId: Int, isFlexible: Boolean): Flow<List<SubTaskEntity>>
 
     @Query("SELECT * FROM sub_task WHERE isSynced = 0  AND remoteTaskId IS NOT NULL")
-    fun getAllUnSyncedTasks():List<SubTaskEntity>
+    fun getAllUnSyncedTasks(): List<SubTaskEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSubTask(subTask: SubTaskEntity): Long

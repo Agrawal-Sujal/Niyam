@@ -17,7 +17,8 @@ interface TimeBoundTaskDao {
     fun getAllTask(date: LocalDate): Flow<List<TimeBoundTaskEntity>>
 
     @Query("SELECT * FROM time_bound_task WHERE isSynced = 0")
-    fun getAllUnSyncedTasks():List<TimeBoundTaskEntity>
+    fun getAllUnSyncedTasks(): List<TimeBoundTaskEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(task: TimeBoundTaskEntity): Long
 
@@ -29,4 +30,7 @@ interface TimeBoundTaskDao {
 
     @Query("SELECT * FROM time_bound_task WHERE id = :id LIMIT 1")
     suspend fun getTask(id: Int): TimeBoundTaskEntity?
+
+    @Query("SELECT * FROM time_bound_task WHERE id = :id LIMIT 1")
+    fun observeTask(id: Int): Flow<TimeBoundTaskEntity?>
 }

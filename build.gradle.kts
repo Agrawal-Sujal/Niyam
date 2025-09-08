@@ -15,7 +15,7 @@ subprojects {
             trimTrailingWhitespace()
             ktlint("0.50.0")
             targetExclude("build/**", "**/generated/**") // Exclude build and generated files
-            indentWithSpaces()
+            leadingTabsToSpaces()
             endWithNewline()
         }
 

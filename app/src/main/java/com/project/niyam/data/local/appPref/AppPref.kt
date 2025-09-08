@@ -23,9 +23,9 @@ class AppPref(private val context: Context) {
     val username: Flow<String?> = context.appDataStore.data.map { it[USERNAME] }
     val token: Flow<String?> = context.appDataStore.data.map { it[TOKEN] }
 
-    val email : Flow<String?> = context.appDataStore.data.map { it[EMAIL] }
+    val email: Flow<String?> = context.appDataStore.data.map { it[EMAIL] }
 
-    suspend fun saveUser(userId: String, username: String, token: String,email : String? = null) {
+    suspend fun saveUser(userId: String, username: String, token: String, email: String? = null) {
         context.appDataStore.edit { prefs ->
             prefs[USER_ID] = userId
             prefs[USERNAME] = username

@@ -37,7 +37,7 @@ import coil.compose.AsyncImage
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    onNavigateToFriends: () -> Unit
+    onNavigateToFriends: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -45,21 +45,22 @@ fun ProfileScreen(
         state = state,
         onSync = { viewModel.sync() },
         onLogout = { viewModel.logout() },
-        onFriends = onNavigateToFriends
+        onFriends = onNavigateToFriends,
     )
 }
+
 @Composable
 fun ProfilePage(
     state: ProfileUiState,
     onSync: () -> Unit,
     onLogout: () -> Unit,
-    onFriends: () -> Unit
+    onFriends: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Profile Photo
         if (state.photoUrl != null) {
@@ -69,7 +70,7 @@ fun ProfilePage(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
             )
         } else {
             Icon(
@@ -79,7 +80,7 @@ fun ProfilePage(
                     .size(100.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-                    .padding(16.dp)
+                    .padding(16.dp),
             )
         }
 
@@ -88,14 +89,14 @@ fun ProfilePage(
         // Username
         Text(
             text = state.username,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
         )
 
         // Email
         Text(
             text = state.email,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(Modifier.height(24.dp))
@@ -104,13 +105,13 @@ fun ProfilePage(
         Button(
             onClick = onSync,
             modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isSyncing
+            enabled = !state.isSyncing,
         ) {
             if (state.isSyncing) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Spacer(Modifier.width(8.dp))
                 Text("Syncing...")
@@ -125,7 +126,7 @@ fun ProfilePage(
 
         Button(
             onClick = onFriends,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(Icons.Default.Group, contentDescription = null)
             Spacer(Modifier.width(8.dp))
@@ -138,8 +139,8 @@ fun ProfilePage(
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.error
-            )
+                contentColor = MaterialTheme.colorScheme.error,
+            ),
         ) {
             Icon(Icons.Default.Logout, contentDescription = null)
             Spacer(Modifier.width(8.dp))

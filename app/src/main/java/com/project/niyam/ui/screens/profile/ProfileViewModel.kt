@@ -13,10 +13,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val appPref: AppPref
+    private val appPref: AppPref,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        ProfileUiState()
+        ProfileUiState(),
     )
     val uiState: StateFlow<ProfileUiState> = _uiState
 

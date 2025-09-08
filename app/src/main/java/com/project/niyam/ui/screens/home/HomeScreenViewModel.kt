@@ -30,7 +30,7 @@ class HomeScreenViewModel @Inject constructor(
     private val timeBoundRepo: TimeBoundTaskRepository,
     private val flexibleRepo: FlexibleTaskRepository,
     val appPref: AppPref,
-    val syncRepository: SyncRepository
+    val syncRepository: SyncRepository,
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(
@@ -64,8 +64,9 @@ class HomeScreenViewModel @Inject constructor(
     fun syncTasks() {
         CoroutineScope(Dispatchers.IO).launch {
             val userId = appPref.userId.first()
-            if (userId != null)
+            if (userId != null) {
                 syncRepository.syncTasks(userId.toInt())
+            }
         }
     }
 

@@ -14,24 +14,24 @@ import com.project.niyam.utils.Utils.parseResponse
 import javax.inject.Inject
 
 class SyncRepositoryImpl@Inject constructor(
-    val timeBoundTaskDao : TimeBoundTaskDao,
-    val tasksServices : TasksServices,
+    val timeBoundTaskDao: TimeBoundTaskDao,
+    val tasksServices: TasksServices,
     val flexibleTaskDao: FlexibleTaskDao,
-    val subTaskDao: SubTaskDao
-): SyncRepository {
+    val subTaskDao: SubTaskDao,
+) : SyncRepository {
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun syncTimeBoundedTasks(userId : Int) {
+    override suspend fun syncTimeBoundedTasks(userId: Int) {
         val tasks = timeBoundTaskDao.getAllUnSyncedTasks()
-        for(task in tasks){
+        for (task in tasks) {
             val response = tasksServices.addTimeBoundedTask(task.toRequest(userId))
             val parseResponse = parseResponse(response)
-            if(response.isSuccessful){
+            if (response.isSuccessful) {
                 task.isSynced = true
                 val remoteId = parseResponse.data!!.id
                 task.remoteId = remoteId
                 timeBoundTaskDao.updateTask(task)
                 val subTasks = subTaskDao.getSubTasks(task.id)
-                for(subTask in subTasks){
+                for (subTask in subTasks) {
                     subTask.remoteTaskId = remoteId
                     subTaskDao.updateSubTask(subTask)
                 }
@@ -40,17 +40,17 @@ class SyncRepositoryImpl@Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun syncFlexibleTasks(userId : Int) {
+    override suspend fun syncFlexibleTasks(userId: Int) {
         val tasks = flexibleTaskDao.getAllUnSyncedTasks()
-        for(task in tasks){
+        for (task in tasks) {
             val response = tasksServices.addFlexibleTask(task.toRequest(userId))
             val parseResponse = parseResponse(response)
-            if(response.isSuccessful){
+            if (response.isSuccessful) {
                 task.isSynced = true
                 task.remoteId = parseResponse.data!!.id
                 flexibleTaskDao.updateTask(task)
                 val subTasks = subTaskDao.getSubTasks(task.id)
-                for(subTask in subTasks){
+                for (subTask in subTasks) {
                     subTask.remoteTaskId = task.remoteId
                     subTaskDao.updateSubTask(subTask)
                 }
@@ -58,21 +58,20 @@ class SyncRepositoryImpl@Inject constructor(
         }
     }
 
-    override suspend fun syncSubTasks(userId : Int) {
+    override suspend fun syncSubTasks(userId: Int) {
         val tasks = subTaskDao.getAllUnSyncedTasks()
-        Log.d("SubTasks",tasks.toString())
-        for(task in tasks){
+        Log.d("SubTasks", tasks.toString())
+        for (task in tasks) {
             val response = tasksServices.addSubTask(task.toRequest())
             val parseResponse = parseResponse(response)
-            if(response.isSuccessful){
+            if (response.isSuccessful) {
                 task.isSynced = true
                 task.remoteId = parseResponse.data!!.id
                 subTaskDao.updateSubTask(task)
-            }
-            else{
+            } else {
                 val error = parseResponse.error
-                Log.d("Error",error.toString())
-                Log.d("Error",response.error().toString())
+                Log.d("Error", error.toString())
+                Log.d("Error", response.error().toString())
             }
         }
     }

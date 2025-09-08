@@ -9,7 +9,7 @@ interface FriendRepository {
     fun observeFriends(): Flow<List<FriendEntity>>
     suspend fun searchUsers(query: String): List<String>
     suspend fun addFriend(
-        friendEntity: FriendEntity
+        friendEntity: FriendEntity,
     ): Result<Unit>
 
     suspend fun acceptRequest(requestId: Int)

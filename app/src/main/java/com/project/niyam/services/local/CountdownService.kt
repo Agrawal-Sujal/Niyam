@@ -14,6 +14,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.project.niyam.data.local.entity.AlarmEntity
 import com.project.niyam.domain.repository.AlarmRepository
 import com.project.niyam.utils.NotificationHelper
+import com.project.niyam.utils.NotificationHelper.buildLoadingNotification
 import com.project.niyam.utils.TimerState
 import com.project.niyam.utils.secondsUntil
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +42,11 @@ class CountdownService : Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (currentForegroundId == null) {
+            startForeground(LOADING_NOTIFICATION_ID, buildLoadingNotification(this))
+            currentForegroundId = LOADING_NOTIFICATION_ID
+        }
+
         val id = intent?.getLongExtra(EXTRA_ALARM_ID, -1L) ?: -1L
         if (id == -1L) return START_NOT_STICKY
         currentId = id
@@ -50,6 +56,7 @@ class CountdownService : Service() {
             ACTION_RESUME -> resumeCountdown(id)
             ACTION_PAUSE -> pauseCountdown(id)
             ACTION_DONE -> doneCountdown(id)
+            ACTION_FINAL_DONE -> finalDoneCountdown(id)
             else -> updateNotification(id) // keep UI fresh
         }
         return START_STICKY
@@ -114,6 +121,17 @@ class CountdownService : Service() {
         stopSelf()
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun finalDoneCountdown(id: Long) = scope.launch {
+        tickJob?.cancel()
+        val a = repo.get(id) ?: return@launch
+        val done = a.copy(state = TimerState.DONE)
+        repo.save(done)
+        postOrUpdate(done)
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
     // endregion
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -153,17 +171,37 @@ class CountdownService : Service() {
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun postOrUpdate(alarm: AlarmEntity) {
-        val notifId = alarm.id.toInt()
+        val notifId = alarm.id.toInt().coerceAtLeast(1) // ensure positive non-zero id
         val notification = NotificationHelper.build(
             this,
             alarm,
         ) { action -> pendingToService(this, alarm.id, action) }
 
-        if (alarm.state == TimerState.RUNNING && currentForegroundId != notifId) {
-            startForeground(notifId, notification)
-            currentForegroundId = notifId
+        val nm = NotificationManagerCompat.from(this)
+
+        if (alarm.state == TimerState.RUNNING) {
+            // Running timers must be foreground.
+            if (currentForegroundId == null) {
+                // Shouldn't normally happen (we start with loading), but handle defensively.
+                startForeground(notifId, notification)
+                currentForegroundId = notifId
+            } else if (currentForegroundId != notifId) {
+                // Replace the dummy or previous foreground notification with the real one.
+                // Stop prior foreground then start new foreground with this id.
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                startForeground(notifId, notification)
+                currentForegroundId = notifId
+            } else {
+                // same id -> just update content
+                nm.notify(notifId, notification)
+            }
         } else {
-            NotificationManagerCompat.from(this).notify(notifId, notification)
+            // Not running: just post as a normal notification. If we were foreground for this id, drop foreground.
+            nm.notify(notifId, notification)
+            if (currentForegroundId == notifId) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                currentForegroundId = null
+            }
         }
     }
 
@@ -179,8 +217,11 @@ class CountdownService : Service() {
         const val ACTION_PAUSE = "countdown.PAUSE"
         const val ACTION_RESUME = "countdown.RESUME"
         const val ACTION_DONE = "countdown.DONE"
+        const val ACTION_FINAL_DONE = "countdown.Final_Done"
 
         private var currentForegroundId: Int? = null
+
+        private const val LOADING_NOTIFICATION_ID = 1
 
         fun intent(ctx: Context, id: Long, action: String): Intent =
             Intent(ctx, CountdownService::class.java).apply {

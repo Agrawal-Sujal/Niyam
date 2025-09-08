@@ -21,4 +21,7 @@ interface AlarmDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(alarm: AlarmEntity)
+
+    @Query("SELECT * FROM alarms WHERE taskId = :taskId AND isFlexible=:isFlexible")
+    suspend fun getByTaskId(taskId: Long, isFlexible: Boolean): AlarmEntity?
 }

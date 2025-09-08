@@ -10,4 +10,6 @@ interface TimeBoundTaskRepository {
     suspend fun deleteTask(id: Int)
     suspend fun updateTask(task: TimeBoundTaskEntity)
     suspend fun getTask(id: Int): TimeBoundTaskEntity?
+
+    suspend fun observeTask(id: Int): Flow<TimeBoundTaskEntity?>
 }

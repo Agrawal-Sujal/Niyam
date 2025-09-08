@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -55,7 +54,7 @@ fun MainScreen(isLoggedIn: Boolean) {
         if (isLoggedIn) NavRoutes.HomeScreen.route else NavRoutes.LoginScreen.route
     val bottomBarRoutes = listOf(
         NavRoutes.HomeScreen.route,
-        NavRoutes.ProfileScreen.route
+        NavRoutes.ProfileScreen.route,
     )
 
     val showBottomBar = currentRoute in bottomBarRoutes
@@ -64,7 +63,7 @@ fun MainScreen(isLoggedIn: Boolean) {
             if (showBottomBar) {
                 BottomNavigationBar(
                     navController = navController,
-                    currentRoute = currentRoute
+                    currentRoute = currentRoute,
                 )
             }
         },
@@ -76,11 +75,11 @@ fun MainScreen(isLoggedIn: Boolean) {
                     },
                     onAddFlexible = {
                         navController.navigate(NavRoutes.AddFlexibleTask.route)
-                    }
+                    },
                 )
             }
         },
-        modifier = Modifier.fillMaxSize().background(color = NiyamColors.backgroundColor)
+        modifier = Modifier.fillMaxSize().background(color = NiyamColors.backgroundColor),
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -147,7 +146,7 @@ fun MainScreen(isLoggedIn: Boolean) {
                 ProfileScreen(
                     onNavigateToFriends = {
                         navController.navigate(NavRoutes.FriendsScreen.route)
-                    }
+                    },
                 )
             }
 
@@ -179,7 +178,7 @@ private fun ExpandableFab(
                 modifier = Modifier.padding(bottom = 8.dp),
                 icon = {},
 
-                )
+            )
             ExtendedFloatingActionButton(
                 onClick = {
                     expanded = false
@@ -192,7 +191,7 @@ private fun ExpandableFab(
             )
         }
         FloatingActionButton(onClick = { expanded = !expanded }, containerColor = NiyamColors.primaryColor) {
-            Icon(Icons.Default.Add, contentDescription = "Add", tint =  NiyamColors.whiteColor)
+            Icon(Icons.Default.Add, contentDescription = "Add", tint = NiyamColors.whiteColor)
         }
     }
 }
@@ -224,7 +223,7 @@ fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
                 }
             },
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") }
+            label = { Text("Profile") },
         )
     }
 }

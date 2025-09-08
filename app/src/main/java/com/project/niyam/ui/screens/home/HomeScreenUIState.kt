@@ -14,9 +14,9 @@ data class TimeBoundTaskUI(
     val taskName: String,
     val taskDescription: String?,
     val completed: Boolean,
-    val timeRemaining : Int,
-    val status : TimerState,
-    val totalTimeAllocated: Long
+    val timeRemaining: Int,
+    val status: TimerState,
+    val totalTimeAllocated: Long,
 )
 
 data class FlexibleTaskUI(
@@ -33,7 +33,7 @@ data class FlexibleTaskUI(
     val taskDescription: String?,
     val completed: Boolean,
     val timeRemaining: Int,
-    val state : TimerState
+    val state: TimerState,
 )
 
 data class HomeScreenUIState

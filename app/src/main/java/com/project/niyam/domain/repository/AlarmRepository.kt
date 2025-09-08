@@ -7,4 +7,6 @@ interface AlarmRepository {
     fun observe(id: Long, isFlexible: Boolean): Flow<AlarmEntity?>
     suspend fun get(id: Long): AlarmEntity?
     suspend fun save(alarm: AlarmEntity)
+
+    suspend fun getByTaskId(taskId: Long, isFlexible: Boolean): AlarmEntity?
 }
